@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    expose:
+      - 5432
+    env_file: ./.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    env_file: ./backend/.env
+    restart: unless-stopped
+    expose:
+      - 4000
+    depends_on:
+      - postgres
+
+  site:
+    build:
+      context: ./site
+    env_file: ./site/.env
+    restart: unless-stopped
+    expose:
+      - 3000
+
+  gateway:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "3030:3030"
+      - "4040:4040"
+    volumes:
+      - ./nginx/gateway.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+      - site
+
+volumes:
+  postgres_data:

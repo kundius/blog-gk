@@ -1,0 +1,15 @@
+.Container {
+  width: 1140px;
+  max-width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (--below-md) {
+  .Container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

@@ -1,0 +1,8 @@
+.ScrollTop {
+  opacity: 0;
+  transition: .3 ease;
+}
+
+:global(.isHeaderFixed) .ScrollTop {
+  opacity: 1;
+}

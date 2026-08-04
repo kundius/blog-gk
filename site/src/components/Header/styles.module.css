@@ -1,0 +1,276 @@
+.Placeholder {
+  height: 324px;
+}
+
+@media (--below-md) {
+  .Placeholder {
+    height: 180px;
+  }
+}
+
+.Inner {
+  position: relative;
+}
+
+@media (--below-md) {
+  .Inner {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+}
+
+.Inner::after {
+  content: '';
+  height: 60px;
+  display: block;
+  width: 100%;
+  background: url("/images/header-bottom.png") no-repeat calc(50% - 20px) 0;
+  background-size: cover;
+  transition: 300ms ease-out;
+}
+
+:global(.isHeaderFixed) .Inner::after {
+  display: none;
+}
+
+@media (--below-md) {
+  .Inner::after {
+    height: 40px;
+  }
+}
+
+.Inner::before {
+  content: '';
+  height: 184px;
+  display: block;
+  width: 100%;
+  background: url("/images/header-top.png") no-repeat calc(50% - 20px) 0;
+  background-size: cover;
+  transition: 300ms ease-out;
+}
+
+:global(.isHeaderFixed) .Inner::before {
+  display: none;
+}
+
+@media (--below-md) {
+  .Inner::before {
+    height: 140px;
+  }
+}
+
+.Slogan {
+  border-top: 4px dotted var(--slogan-border-top-color);
+  padding-top: 14px;
+  letter-spacing: 12px;
+  text-align: center;
+  color: var(--slogan-color);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 12px;
+  font-weight: 400;
+  text-indent: 12px;
+  position: absolute;
+  line-height: 1;
+  z-index: 20;
+  white-space: nowrap;
+  top: 292px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: border-top-color 300ms ease-out, color 300ms ease-out;
+}
+
+@media (--below-md) {
+  .Slogan {
+    top: 160px;
+    border-top: 0;
+  }
+}
+
+:global(.isHeaderFixed) .Slogan {
+  top: 64px;
+  border-top: 0;
+  letter-spacing: 10px;
+  font-size: 12px;
+  padding: 3px;
+  /* z-index: 1; */
+}
+
+:global(.isHeaderFixed) .Slogan::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  top: 0;
+  border-left: 1px dashed var(--header-nav-border-color);
+  border-right: 1px dashed var(--header-nav-border-color);
+  border-bottom: 1px dashed var(--header-nav-border-color);
+  border-radius: 0 0 24px 24px;
+  background: var(--color-background);
+  z-index: -1;
+  transition: 300ms ease-out;
+}
+
+:global(.isHeaderFixed) .Slogan::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border-left: 1px dashed var(--header-nav-border-color);
+  border-right: 1px dashed var(--header-nav-border-color);
+  border-bottom: 1px dashed var(--header-nav-border-color);
+  border-radius: 0 0 24px 24px;
+  background: var(--color-background);
+  z-index: -1;
+  transition: 300ms ease-out;
+}
+
+.Search {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 50;
+}
+
+:global(.isHeaderFixed) .Search {
+  display: none;
+}
+
+@media (--below-md) {
+  :global(.isHeaderFixed) .Search {
+    display: block;
+  }
+}
+
+.Buttons {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+@media (--below-md) {
+  .Buttons {
+    display: none;
+  }
+}
+
+:global(.isHeaderFixed) .Buttons {
+  display: none;
+}
+
+.Button {
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.Button:hover {
+  opacity: 1;
+}
+
+.Wrapper {
+  z-index: 200;
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: relative;
+}
+
+:global(.isHeaderFixed) .Wrapper {
+  position: fixed;
+}
+
+.Garland1 {
+  background: url('/images/ng-left-top-2-red.png') no-repeat 50% 50%;
+  background-size: contain;
+  height: 600px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: -163px;
+  width: 297px;
+  z-index: -1;
+}
+
+@media (--below-md) {
+  .Garland1 {
+    left: -93px;
+  }
+}
+
+.Garland2 {
+  background: url('/images/ng-right-top-2-red.png') no-repeat 50% 50%;
+  background-size: contain;
+  height: 600px;
+  pointer-events: none;
+  position: absolute;
+  right: -170px;
+  top: -163px;
+  width: 529px;
+  z-index: -1;
+}
+
+@media (--below-md) {
+  .Garland2 {
+    right: -380px;
+  }
+}
+
+@media (--below-sm) {
+  .Garland2 {
+    right: -460px;
+  }
+}
+
+.Garland3 {
+  background: url('/images/ng-left-top-1-red.png') no-repeat 50% 50%;
+  height: 518px;
+  left: -257px;
+  position: absolute;
+  top: -36px;
+  width: 428px;
+  z-index: -1;
+}
+
+@media (--below-md) {
+  .Garland3 {
+    display: none;
+  }
+}
+
+.Garland4 {
+  background: url('/images/ng-right-top-1.png') no-repeat;
+  height: 126px;
+  position: absolute;
+  right: 200px;
+  top: 0;
+  width: 398px;
+  z-index: -1;
+}
+
+@media (--below-lg) {
+  .Garland4 {
+    display: none;
+  }
+}
+
+.Garland5 {
+  background: url('/images/ng-middle-top-1.png') no-repeat;
+  height: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  top: 0;
+  width: 133px;
+  z-index: -1;
+}

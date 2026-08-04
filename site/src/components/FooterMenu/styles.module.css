@@ -1,0 +1,48 @@
+.Wrapper {
+}
+
+.SectionName {
+  letter-spacing: 1px;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-bottom: 1px solid currentColor;
+}
+
+.SectionIcon {
+  font-size: 16px;
+}
+
+.Section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.Section:hover .SectionIcon {
+  color: var(--color-text);
+}
+
+.Section:hover .SectionName {
+  border-bottom-color: transparent;
+}
+
+.List {
+  margin-top: 16px;
+  line-height: 1;
+}
+
+.List li + li {
+  margin-top: 12px;
+}
+
+.List a {
+  color: #c66;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.List a:hover {
+  color: #c00;
+}

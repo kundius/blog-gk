@@ -1,0 +1,45 @@
+.Advert {
+  position: relative;
+}
+
+.Advert::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: -16px;
+  right: -16px;
+  bottom: -16px;
+  border: 1px dashed var(--header-nav-border-color);
+  display: block;
+  z-index: 1;
+  transition: 300ms ease-out
+}
+
+.Advert::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border: 1px dashed var(--header-nav-border-color);
+  display: block;
+  z-index: 1;
+  transition: 300ms ease-out
+}
+
+@media (--below-md) {
+  .Advert::before {
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    bottom: -12px;
+  }
+  
+  .Advert::after {
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+  }
+}

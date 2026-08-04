@@ -1,0 +1,103 @@
+.Wrapper {
+  position: relative;
+}
+
+.Meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+.Category {
+  color: #c66;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 2;
+}
+
+.Category:hover {
+  text-decoration: underline;
+}
+
+.Date {
+  color: #999;
+  font-size: 12px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.Name {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .5px;
+}
+
+@media (--below-md) {
+  .Name {
+    font-size: 36px;
+  }
+}
+
+.Name a {
+  color: inherit;
+}
+
+.Name a:hover {
+  color: #c66;
+}
+
+.Info {
+  padding-bottom: 10px;
+  margin-top: 3.5rem;
+  line-height: 1;
+  transition: 300ms ease-out;
+}
+
+@media (--below-md) {
+  .Info {
+    margin-top: 2.5rem;
+  }
+}
+
+.InfoItem {
+  color: #787878;
+  text-transform: uppercase;
+}
+
+.Thumbnail {
+  margin-top: 2rem;
+}
+
+.Excerpt {
+  margin-top: 2rem;
+  font-size: 16px;
+  letter-spacing: .28px;
+  line-height: 1.45;
+}
+
+.More {
+  margin-top: 20px;
+  display: inline-block;
+  text-align: center;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  background: rgba(255,255,255,0);
+  padding: 0 32px;
+  white-space: nowrap;
+  line-height: 58px;
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.More:hover {
+  border-color: #c66;
+  background: #c66;
+  color: #fff;
+}

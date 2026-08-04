@@ -1,0 +1,19 @@
+.Main {
+  display: flex;
+  gap: 80px;
+}
+
+.Content {
+  width: 100%;
+}
+
+.Side {
+  width: calc(100% * 1 / 3.001);
+  flex-shrink: 0;
+}
+
+@media (--below-lg) {
+  .Side {
+    display: none;
+  }
+}

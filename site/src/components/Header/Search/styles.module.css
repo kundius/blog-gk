@@ -1,0 +1,41 @@
+.Wrapper {
+  position: relative;
+}
+
+.Field {
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  background: #ffffff;
+  padding-right: 0;
+  padding-left: 3rem;
+  z-index: 1;
+  top: -8px;
+  bottom: -8px;
+  border-radius: 24px;
+  box-shadow: rgb(0 0 0 / 2%) 0px -5.9px 2.7px, rgb(0 0 0 / 2%) 0px -1.2px 6.9px, rgb(0 0 0 / 3%) 0px 8px 14.2px, rgb(0 0 0 / 4%) 0px 21.9px 29.2px;
+  transform-origin: 2rem 50%;
+  width: 0;
+  transition: background 300ms ease-out, box-shadow 300ms ease-out;
+}
+
+:global(.dark) .Field {
+  background: #6b7280;
+  box-shadow: rgb(255 255 255 / 0%) 0px -5.9px 2.7px, rgb(255 255 255 / 2%) 0px -1.2px 6.9px, rgb(255 255 255 / 3%) 0px 8px 14.2px, rgb(255 255 255 / 4%) 0px 21.9px 29.2px;
+}
+
+.Button {
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  opacity: 0.7;
+}
+
+.Button:hover {
+  opacity: 1;
+}

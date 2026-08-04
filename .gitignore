@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.next/
+.env
+*.tsbuildinfo
+.DS_Store
+*.log
+landing/public/widget/
+*.pgsql

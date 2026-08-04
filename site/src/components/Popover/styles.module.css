@@ -1,0 +1,227 @@
+.Arrow {
+  transition: border-color 300ms ease-out;
+}
+
+.Close {
+  width: 16px;
+  height: 16px;
+  top: 6px;
+  right: 6px;
+  border: none;
+  background: transparent;
+  position: absolute;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0;
+  opacity: 0.7;
+}
+
+.Close:hover {
+  opacity: 1;
+}
+
+.Close::before,
+.Close::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 1px;
+  width: 100%;
+  background-color: currentColor;
+}
+
+.Close::before {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.Close::after {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.Title {
+  color: currentColor;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.Content {
+  color: currentColor;
+  font-size: 13px;
+  line-height: 1.285;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.Content p {
+  margin: 0;
+}
+
+.Content * + p {
+  margin-top: 12px;
+}
+
+.Wrapper {
+  border-radius: 6px;
+  padding: 16px;
+  max-width: 260px;
+  z-index: 1050;
+  transition: background 300ms ease-out, box-shadow 300ms ease-out, visibility 300ms ease-out-in-out, opacity 300ms ease-out-in-out;
+  opacity: 0;
+  visibility: hidden;
+  background: #ffffff;
+  box-shadow: rgb(0 0 0 / 2%) 0px -5.9px 2.7px, rgb(0 0 0 / 2%) 0px -1.2px 6.9px, rgb(0 0 0 / 3%) 0px 8px 14.2px, rgb(0 0 0 / 4%) 0px 21.9px 29.2px, rgb(0 0 0 / 7%) 0px 49px 80px;
+}
+
+:global(.dark) .Wrapper {
+  background: #6b7280;
+  box-shadow: rgb(255 255 255 / 2%) 0px -5.9px 2.7px, rgb(255 255 255 / 2%) 0px -1.2px 6.9px, rgb(255 255 255 / 3%) 0px 8px 14.2px, rgb(255 255 255 / 4%) 0px 21.9px 29.2px, rgb(255 255 255 / 7%) 0px 49px 80px;
+}
+
+.Wrapper[data-popper-placement^="bottom"] > .Arrow {
+  top: -16px;
+  border-width: 0 16px 16px 16px;
+  border-color: transparent transparent #ffffff transparent;
+  filter: drop-shadow(0px -4px 4px rgb(0 0 0 / 8%));
+}
+
+:global(.dark) .Wrapper[data-popper-placement^="bottom"] > .Arrow {
+  border-color: transparent transparent #6b7280 transparent;
+  filter: drop-shadow(0px -4px 4px rgb(255 255 255 / 8%));
+}
+
+.Wrapper[data-popper-placement^="right"] > .Arrow {
+  left: -16px;
+  border-width: 16px 16px 16px 0;
+  border-color: transparent #ffffff transparent transparent;
+}
+
+:global(.dark) .Wrapper[data-popper-placement^="right"] > .Arrow {
+  border-color: transparent #6b7280 transparent transparent;
+}
+
+.Wrapper[data-popper-placement^="top"] > .Arrow {
+  bottom: -16px;
+  border-width: 16px 16px 0 16px;
+  border-color: #ffffff transparent transparent transparent;
+  filter: drop-shadow(0px -4px 4px rgb(0 0 0 / 8%));
+}
+
+:global(.dark) .Wrapper[data-popper-placement^="top"] > .Arrow {
+  border-color: #6b7280 transparent transparent transparent;
+  filter: drop-shadow(0px 4px 4px rgb(255 255 255 / 8%));
+}
+
+.Wrapper[data-popper-placement^="left"] > .Arrow {
+  right: -16px;
+  border-width: 16px 0 16px 16px;
+  border-color: transparent transparent transparent #ffffff;
+}
+
+:global(.dark) .Wrapper[data-popper-placement^="left"] > .Arrow {
+  border-color: transparent transparent transparent #6b7280;
+}
+
+.WrapperIsOpen {
+  opacity: 1;
+  visibility: visible;
+}
+
+.WrapperSmall {
+  border-radius: 4px;
+  padding: 10px;
+  max-width: 180px;
+}
+
+.WrapperSmall[data-popper-placement^="bottom"] > .Arrow {
+  top: -8px;
+  border-width: 0 8px 8px 8px;
+}
+
+.WrapperSmall[data-popper-placement^="right"] > .Arrow {
+  left: -8px;
+  border-width: 8px 8px 8px 0;
+}
+
+.WrapperSmall[data-popper-placement^="top"] > .Arrow {
+  bottom: -8px;
+  border-width: 8px 8px 0 8px;
+}
+
+.WrapperSmall[data-popper-placement^="left"] > .Arrow {
+  right: -8px;
+  border-width: 8px 0 8px 8px;
+}
+
+.WrapperSmall .Content {
+  font-size: 11px;
+}
+
+.WrapperSmall .Content * + p {
+  margin-top: 8px;
+}
+
+.WrapperSmall .Title {
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+
+.WrapperSmall .Close {
+  width: 12px;
+  height: 12px;
+  top: 4px;
+  right: 4px;
+}
+
+.WrapperMedium {
+  
+}
+
+.WrapperLarge {
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 340px;
+}
+
+.WrapperLarge[data-popper-placement^="bottom"] > .Arrow {
+  top: -24px;
+  border-width: 0 24px 24px 24px;
+}
+
+.WrapperLarge[data-popper-placement^="right"] > .Arrow {
+  left: -24px;
+  border-width: 24px 24px 24px 0;
+}
+
+.WrapperLarge[data-popper-placement^="top"] > .Arrow {
+  bottom: -24px;
+  border-width: 24px 24px 0 24px;
+}
+
+.WrapperLarge[data-popper-placement^="left"] > .Arrow {
+  right: -24px;
+  border-width: 24px 0 24px 24px;
+}
+
+.WrapperLarge .Content {
+  font-size: 14px;
+}
+
+.WrapperLarge .Content * + p {
+  margin-top: 16px;
+}
+
+.WrapperLarge .Title {
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.WrapperLarge .Close {
+  width: 18px;
+  height: 18px;
+  top: 10px;
+  right: 10px;
+}

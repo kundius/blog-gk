@@ -1,0 +1,21 @@
+.Garland {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 254px;
+  width: 100%;
+  height: auto;
+  z-index: 30;
+}
+
+:global(.isHeaderFixed) .Garland {
+  z-index: 10;
+  top: 54px;
+}
+
+@media (--below-md) {
+  .Garland {
+    top: 136px;
+    width: 768px;
+  }
+}

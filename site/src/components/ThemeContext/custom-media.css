@@ -1,0 +1,16 @@
+@custom-media --below-sm (max-width: 639px);
+@custom-media --below-md (max-width: 767px);
+@custom-media --below-lg (max-width: 1023px);
+@custom-media --below-xl (max-width: 1279px);
+@custom-media --below-xxl (max-width: 1619px);
+
+@custom-media --above-xs (min-width: 0px);
+@custom-media --above-sm (min-width: 640px);
+@custom-media --above-md (min-width: 768px);
+@custom-media --above-lg (min-width: 1024px);
+@custom-media --above-xl (min-width: 1280px);
+@custom-media --above-xxl (min-width: 1620px);
+
+@custom-media --mobile (max-width: 767px);
+@custom-media --tablet (min-width: 768px) and (max-width: 1024px);
+@custom-media --desktop (min-width: 1024px);

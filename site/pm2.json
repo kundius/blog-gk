@@ -1,0 +1,9 @@
+{
+    "apps": [
+        {
+            "name": "blog-gk.ru",
+            "script": "npm",
+            "args" : "start -- -p 4011"
+        }
+    ]
+}

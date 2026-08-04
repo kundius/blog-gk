@@ -1,0 +1,20 @@
+.Wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.Wrapper li::after {
+  content: '/';
+  margin: 0 12px;
+}
+
+.Wrapper li:last-child::after {
+  display: none;
+}
+
+.Wrapper a:hover {
+  color: var(--color-text);
+}

@@ -1,0 +1,111 @@
+.List > li {
+  padding: 12px 12px 12px 32px;
+  font-size: 24px;
+}
+
+.List > li > a {
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.SecondList {
+  display: none;
+}
+
+.Drawer {
+  display: none;
+  position: fixed;
+  overflow: auto;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  width: 100vw;
+  height: 100vh;
+  z-index: 300;
+  background: var(--color-blurred-background);
+  backdrop-filter: blur(8px);
+}
+
+.DrawerIsVisible {
+  display: flex;
+}
+
+.Buttons {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-left: 32px;
+  margin-top: 32px;
+}
+
+.Button {
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.Button:hover {
+  opacity: 1;
+}
+
+.Toggle {
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  width: 32px;
+  height: 32px;
+  z-index: 300;
+}
+
+@media (--above-md) {
+  .Toggle {
+    display: none;
+  }
+}
+
+.Toggle::before {
+  content: '';
+  width: 28px;
+  height: 3px;
+  background: currentColor;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+  margin-top: -8px;
+  transition: .3s ease-out;
+}
+
+.Toggle::after {
+  content: '';
+  width: 28px;
+  height: 3px;
+  background: currentColor;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+  margin-top: 8px;
+  transition: .3s ease-out;
+}
+
+.ToggleIsActive.Toggle::before {
+  transform: translate(-50%, -50%) rotate(-45deg);
+  margin-top: 0;
+}
+
+.ToggleIsActive.Toggle::after {
+  transform: translate(-50%, -50%) rotate(45deg);
+  margin-top: 0;
+}
