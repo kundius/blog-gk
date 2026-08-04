@@ -25,6 +25,11 @@ export class PagesController {
     return this.pagesService.findAll(query);
   }
 
+  @Get('by-alias/:alias')
+  async findByAlias(@Param('alias') alias: string) {
+    return { data: await this.pagesService.findByAlias(alias) };
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return { data: await this.pagesService.findOne(id) };

@@ -1,17 +1,14 @@
 import { SitemapPage } from '@components/SitemapPage'
-import * as api from '@components/SitemapPage/api'
+import { listArticles } from '@app/api/articles'
+import { categoriesTree } from '@app/api/categories'
 
-export async function getStaticProps({ params }) {
-  const [keyCooking, fetcherCooking] = api.getArticles({
-    sectionIn: ['cooking']
-  })
-  const [keyArticles, fetcherArticles] = api.getArticles({
-    sectionNotIn: ['cooking']
-  })
+export async function getStaticProps() {
+  const [keyArticles, fetcherArticles] = listArticles({ limit: 1000 })
+  const [keyCategories, fetcherCategories] = categoriesTree()
 
   const preloadData = {
-    [keyCooking]: await fetcherCooking(keyCooking),
-    [keyArticles]: await fetcherArticles(keyArticles)
+    [keyArticles]: await fetcherArticles(keyArticles),
+    [keyCategories]: await fetcherCategories(keyCategories)
   }
 
   return {

@@ -30,117 +30,58 @@ export const MobileMenu = () => {
             </Link>
           </li>
           <li>
-            <Link href="/cooking" passHref>
+            <Link href="/krem-i-glazur-dlya-tortov" passHref>
               <a>Кулинария</a>
             </Link>
             <ul className={styles.SecondList}>
               <li>
-                <Link href="/cooking/krem-i-glazur-dlya-tortov" passHref>
+                <Link href="/krem-i-glazur-dlya-tortov" passHref>
                   <a>Крем и глазурь для тортов</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/cakes" passHref>
+                <Link href="/cakes" passHref>
                   <a>Торты, пироги и пирожные</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/drinks" passHref>
+                <Link href="/drinks" passHref>
                   <a>Напитки и десерты</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/salads" passHref>
+                <Link href="/salads" passHref>
                   <a>Салаты и закуски</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/conservation" passHref>
+                <Link href="/conservation" passHref>
                   <a>Консервация</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/baking" passHref>
+                <Link href="/baking" passHref>
                   <a>Выпечка</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/cookies" passHref>
+                <Link href="/cookies" passHref>
                   <a>Печенье</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/main-dishes" passHref>
+                <Link href="/main-dishes" passHref>
                   <a>Вторые блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/entrees" passHref>
+                <Link href="/entrees" passHref>
                   <a>Первые блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/fish-dishes" passHref>
+                <Link href="/fish-dishes" passHref>
                   <a>Рыбные блюда</a>
-                </Link>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <Link href="/article/temples" passHref>
-              <a>Храмы</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/notes" passHref>
-              <a>Заметки</a>
-            </Link>
-            <ul className={styles.SecondList}>
-              <li>
-                <Link href="/notes/zametki-o-vtoryh-blyudah" passHref>
-                  <a>Вторые блюда</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/zametki-o-vypechke" passHref>
-                  <a>Выпечка</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/zametki-o-pervyh-blyudah" passHref>
-                  <a>Первые блюда</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/useful-tips" passHref>
-                  <a>Полезные советы</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/zametki-o-napitkah" passHref>
-                  <a>Заметки о напитках</a>
-                </Link>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <Link href="/article" passHref>
-              <a>Статьи</a>
-            </Link>
-            <ul className={styles.SecondList}>
-              <li>
-                <Link href="/article/supernatural" passHref>
-                  <a>Сверхъестественное</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/article/relationship" passHref>
-                  <a>Отношения</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/article/subsection-2" passHref>
-                  <a>Жизненные истории</a>
                 </Link>
               </li>
             </ul>
@@ -148,6 +89,11 @@ export const MobileMenu = () => {
           <li>
             <Link href="/albums" passHref>
               <a>Альбомы</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/sitemap" passHref>
+              <a>Карта сайта</a>
             </Link>
           </li>
         </ul>

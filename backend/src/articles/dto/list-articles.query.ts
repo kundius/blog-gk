@@ -15,6 +15,14 @@ export class ListArticlesQueryDto extends PaginationDto {
   categoryAlias?: string;
 
   @IsOptional()
+  @IsString()
+  categories?: string;
+
+  @IsOptional()
+  @IsString()
+  categoriesNotIn?: string;
+
+  @IsOptional()
   @IsUUID()
   tagId?: string;
 

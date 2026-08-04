@@ -23,13 +23,13 @@ import {
   VKIcon
 } from 'react-share'
 
-import { YandexRTB } from '@components/YandexRTB'
 import { Content } from '@components/Content'
 import { Image } from '@components/Image'
 import { ClocheIcon } from '@components/Icon/cloche'
 import { ToqueIcon } from '@components/Icon/toque'
 import { CommentsIcon } from '@components/Icon/comments'
 import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { fileUrl } from '@app/api/images'
 import { WideLayout } from '@components/WideLayout'
 import { ArticleRelated } from '@components/ArticleRelated'
 import { Comments } from '@components/Comments'
@@ -38,7 +38,6 @@ import { ArticleLikes } from '@components/ArticleLikes'
 
 import { Hits } from './Hits'
 import * as api from './api'
-import * as styles from './styles.module.css'
 
 const { publicRuntimeConfig } = getRuntimeConfig()
 
@@ -54,12 +53,10 @@ export function ArticlePage({ alias }: ArticlePageProps) {
   let nextApi: api.GetNextResult | undefined
   if (result?.data) {
     previousApi = api.getPrevious({
-      id: result.data.id,
-      date: result.data.date_created
+      id: result.data.id
     })
     nextApi = api.getNext({
-      id: result.data.id,
-      date: result.data.date_created
+      id: result.data.id
     })
   }
 
@@ -72,29 +69,27 @@ export function ArticlePage({ alias }: ArticlePageProps) {
     nextApi?.[1] || null
   )
 
-  const pageUrl = `${publicRuntimeConfig.CLIENT_URL}/${result?.data?.category.section.alias}/${result?.data?.category.alias}/${result?.data?.alias}`
-  const imageUrl = `${publicRuntimeConfig.API_URL}/assets/${result?.data?.thumbnail?.filename_disk}`
+  const pageUrl = `${publicRuntimeConfig.CLIENT_URL}/${result?.data?.category.alias}/${result?.data?.alias}`
+  const imageUrl = fileUrl(result?.data?.thumbnail?.filenameDisk)
   const isRecipe = !!result?.data?.ingredients
-
-  /*useEffect(() => {
-    console.log(`${publicRuntimeConfig.API_URL}/assets/${result?.data?.thumbnail?.filename_disk}`)
-    Ya.share2('ya-share2', {
-      theme: { services: 'messenger,vkontakte,odnoklassniki,telegram,twitter,viber,whatsapp' },
-      content: { url: location.href, image: `${publicRuntimeConfig.API_URL}/assets/${result?.data?.thumbnail?.filename_disk}` }
-    });
-  }, [])*/
 
   return (
     <WideLayout>
       <Head>
-        <title>{result?.data?.seo_title || result?.data?.name}</title>
-        <meta name="description" content={result?.data?.seo_description} />
-        <meta name="keywords" content={result?.data?.seo_keywords} />
+        <title>{result?.data?.seoTitle || result?.data?.name}</title>
+        <meta
+          name="description"
+          content={result?.data?.seoDescription || undefined}
+        />
+        <meta
+          name="keywords"
+          content={result?.data?.seoKeywords || undefined}
+        />
 
         <meta property="og:title" content={result?.data?.name} />
         <meta
           property="og:description"
-          content={result?.data?.seo_description}
+          content={result?.data?.seoDescription || undefined}
         />
         <meta property="og:image" content={imageUrl} />
         <meta property="og:type" content="article" />
@@ -122,31 +117,10 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                   itemScope
                   itemType="http://schema.org/ListItem"
                 >
-                  <Link
-                    href={`/${result.data.category.section.alias}`}
-                    passHref
-                  >
-                    <a className="hover:text-red-400" itemProp="item">
-                      <span itemProp="name">
-                        {result.data.category.section.name}
-                      </span>
-                      <meta itemProp="position" content="1" />
-                    </a>
-                  </Link>
-                </span>
-                <span className="ml-1 mr-1">/</span>
-                <span
-                  itemProp="itemListElement"
-                  itemScope
-                  itemType="http://schema.org/ListItem"
-                >
-                  <Link
-                    href={`/${result.data.category.section.alias}/${result.data.category.alias}`}
-                    passHref
-                  >
+                  <Link href={`/${result.data.category.alias}`} passHref>
                     <a className="hover:text-red-400" itemProp="item">
                       <span itemProp="name">{result.data.category.name}</span>
-                      <meta itemProp="position" content="2" />
+                      <meta itemProp="position" content="1" />
                     </a>
                   </Link>
                 </span>
@@ -173,7 +147,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                 </div>
                 <meta
                   itemProp="dateModified"
-                  content={result.data.date_updated}
+                  content={result.data.dateUpdated || undefined}
                 />
                 <meta
                   itemScope
@@ -185,9 +159,9 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               <time
                 className="text-xs text-gray-400 whitespace-nowrap"
                 itemProp="datePublished"
-                dateTime={result.data.date_created}
+                dateTime={result.data.dateCreated}
               >
-                {DateTime.fromISO(result.data.date_created)
+                {DateTime.fromISO(result.data.dateCreated)
                   .setLocale('ru')
                   .toFormat('DDD')
                   .replace(' г.', '')}
@@ -212,12 +186,12 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                       <meta
                         itemProp="totalTime"
                         content={`PT${
-                          result.data.cooking_time
-                            ? result.data.cooking_time.replace(/[^0-9]/g, '')
+                          result.data.cookingTime
+                            ? result.data.cookingTime.replace(/[^0-9]/g, '')
                             : 45
                         }M`}
                       />
-                      {result.data.cooking_time || '45 минут'}
+                      {result.data.cookingTime || '45 минут'}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -225,7 +199,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                       <ClocheIcon />
                     </div>
                     <div className="text-xs uppercase" itemProp="recipeYield">
-                      {result.data.portion_count || 1}
+                      {result.data.portionCount || 1}
                     </div>
                   </div>
                 </div>
@@ -234,7 +208,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               <div className="flex items-center gap-8">
                 <Hits
                   id={result.data.id}
-                  initialHits={result.data.hits_count || 0}
+                  initialHits={result.data.hitsCount || 0}
                 />
                 <a href={`#comments`} className="flex items-center gap-8">
                   <span className="flex items-center gap-2">
@@ -242,11 +216,14 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                       <CommentsIcon />
                     </span>
                     <span className="text-xs uppercase">
-                      {result.data.comments_count || 0}
+                      {result.data.commentsCount || 0}
                     </span>
                   </span>
                 </a>
-                <ArticleLikes id={result.data.id} />
+                <ArticleLikes
+                  id={result.data.id}
+                  initialLikes={result.data.likesCount || 0}
+                />
               </div>
             </div>
 
@@ -258,13 +235,13 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                 itemType="http://schema.org/ImageObject"
               >
                 <Image
-                  src={`${publicRuntimeConfig.API_URL}/assets/${result.data.thumbnail?.filename_disk}`}
-                  alt={result.data.thumbnail?.title}
+                  src={fileUrl(result.data.thumbnail?.filenameDisk) || ''}
+                  alt={result.data.thumbnail?.title || undefined}
                   blurHash={result.data.thumbnail.blurhash}
                   width={675}
                   height={
-                    (675 / result.data.thumbnail.width) *
-                    result.data.thumbnail.height
+                    (675 / (result.data.thumbnail.width || 1)) *
+                    (result.data.thumbnail.height || 1)
                   }
                   objectFit="cover"
                   layout="responsive"
@@ -272,14 +249,14 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                 <img
                   className="hidden"
                   itemProp="url contentUrl"
-                  src={`${publicRuntimeConfig.API_URL}/assets/${result.data.thumbnail?.filename_disk}`}
+                  src={fileUrl(result.data.thumbnail?.filenameDisk) || ''}
                 />
                 <meta itemProp="width" content={String(675)} />
                 <meta
                   itemProp="height"
                   content={String(
-                    (675 / result.data.thumbnail.width) *
-                      result.data.thumbnail.height
+                    (675 / (result.data.thumbnail.width || 1)) *
+                      (result.data.thumbnail.height || 1)
                   )}
                 />
               </figure>
@@ -289,7 +266,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               <img
                 className="hidden"
                 itemProp="resultPhoto"
-                src={`${publicRuntimeConfig.API_URL}/assets/${result.data.thumbnail?.filename_disk}`}
+                src={fileUrl(result.data.thumbnail?.filenameDisk) || ''}
               />
             )}
 
@@ -303,10 +280,6 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               dangerouslySetInnerHTML={{ __html: result.data.content }}
               itemProp={isRecipe ? 'recipeInstructions' : 'articleBody'}
             />
-
-            <div className={`${styles.Advert} mt-16`}>
-              <YandexRTB id={'R-A-2214092-1'} />
-            </div>
 
             {result.data.tags?.[0] && (
               <div className="flex items-start leading-none mt-16">
@@ -337,7 +310,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                 <TwitterShareButton url={pageUrl}>
                   <TwitterIcon size={32} borderRadius={32} />
                 </TwitterShareButton>
-                <VKShareButton url={pageUrl} image={`${publicRuntimeConfig.API_URL}/assets/${result.data.thumbnail?.filename_disk}`}>
+                <VKShareButton url={pageUrl} image={fileUrl(result.data.thumbnail?.filenameDisk)}>
                   <VKIcon size={32} borderRadius={32} />
                 </VKShareButton>
                 <OKShareButton url={pageUrl}>
@@ -349,7 +322,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                 {result.data.thumbnail && (
                   <PinterestShareButton
                     url={pageUrl}
-                    media={`${publicRuntimeConfig.API_URL}/assets/${result.data.thumbnail.filename_disk}`}
+                    media={fileUrl(result.data.thumbnail.filenameDisk)}
                   >
                     <PinterestIcon size={32} borderRadius={32} />
                   </PinterestShareButton>
@@ -360,7 +333,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
             <div className="flex items-center gap-2">
               {previousResult?.data && (
                 <Link
-                  href={`/${previousResult.data.category.section.alias}/${previousResult.data.category.alias}/${previousResult.data.alias}`}
+                  href={`/${previousResult.data.category.alias}/${previousResult.data.alias}`}
                   passHref
                 >
                   <a
@@ -375,7 +348,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               )}
               {nextResult?.data && (
                 <Link
-                  href={`/${nextResult.data.category.section.alias}/${nextResult.data.category.alias}/${nextResult.data.alias}`}
+                  href={`/${nextResult.data.category.alias}/${nextResult.data.alias}`}
                   passHref
                 >
                   <a

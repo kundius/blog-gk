@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import useSWR, { mutate } from 'swr'
 import { DateTime } from 'luxon'
 
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
 import { Container } from '@components/Container'
 import { CommentsForm, CommentsFormReply } from '@components/CommentsForm'
 import { CommentsItem, CommentsItemData } from '@components/CommentsItem'
@@ -10,8 +9,6 @@ import { CommentsItemSkeleton } from '@components/CommentsItem/skeleton'
 
 import * as styles from './styles.module.css'
 import * as api from './api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 export interface CommentsProps {
   threadId: string
@@ -47,19 +44,20 @@ export function Comments({ threadId, threadType }: CommentsProps) {
     commentsResult?.data.map((item) => ({
       id: item.id,
       content: item.content || '',
-      createdAt: item.date_created,
+      createdAt: item.dateCreated,
       isBlocked: item.status === 'draft',
-      isChanged: !!item.date_updated,
+      isChanged: !!item.dateUpdated,
       parent: item.parent
         ? {
             content: item.parent.content || '',
             id: item.parent.id,
-            authorName: item.parent.author_name || 'Гость'
+            authorName: item.parent.authorName || 'Гость'
           }
         : undefined,
-      authorName: item.author_name || 'Гость',
+      authorName: item.authorName || 'Гость',
+      authorEmail: item.authorEmail || '',
       raw: item.raw || '',
-      updatedAt: item.date_updated
+      updatedAt: item.dateUpdated || ''
     })) || []
 
   return (
@@ -155,21 +153,19 @@ export function Comments({ threadId, threadType }: CommentsProps) {
   async function onCreateSubmit() {
     if (!createValue) return
 
-    await fetch(`${publicRuntimeConfig.API_URL}/custom/comments/create`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+    setCreating(true)
+    try {
+      await api.createNewComment({
+        threadId,
+        threadType,
         content: createValue,
-        parent_id: createReply?.id,
-        thread_type: threadType,
-        thread_id: threadId,
-        author_email: authorEmail,
-        author_name: authorName
+        parentId: createReply?.id,
+        authorName: authorName || 'Гость',
+        authorEmail
       })
-    })
+    } finally {
+      setCreating(false)
+    }
 
     setCreateValue('')
     setAuthorEmail('')

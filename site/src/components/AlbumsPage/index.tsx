@@ -5,13 +5,11 @@ import { DateTime } from 'luxon'
 
 import { Pagination } from '@components/Pagination'
 import { ArticleCardMain } from '@components/ArticleCardMain'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { fileUrl } from '@app/api/images'
 import { MainLayout } from '@components/MainLayout'
 
 import * as api from './api'
 import { Card } from './Card'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 export function AlbumsPage() {
   const [albumsKey, albumsFetcher] = api.getAlbums()
@@ -43,9 +41,9 @@ export function AlbumsPage() {
             thumbnail={
               album.thumbnail
                 ? {
-                    name: album.thumbnail?.title,
-                    blurHash: album.thumbnail?.blurhash,
-                    url: `${publicRuntimeConfig.API_URL}/assets/${album.thumbnail?.filename_disk}`
+                    name: album.thumbnail?.title || undefined,
+                    blurHash: album.thumbnail?.blurhash || undefined,
+                    url: fileUrl(album.thumbnail?.filenameDisk)
                   }
                 : undefined
             }

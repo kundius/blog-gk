@@ -98,10 +98,10 @@ export function SearchPage({ query }: SearchPageProps) {
           <Card key={item.id} id={item.id} />
         ))}
 
-        {(searchResult?.meta?.search_count || 0) > limit && (
+        {(searchResult?.meta?.total || 0) > limit && (
           <Pagination
             current={page}
-            total={searchResult?.meta?.search_count}
+            total={searchResult?.meta?.total}
             pageSize={limit}
             onChange={setPage}
           />

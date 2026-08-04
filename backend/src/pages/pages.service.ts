@@ -42,6 +42,14 @@ export class PagesService {
     return page;
   }
 
+  async findByAlias(alias: string) {
+    const page = await this.prisma.page.findUnique({ where: { alias } });
+    if (!page) {
+      throw new NotFoundException('Page not found');
+    }
+    return page;
+  }
+
   async create(dto: CreatePageDto) {
     return this.prisma.page.create({ data: dto });
   }

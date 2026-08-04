@@ -6,21 +6,86 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  const soups = await prisma.category.upsert({
-    where: { alias: "soups" },
-    update: {},
+  const baking = await prisma.category.upsert({
+    where: { alias: "baking" },
+    update: { parentId: null },
     create: {
-      name: "Супы",
-      alias: "soups",
-      content: "Горячие и холодные супы на любой вкус.",
-      seoTitle: "Супы — рецепты",
+      name: "Выпечка",
+      alias: "baking",
+      content: "Домашняя выпечка: торты, печенье и пироги.",
+      seoTitle: "Выпечка — рецепты",
+    },
+  });
+
+  const entrees = await prisma.category.upsert({
+    where: { alias: "entrees" },
+    update: { parentId: null },
+    create: {
+      name: "Первые и вторые блюда",
+      alias: "entrees",
+      content: "Супы, горячее и повседневные блюда.",
+      seoTitle: "Первые и вторые блюда — рецепты",
     },
   });
 
   const desserts = await prisma.category.upsert({
     where: { alias: "desserts" },
-    update: {},
-    create: { name: "Десерты", alias: "desserts" },
+    update: {
+      parentId: null,
+      content: "Сладкие десерты к чаю.",
+      seoTitle: "Десерты — рецепты",
+    },
+    create: {
+      name: "Десерты",
+      alias: "desserts",
+      content: "Сладкие десерты к чаю.",
+      seoTitle: "Десерты — рецепты",
+    },
+  });
+
+  const cookies = await prisma.category.upsert({
+    where: { alias: "cookies" },
+    update: { parentId: baking.id },
+    create: {
+      name: "Печенье",
+      alias: "cookies",
+      parentId: baking.id,
+      seoTitle: "Печенье — рецепты",
+    },
+  });
+
+  const cakes = await prisma.category.upsert({
+    where: { alias: "cakes" },
+    update: { parentId: baking.id },
+    create: {
+      name: "Торты",
+      alias: "cakes",
+      parentId: baking.id,
+      seoTitle: "Торты — рецепты",
+    },
+  });
+
+  const soups = await prisma.category.upsert({
+    where: { alias: "soups" },
+    update: { parentId: entrees.id },
+    create: {
+      name: "Супы",
+      alias: "soups",
+      parentId: entrees.id,
+      content: "Горячие и холодные супы на любой вкус.",
+      seoTitle: "Супы — рецепты",
+    },
+  });
+
+  const mainDishes = await prisma.category.upsert({
+    where: { alias: "main-dishes" },
+    update: { parentId: entrees.id },
+    create: {
+      name: "Вторые блюда",
+      alias: "main-dishes",
+      parentId: entrees.id,
+      seoTitle: "Вторые блюда — рецепты",
+    },
   });
 
   const fast = await prisma.tag.upsert({
@@ -75,7 +140,31 @@ async function main() {
       ],
       portionCount: "4",
       cookingTime: "45 минут",
-      dateCreated: new Date(),
+      seoTitle: "Крем-брюле — пошаговый рецепт",
+      dateCreated: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      tags: { create: [{ tagId: fast.id, sort: 0 }] },
+    },
+  });
+
+  await prisma.article.upsert({
+    where: { alias: "chocolate-cookies" },
+    update: {},
+    create: {
+      name: "Шоколадное печенье",
+      alias: "chocolate-cookies",
+      status: "published",
+      content: "Хрустящее шоколадное печенье, которое тает во рту.",
+      excerpt: "Печенье к чаю за полчаса.",
+      categoryId: cookies.id,
+      ingredients: [
+        { name: "Мука", amount: "250 г" },
+        { name: "Какао", amount: "2 ст. л" },
+        { name: "Масло", amount: "150 г" },
+      ],
+      portionCount: "20",
+      cookingTime: "30 минут",
+      seoTitle: "Шоколадное печенье — пошаговый рецепт",
+      dateCreated: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       tags: { create: [{ tagId: fast.id, sort: 0 }] },
     },
   });

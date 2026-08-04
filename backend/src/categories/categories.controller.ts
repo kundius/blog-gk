@@ -25,6 +25,16 @@ export class CategoriesController {
     return this.categoriesService.findAll(query);
   }
 
+  @Get('tree')
+  async tree() {
+    return { data: await this.categoriesService.tree() };
+  }
+
+  @Get('by-alias/:alias')
+  async findByAlias(@Param('alias') alias: string) {
+    return { data: await this.categoriesService.findByAlias(alias) };
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return { data: await this.categoriesService.findOne(id) };

@@ -8,7 +8,13 @@ import { MainLayout } from '@components/MainLayout'
 import * as api from './api'
 
 export function SitemapPage() {
+  const [keyCategories, fetcherCategories] = api.getCategories()
   const [keyArticles, fetcherArticles] = api.getArticles({})
+
+  const { data: resultCategories } = useSWR<api.GetCategoriesData>(
+    keyCategories,
+    fetcherCategories
+  )
 
   const { data: resultArticles } = useSWR<api.GetArticlesData>(
     keyArticles,
@@ -35,124 +41,26 @@ export function SitemapPage() {
             <a>Обо мне</a>
           </Link>
         </li>
+        {resultCategories?.data?.map((category) => (
+          <li key={category.id}>
+            <Link href={`/${category.alias}`}>
+              <a>{category.name}</a>
+            </Link>
+            {category.children && category.children.length > 0 && (
+              <ul className="ml-8 mt-2 space-y-2">
+                {category.children.map((child) => (
+                  <li key={child.id}>
+                    <Link href={`/${child.alias}`}>
+                      <a>{child.name}</a>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
         <li>
-          <Link href="/cooking">
-            <a>Кулинария</a>
-          </Link>
-          <ul className="ml-8 mt-2 space-y-2">
-            <li>
-              <Link href="/cooking/krem-i-glazur-dlya-tortov" passHref>
-                <a>Крем и глазурь для тортов</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/cakes" passHref>
-                <a>Торты, пироги и пирожные</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/drinks" passHref>
-                <a>Напитки и десерты</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/salads" passHref>
-                <a>Салаты и закуски</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/conservation" passHref>
-                <a>Консервация</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/baking" passHref>
-                <a>Выпечка</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/cookies" passHref>
-                <a>Печенье</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/main-dishes" passHref>
-                <a>Вторые блюда</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/entrees" passHref>
-                <a>Первые блюда</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/cooking/fish-dishes" passHref>
-                <a>Рыбные блюда</a>
-              </Link>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <Link href="/article/temples" passHref>
-            <a>Храмы</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/notes" passHref>
-            <a>Заметки</a>
-          </Link>
-          <ul className="ml-8 mt-2 space-y-2">
-            <li>
-              <Link href="/notes/zametki-o-vtoryh-blyudah" passHref>
-                <a>Вторые блюда</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/notes/zametki-o-vypechke" passHref>
-                <a>Выпечка</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/notes/zametki-o-pervyh-blyudah" passHref>
-                <a>Первые блюда</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/notes/useful-tips" passHref>
-                <a>Полезные советы</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/notes/zametki-o-napitkah" passHref>
-                <a>Заметки о напитках</a>
-              </Link>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <Link href="/article" passHref>
-            <a>Статьи</a>
-          </Link>
-          <ul className="ml-8 mt-2 space-y-2">
-            <li>
-              <Link href="/article/supernatural" passHref>
-                <a>Сверхъестественное</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/article/relationship" passHref>
-                <a>Отношения</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/article/subsection-2" passHref>
-                <a>Жизненные истории</a>
-              </Link>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <Link href="/albums" passHref>
+          <Link href="/albums">
             <a>Альбомы</a>
           </Link>
         </li>
@@ -163,7 +71,7 @@ export function SitemapPage() {
         {resultArticles?.data.map((item) => (
           <li key={item.id}>
             <Link
-              href={`/${item.category.section.alias}/${item.category.alias}/${item.alias}`}
+              href={`/${item.category.alias}/${item.alias}`}
             >
               <a>{item.name}</a>
             </Link>

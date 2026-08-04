@@ -18,6 +18,8 @@ services:
       - ./site/src:/app/src
       - ./site/package.json:/app/package.json
       - ./site/package-lock.json:/app/package-lock.json
+      - ./site/next.config.js:/app/next.config.js
+      - ./site/.env:/app/.env
     command: npm run dev
 
   pgadmin:

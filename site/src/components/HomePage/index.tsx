@@ -7,17 +7,15 @@ import { DateTime } from 'luxon'
 import Link from 'next/link'
 
 import { Image } from '@components/Image'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { fileUrl } from '@app/api/images'
 import { ArticleCardLatest } from '@components/ArticleCardLatest'
 import { WideLayout } from '@components/WideLayout'
 
 import * as api from './api'
 
-const { publicRuntimeConfig } = getRuntimeConfig()
-
 export function HomePage() {
   const [keyFirstSection, fetcherFirstSection] = api.getArticles({
-    aliasIn: ['baking', 'cookies', 'cakes'],
+    categories: ['baking'],
     limit: 6
   })
 
@@ -27,7 +25,7 @@ export function HomePage() {
   )
 
   const [keySecondSection, fetcherSecondSection] = api.getArticles({
-    aliasIn: ['entrees', 'main-dishes'],
+    categories: ['entrees'],
     limit: 6
   })
 
@@ -37,7 +35,7 @@ export function HomePage() {
   )
 
   const [keyThirdSection, fetcherThirdSection] = api.getArticles({
-    aliasNotIn: ['baking', 'cookies', 'cakes', 'entrees', 'main-dishes'],
+    categories: ['desserts'],
     limit: 6
   })
 
@@ -151,28 +149,31 @@ export function HomePage() {
 
         {renderLatestCooking({
           title: 'Торты, печенье и прочая выпечка',
+          href: '/baking',
           data: resultFirstSection?.data
         })}
 
         {renderLatestCooking({
           title: 'Первые и вторые блюда',
+          href: '/entrees',
           data: resultSecondSection?.data
         })}
 
         {renderLatestCooking({
-          title: 'Прочая кулинария',
+          title: 'Десерты',
+          href: '/desserts',
           data: resultThirdSection?.data
         })}
       </div>
     </WideLayout>
   )
 
-  function renderLatestCooking({ data, title }) {
+  function renderLatestCooking({ data, title, href }) {
     return (
       <section>
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-2">
           <h2 className="text-2xl md:text-3xl">{title}</h2>
-          <Link href="/cooking" passHref>
+          <Link href={href} passHref>
             <a className="text-red-500 inline-flex items-center md:mb-2 lg:mb-0">
               смотреть все
               <span className="ml-1 text-xl">
@@ -186,27 +187,27 @@ export function HomePage() {
             <ArticleCardLatest
               key={article.alias}
               name={article.name}
-              portionCount={article.portion_count}
-              cookingTime={article.cooking_time}
-              commentsCount={article.comments_count || 0}
-              hitsCount={article.hits_count || 0}
+              portionCount={article.portionCount}
+              cookingTime={article.cookingTime}
+              commentsCount={article.commentsCount || 0}
+              hitsCount={article.hitsCount || 0}
               excerpt={article.excerpt}
-              createdAt={DateTime.fromISO(article.date_created)
+              createdAt={DateTime.fromISO(article.dateCreated)
                 .setLocale('ru')
                 .toFormat('DDD')}
               thumbnail={
                 article.thumbnail
                   ? {
-                      name: article.thumbnail?.title,
-                      blurHash: article.thumbnail?.blurhash,
-                      url: `${publicRuntimeConfig.API_URL}/assets/${article.thumbnail?.filename_disk}`
+                      name: article.thumbnail?.title || undefined,
+                      blurHash: article.thumbnail?.blurhash || undefined,
+                      url: fileUrl(article.thumbnail?.filenameDisk)
                     }
                   : undefined
               }
-              url={`/${article.category.section.alias}/${article.category.alias}/${article.alias}`}
+              url={`/${article.category.alias}/${article.alias}`}
               category={{
                 name: article.category.name,
-                url: `/${article.category.section.alias}/${article.category.alias}`
+                url: `/${article.category.alias}`
               }}
             />
           ))}

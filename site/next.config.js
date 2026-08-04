@@ -24,8 +24,34 @@ module.exports = {
     return [
       {
         source: '/assets/:slug',
-        destination: `${API_URL}/assets/:slug`,
+        destination: '/files/:slug',
         permanent: true
+      },
+      {
+        source: '/cooking/:category/:article',
+        destination: '/:category/:article',
+        permanent: true
+      },
+      {
+        source: '/cooking/:category',
+        destination: '/:category',
+        permanent: true
+      }
+    ]
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap.xml'
+      },
+      {
+        source: '/rss',
+        destination: '/api/rss'
+      },
+      {
+        source: '/files/:key',
+        destination: '/api/files/:key'
       }
     ]
   }

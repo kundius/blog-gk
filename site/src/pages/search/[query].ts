@@ -1,5 +1,5 @@
 import { SearchPage } from '@components/SearchPage'
-import * as pageApi from '@components/SearchPage/api'
+import { searchArticles } from '@app/api/articles'
 
 export async function getStaticPaths() {
   return { paths: [], fallback: 'blocking' }
@@ -7,15 +7,9 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const preloadData = {}
-  
-  const [pageKey, pageFetcher] = pageApi.Search({
-    search: String(params.query),
-    limit: 20,
-    page: 1
-  })
-  const pageData = await pageFetcher(pageKey)
-  
-  preloadData[pageKey] = pageData
+
+  const [pageKey, pageFetcher] = searchArticles(String(params.query), 20)
+  preloadData[pageKey] = await pageFetcher(pageKey)
 
   return {
     props: {

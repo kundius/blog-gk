@@ -1,16 +1,10 @@
 import { ContentPage } from '@components/ContentPage'
-import { fetchJson } from '@app/utils/fetchJson'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
-
-import * as pageApi from '@components/ContentPage/api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
+import { pageByAlias, listPages } from '@app/api/pages'
 
 export async function getStaticPaths() {
-  const pages = await fetchJson(
-    `${publicRuntimeConfig.API_URL}/items/pages?fields=alias`
-  )
-  const paths = pages.data.map((page) => ({
+  const [key, fetcher] = listPages({ limit: 1000 })
+  const result = await fetcher(key)
+  const paths = (result.data || []).map((page) => ({
     params: {
       page: page.alias
     }
@@ -21,9 +15,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const preloadData = {}
 
-  const [pageKey, pageFetcher] = pageApi.getPage({
-    alias: params.page
-  })
+  const [pageKey, pageFetcher] = pageByAlias(params.page)
   const pageData = await pageFetcher(pageKey)
 
   if (!pageData.data) {
@@ -31,7 +23,7 @@ export async function getStaticProps({ params }) {
       notFound: true
     }
   }
-  
+
   preloadData[pageKey] = pageData
 
   return {

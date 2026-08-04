@@ -1,28 +1,12 @@
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
-import { fetchJson } from '@app/utils/fetchJson'
-import queryString from 'query-string'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
+import { listAlbums } from '@app/api/albums'
+import type { Album } from '@app/api/types'
 
 export interface GetAlbumsData {
-  data: {
-    name: string
-    alias: string
-    thumbnail?: {
-      filename_disk: string
-      title: string
-      blurhash: string
-    }
-  }[]
+  data: Album[]
 }
 
 export type GetAlbumsResult = [string, (url: string) => Promise<GetAlbumsData>]
 
 export function getAlbums (): GetAlbumsResult {
-  const params = queryString.stringify({
-    fields: 'alias,name,thumbnail.filename_disk,thumbnail.title,thumbnail.blurhash'
-  })
-  const key = `${publicRuntimeConfig.API_URL}/items/albums?${params}`
-  const fetcher = url => fetchJson(url)
-  return [key, fetcher]
+  return listAlbums({ limit: 1000 }) as GetAlbumsResult
 }

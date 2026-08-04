@@ -1,4 +1,5 @@
 import React from 'react'
+import md5 from 'blueimp-md5'
 import { MdAccessTime } from 'react-icons/md'
 import { FaUserAlt } from 'react-icons/fa'
 import { BsFillChatQuoteFill } from 'react-icons/bs'
@@ -6,8 +7,6 @@ import { AiOutlineEdit } from 'react-icons/ai'
 import { DateTime } from 'luxon'
 
 import * as styles from './styles.module.css'
-import * as api from './api'
-import useSWR from 'swr'
 
 export interface CommentsItemData {
   id: string
@@ -18,6 +17,7 @@ export interface CommentsItemData {
   createdAt: string
   updatedAt: string
   authorName: string
+  authorEmail: string
   parent?: {
     id: string
     content: string
@@ -38,11 +38,11 @@ export function CommentsItem ({
   scrollToComment,
   isHighlight = false
 }: CommentsItemProps) {
-  const { parent, authorName, id, createdAt, updatedAt, content, isChanged } = data
+  const { parent, authorName, authorEmail, id, createdAt, updatedAt, content, isChanged } = data
 
-  const [avatarKey, avatarFetcher] = api.getAvatar({ id })
-
-  const { data: avatarResult } = useSWR<api.GetAvatarData>(avatarKey, avatarFetcher)
+  const avatar = authorEmail
+    ? `https://www.gravatar.com/avatar/${md5(authorEmail.trim().toLowerCase())}?d=robohash`
+    : undefined
 
   return (
     <div
@@ -50,7 +50,9 @@ export function CommentsItem ({
       id={`comment-${id}`}
     >
       <div className={styles.Avatar}>
-        <img src={avatarResult?.data} alt="" />
+        {avatar
+          ? <img src={avatar} alt="" />
+          : <FaUserAlt />}
       </div>
       <div className={styles.Body}>
         <div className={styles.Headline}>

@@ -1,46 +1,35 @@
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
-import { fetchJson } from '@app/utils/fetchJson'
-import queryString from 'query-string'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
+import { listArticles } from '@app/api/articles'
+import { categoriesTree } from '@app/api/categories'
+import type { ArticleListItem, CategoryWithChildren } from '@app/api/types'
 
 export interface GetArticlesArgs {
-  sectionIn?: string[]
-  sectionNotIn?: string[]
-  categoryIn?: string[]
-  categoryNotIn?: string[]
+  categories?: string[]
+  categoriesNotIn?: string[]
 }
 
 export interface GetArticlesData {
-  data: {
-    id: string
-    alias: string
-    name: string
-    category: {
-      alias: string
-      section: {
-        alias: string
-      }
-    }
-  }[]
+  data: ArticleListItem[]
 }
 
 export type GetArticlesResult = [string, (url: string) => Promise<GetArticlesData>]
 
 export function getArticles ({
-  sectionIn,
-  sectionNotIn,
-  categoryIn,
-  categoryNotIn
+  categories,
+  categoriesNotIn
 }: GetArticlesArgs): GetArticlesResult {
-  const params = queryString.stringify({
-    'filter[category][section][alias][_in]': sectionIn,
-    'filter[category][section][alias][_nin]': sectionNotIn,
-    'filter[category][alias][_in]': categoryIn,
-    'filter[category][alias][_nin]': categoryNotIn,
-    fields: 'id,alias,name,category.alias,category.section.alias'
-  })
-  const key = `${publicRuntimeConfig.API_URL}/items/articles?${params}`
-  const fetcher = url => fetchJson(url)
-  return [key, fetcher]
+  return listArticles({
+    categories,
+    categoriesNotIn,
+    limit: 1000
+  }) as GetArticlesResult
+}
+
+export interface GetCategoriesData {
+  data: CategoryWithChildren[]
+}
+
+export type GetCategoriesResult = [string, (url: string) => Promise<GetCategoriesData>]
+
+export function getCategories (): GetCategoriesResult {
+  return categoriesTree() as GetCategoriesResult
 }

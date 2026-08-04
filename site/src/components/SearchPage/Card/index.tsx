@@ -30,13 +30,17 @@ export const Card = ({
     )
   }
 
+  if (!result.data) {
+    return null
+  }
+
   return (
     <div className={styles.Wrapper}>
       <div className={styles.Date}>
-        {DateTime.fromISO(result.data.date_created).setLocale('ru').toFormat('DDD')}
+        {DateTime.fromISO(result.data.dateCreated).setLocale('ru').toFormat('DDD')}
       </div>
       <div className={styles.Title}>
-        <Link href={`/${result.data.category.section.alias}/${result.data.category.alias}/${result.data.alias}`} passHref>
+        <Link href={`/${result.data.category.alias}/${result.data.alias}`} passHref>
           <a>{result.data.name}</a>
         </Link>
       </div>

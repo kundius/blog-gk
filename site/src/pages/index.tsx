@@ -1,26 +1,26 @@
 import { HomePage } from '@components/HomePage'
-import * as api from '@components/HomePage/api'
+import { listArticles } from '@app/api/articles'
 
 export async function getStaticProps() {
-  const [keyFirstSection, fetcherFirstSection] = api.getArticles({
-    aliasIn: ['baking', 'cookies', 'cakes'],
+  const [keyBaking, fetcherBaking] = listArticles({
+    categories: ['baking'],
     limit: 6
   })
 
-  const [keySecondSection, fetcherSecondSection] = api.getArticles({
-    aliasIn: ['entrees', 'main-dishes'],
+  const [keyEntrees, fetcherEntrees] = listArticles({
+    categories: ['entrees'],
     limit: 6
   })
 
-  const [keyThirdSection, fetcherThirdSection] = api.getArticles({
-    aliasNotIn: ['baking', 'cookies', 'cakes', 'entrees', 'main-dishes'],
+  const [keyDesserts, fetcherDesserts] = listArticles({
+    categories: ['desserts'],
     limit: 6
   })
 
   const preloadData = {
-    [keyFirstSection]: await fetcherFirstSection(keyFirstSection),
-    [keySecondSection]: await fetcherSecondSection(keySecondSection),
-    [keyThirdSection]: await fetcherThirdSection(keyThirdSection),
+    [keyBaking]: await fetcherBaking(keyBaking),
+    [keyEntrees]: await fetcherEntrees(keyEntrees),
+    [keyDesserts]: await fetcherDesserts(keyDesserts)
   }
 
   return {

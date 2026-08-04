@@ -31,6 +31,11 @@ export class ArticlesController {
     return this.articlesService.search(query);
   }
 
+  @Get('by-alias/:alias')
+  async findByAlias(@Param('alias') alias: string) {
+    return { data: await this.articlesService.findByAlias(alias) };
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return { data: await this.articlesService.findOne(id) };
@@ -44,6 +49,16 @@ export class ArticlesController {
     return {
       data: await this.articlesService.related(id, limit ? Number(limit) : undefined),
     };
+  }
+
+  @Get(':id/prev')
+  async prev(@Param('id', ParseUUIDPipe) id: string) {
+    return { data: await this.articlesService.prev(id) };
+  }
+
+  @Get(':id/next')
+  async next(@Param('id', ParseUUIDPipe) id: string) {
+    return { data: await this.articlesService.next(id) };
   }
 
   @Post()

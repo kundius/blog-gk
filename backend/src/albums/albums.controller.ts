@@ -26,6 +26,11 @@ export class AlbumsController {
     return this.albumsService.findAll(query);
   }
 
+  @Get('by-alias/:alias')
+  async findByAlias(@Param('alias') alias: string) {
+    return { data: await this.albumsService.findByAlias(alias) };
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return { data: await this.albumsService.findOne(id) };

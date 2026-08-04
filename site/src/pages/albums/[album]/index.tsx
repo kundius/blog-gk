@@ -1,16 +1,10 @@
 import { AlbumPage } from '@components/AlbumPage'
-import { fetchJson } from '@app/utils/fetchJson'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
-
-import * as albumApi from '@components/AlbumPage/api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
+import { albumByAlias, listAlbums } from '@app/api/albums'
 
 export async function getStaticPaths() {
-  const albums = await fetchJson(
-    `${publicRuntimeConfig.API_URL}/items/albums?fields=alias`
-  )
-  const paths = albums.data.map((album) => ({
+  const [key, fetcher] = listAlbums({ limit: 1000 })
+  const result = await fetcher(key)
+  const paths = (result.data || []).map((album) => ({
     params: {
       album: album.alias
     }
@@ -21,9 +15,7 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const preloadData = {}
 
-  const [albumKey, albumFetcher] = albumApi.getAlbum({
-    alias: params.album
-  })
+  const [albumKey, albumFetcher] = albumByAlias(params.album)
   const albumData = await albumFetcher(albumKey)
 
   if (!albumData.data) {

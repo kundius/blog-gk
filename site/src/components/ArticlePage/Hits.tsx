@@ -1,5 +1,6 @@
 import React from 'react'
 import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { postJson } from '@app/api/http'
 
 import { EyeIcon } from '@components/Icon/eye'
 
@@ -17,14 +18,14 @@ export function Hits ({
   const [hits, setHits] = React.useState(initialHits)
 
   React.useEffect(() => {
-    // Invoke the function by making a request.
-    // Update the URL to match the format of your platform.
-    fetch(`${publicRuntimeConfig.API_URL}/custom/articles/${id}/register-hit`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (typeof json.data === 'number') {
-          setHits(json.data)
+    postJson(`${publicRuntimeConfig.API_URL}/api/articles/${id}/hit`)
+      .then((data) => {
+        if (typeof data?.data?.hitsCount === 'number') {
+          setHits(data.data.hitsCount)
         }
+      })
+      .catch(() => {
+        // ignore request errors, keep current count
       })
   }, [id])
 

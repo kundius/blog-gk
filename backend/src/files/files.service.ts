@@ -4,6 +4,7 @@ import { extname } from 'node:path';
 import { Response } from 'express';
 import { pipeline } from 'node:stream/promises';
 import sharp from 'sharp';
+import { encode } from 'blurhash';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService, StorageObject } from '../storage/storage.service';
@@ -50,6 +51,7 @@ export class FilesService {
 
     let width: number | undefined;
     let height: number | undefined;
+    let blurhash: string | undefined;
     if (file.mimetype.startsWith('image/')) {
       try {
         const metadata = await sharp(file.buffer).metadata();
@@ -58,6 +60,7 @@ export class FilesService {
       } catch {
         this.logger.warn(`Failed to read image dimensions for ${file.originalname}`);
       }
+      blurhash = await this.computeBlurhash(file.buffer);
     }
 
     await this.storage.put(filenameDisk, file.buffer, file.mimetype || undefined);
@@ -72,8 +75,23 @@ export class FilesService {
         filesize: file.size,
         width,
         height,
+        blurhash,
       },
     });
+  }
+
+  private async computeBlurhash(buffer: Buffer): Promise<string | undefined> {
+    try {
+      const { data, info } = await sharp(buffer)
+        .resize(64, 64, { fit: 'inside' })
+        .raw()
+        .ensureAlpha()
+        .toBuffer({ resolveWithObject: true });
+
+      return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
+    } catch {
+      return undefined;
+    }
   }
 
   async update(id: string, dto: UpdateFileDto) {

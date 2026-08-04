@@ -46,6 +46,53 @@ export class CategoriesService {
     return category;
   }
 
+  async findByAlias(alias: string) {
+    const category = await this.prisma.category.findUnique({
+      where: { alias },
+      include: {
+        parent: true,
+        children: {
+          include: { _count: { select: { articles: true } } },
+          orderBy: { name: 'asc' },
+        },
+        _count: { select: { articles: true } },
+      },
+    });
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+    return category;
+  }
+
+  async tree() {
+    type CategoryRow = Prisma.CategoryGetPayload<{
+      include: { _count: { select: { articles: true } } };
+    }>;
+    type CategoryNode = CategoryRow & { children: CategoryNode[] };
+
+    const rows = await this.prisma.category.findMany({
+      include: { _count: { select: { articles: true } } },
+      orderBy: { name: 'asc' },
+    });
+
+    const byId = new Map<string, CategoryNode>();
+    for (const row of rows) {
+      byId.set(row.id, { ...row, children: [] });
+    }
+
+    const roots: CategoryNode[] = [];
+    for (const row of rows) {
+      const node = byId.get(row.id)!;
+      if (row.parentId && byId.has(row.parentId)) {
+        byId.get(row.parentId)!.children.push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    return roots;
+  }
+
   async create(dto: CreateCategoryDto) {
     return this.prisma.category.create({ data: dto });
   }

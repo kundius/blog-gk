@@ -1,8 +1,6 @@
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
-import { fetchJson } from '@app/utils/fetchJson'
-import queryString from 'query-string'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
+import { listArticles } from '@app/api/articles'
+import { categoryByAlias } from '@app/api/categories'
+import type { ArticleListItem, CategoryWithChildren } from '@app/api/types'
 
 export interface GetArticlesArgs {
   alias: string
@@ -11,33 +9,13 @@ export interface GetArticlesArgs {
 }
 
 export interface GetArticlesData {
+  data: ArticleListItem[]
   meta: {
-    filter_count: number
+    total: number
+    page: number
+    limit: number
+    totalPages: number
   }
-  data: {
-    id: string
-    alias: string
-    name: string
-    date_created: string
-    portion_count?: string
-    cooking_time?: string
-    comments_count: number | null
-    hits_count: number | null
-    likes_count: number | null
-    excerpt?: string
-    category: {
-      name: string
-      alias: string
-      section: {
-        alias: string
-      }
-    }
-    thumbnail?: {
-      filename_disk: string
-      title: string
-      blurhash: string
-    }
-  }[]
 }
 
 export type GetArticlesResult = [string, (url: string) => Promise<GetArticlesData>]
@@ -47,17 +25,7 @@ export function getArticles ({
   page,
   limit
 }: GetArticlesArgs): GetArticlesResult {
-  const params = queryString.stringify({
-    sort: '-date_created',
-    'filter[category][alias][_eq]': alias,
-    fields: 'id,alias,name,date_created,portion_count,cooking_time,excerpt,comments_count,likes_count,hits_count,category.name,category.alias,category.section.alias,thumbnail.filename_disk,thumbnail.title,thumbnail.blurhash',
-    limit,
-    page,
-    meta: 'filter_count'
-  })
-  const key = `${publicRuntimeConfig.API_URL}/items/articles?${params}`
-  const fetcher = url => fetchJson(url)
-  return [key, fetcher]
+  return listArticles({ categories: [alias], page, limit }) as GetArticlesResult
 }
 
 export interface GetCategoryArgs {
@@ -65,28 +33,11 @@ export interface GetCategoryArgs {
 }
 
 export interface GetCategoryData {
-  data: {
-    alias: string
-    name: string
-    seo_title: string
-    seo_keywords: string
-    seo_description: string
-    section: {
-      alias: string
-    }
-  } | undefined
+  data: CategoryWithChildren | null
 }
 
 export type GetCategoryResult = [string, (url: string) => Promise<GetCategoryData>]
 
-export function getCategory ({
-  alias
-}: GetCategoryArgs): GetCategoryResult {
-  const params = queryString.stringify({
-    'filter[alias][_eq]': alias,
-    fields: 'alias,name,seo_title,seo_keywords,seo_description,section.alias'
-  })
-  const key = `${publicRuntimeConfig.API_URL}/items/categories?${params}`
-  const fetcher = url => fetchJson(url).then(r => ({ data: r?.data?.[0] }))
-  return [key, fetcher]
+export function getCategory ({ alias }: GetCategoryArgs): GetCategoryResult {
+  return categoryByAlias(alias) as GetCategoryResult
 }

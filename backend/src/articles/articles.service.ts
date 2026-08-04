@@ -41,6 +41,21 @@ export class ArticlesService {
       ...(query.tagAlias ? { tags: { some: { tag: { alias: query.tagAlias } } } } : {}),
     };
 
+    if (query.categories) {
+      const ids = await this.subtreeIds(query.categories);
+      if (ids === null) {
+        return { data: [], meta: buildPaginationMeta(0, query.page, query.limit) };
+      }
+      where.categoryId = { in: ids };
+    }
+
+    if (query.categoriesNotIn) {
+      const ids = await this.subtreeIds(query.categoriesNotIn);
+      if (ids !== null && ids.length > 0) {
+        where.categoryId = { ...(where.categoryId as object), notIn: ids };
+      }
+    }
+
     const [total, data] = await Promise.all([
       this.prisma.article.count({ where }),
       this.prisma.article.findMany({
@@ -53,6 +68,17 @@ export class ArticlesService {
     ]);
 
     return { data, meta: buildPaginationMeta(total, query.page, query.limit) };
+  }
+
+  async findByAlias(alias: string) {
+    const article = await this.prisma.article.findUnique({
+      where: { alias },
+      include: ARTICLE_DETAIL_INCLUDE,
+    });
+    if (!article) {
+      throw new NotFoundException('Article not found');
+    }
+    return article;
   }
 
   async findOne(id: string) {
@@ -182,6 +208,78 @@ export class ArticlesService {
       orderBy: { dateCreated: 'desc' },
       take: limit ?? 5,
     });
+  }
+
+  async prev(id: string) {
+    return this.neighbor(id, 'prev');
+  }
+
+  async next(id: string) {
+    return this.neighbor(id, 'next');
+  }
+
+  private async neighbor(id: string, direction: 'prev' | 'next') {
+    const article = await this.prisma.article.findUnique({
+      where: { id },
+      select: { id: true, categoryId: true, dateCreated: true },
+    });
+    if (!article) {
+      throw new NotFoundException('Article not found');
+    }
+
+    const isNext = direction === 'next';
+    return this.prisma.article.findFirst({
+      where: {
+        categoryId: article.categoryId,
+        status: 'published',
+        id: { not: id },
+        ...(isNext
+          ? { dateCreated: { gt: article.dateCreated ?? new Date(0) } }
+          : { dateCreated: { lt: article.dateCreated ?? new Date(0) } }),
+      },
+      orderBy: { dateCreated: isNext ? 'asc' : 'desc' },
+      include: {
+        category: { select: { name: true, alias: true } },
+      },
+    });
+  }
+
+  private async subtreeIds(categoriesCsv: string): Promise<string[] | null> {
+    const aliases = categoriesCsv.split(',').map((part) => part.trim()).filter(Boolean);
+    if (aliases.length === 0) {
+      return null;
+    }
+
+    const rows = await this.prisma.category.findMany({
+      where: { alias: { in: aliases } },
+      select: { id: true },
+    });
+
+    if (rows.length !== aliases.length) {
+      return null;
+    }
+
+    const all = await this.prisma.category.findMany({
+      select: { id: true, parentId: true },
+    });
+
+    const fullChildrenMap = new Map<string, string[]>();
+    for (const row of all) {
+      if (row.parentId) {
+        const list = fullChildrenMap.get(row.parentId) ?? [];
+        list.push(row.id);
+        fullChildrenMap.set(row.parentId, list);
+      }
+    }
+
+    const ids: string[] = [];
+    const queue = rows.map((row) => row.id);
+    while (queue.length) {
+      const current = queue.shift()!;
+      ids.push(current);
+      queue.push(...(fullChildrenMap.get(current) ?? []));
+    }
+    return ids;
   }
 
   async search(query: SearchArticlesQueryDto) {

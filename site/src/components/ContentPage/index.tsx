@@ -15,17 +15,19 @@ export function ContentPage({ alias }: ContentPageProps) {
   const [key, fetcher] = api.getPage({ alias })
   const { data: result } = useSWR<api.GetPageData>(key, fetcher)
 
+  const page = result?.data
+
   return (
     <MainLayout>
       <Head>
-        <title>{result?.data.seo_title || result?.data.name}</title>
-        <meta name="description" content={result?.data.seo_description} />
-        <meta name="keywords" content={result?.data.seo_keywords} />
+        <title>{page?.seoTitle || page?.name}</title>
+        <meta name="description" content={page?.seoDescription || undefined} />
+        <meta name="keywords" content={page?.seoKeywords || undefined} />
       </Head>
 
-      <h1 className="mb-12">{result?.data.name}</h1>
+      <h1 className="mb-12">{page?.name}</h1>
 
-      <Content dangerouslySetInnerHTML={{ __html: result?.data.content }} />
+      <Content dangerouslySetInnerHTML={{ __html: page?.content || '' }} />
     </MainLayout>
   )
 }

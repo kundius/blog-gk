@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 
 import { Pagination } from '@components/Pagination'
 import { ArticleCardMain } from '@components/ArticleCardMain'
+import { fileUrl } from '@app/api/images'
 import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
 import { MainLayout } from '@components/MainLayout'
 
@@ -66,17 +67,20 @@ export function CategoryPage({ alias }: CategoryPageProps) {
     <MainLayout>
       <Head>
         <title>
-          {categoryResult?.data?.seo_title || categoryResult?.data?.name}
+          {categoryResult?.data?.seoTitle || categoryResult?.data?.name}
         </title>
         <meta
           name="description"
-          content={categoryResult?.data?.seo_description}
+          content={categoryResult?.data?.seoDescription || undefined}
         />
-        <meta name="keywords" content={categoryResult?.data?.seo_keywords} />
+        <meta
+          name="keywords"
+          content={categoryResult?.data?.seoKeywords || undefined}
+        />
 
         <link
           rel="canonical"
-          href={`${publicRuntimeConfig.CLIENT_URL}/${categoryResult?.data?.section.alias}/${categoryResult?.data?.alias}`}
+          href={`${publicRuntimeConfig.CLIENT_URL}/${categoryResult?.data?.alias}`}
         />
       </Head>
 
@@ -98,38 +102,38 @@ export function CategoryPage({ alias }: CategoryPageProps) {
             <ArticleCardMain
               id={article.id}
               name={article.name}
-              portionCount={article.portion_count}
-              cookingTime={article.cooking_time}
-              commentsCount={article.comments_count || 0}
-              hitsCount={article.hits_count || 0}
-              likesCount={article.likes_count || 0}
-              excerpt={article.excerpt}
-              createdAt={DateTime.fromISO(article.date_created)
+              portionCount={article.portionCount || undefined}
+              cookingTime={article.cookingTime || undefined}
+              commentsCount={article.commentsCount || 0}
+              hitsCount={article.hitsCount || 0}
+              likesCount={article.likesCount || 0}
+              excerpt={article.excerpt || undefined}
+              createdAt={DateTime.fromISO(article.dateCreated)
                 .setLocale('ru')
                 .toFormat('DDD')
                 .replace(' г.', '')}
               thumbnail={
                 article.thumbnail
                   ? {
-                      name: article.thumbnail?.title,
-                      blurHash: article.thumbnail?.blurhash,
-                      url: `${publicRuntimeConfig.API_URL}/assets/${article.thumbnail?.filename_disk}`
+                      name: article.thumbnail?.title || undefined,
+                      blurHash: article.thumbnail?.blurhash || undefined,
+                      url: fileUrl(article.thumbnail?.filenameDisk)
                     }
                   : undefined
               }
-              url={`/${article.category.section.alias}/${article.category.alias}/${article.alias}`}
+              url={`/${article.category.alias}/${article.alias}`}
               category={{
                 name: article.category.name,
-                url: `/${article.category.section.alias}/${article.category.alias}`
+                url: `/${article.category.alias}`
               }}
             />
           </div>
         ))}
 
-        {(articlesResult?.meta?.filter_count || 0) > limit && (
+        {(articlesResult?.meta?.total || 0) > limit && (
           <Pagination
             current={page}
-            total={articlesResult?.meta?.filter_count}
+            total={articlesResult?.meta?.total}
             pageSize={limit}
             onChange={setPage}
           />

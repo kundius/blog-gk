@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 
 import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { postJson } from '@app/api/http'
 
 const { publicRuntimeConfig } = getRuntimeConfig()
 
@@ -17,14 +18,16 @@ export function SubscribeForm () {
       clearTimeout(timer.current)
     }
 
-    const response = await fetch(`${publicRuntimeConfig.API_URL}/custom/articles/register-subscriber?email=${value}`)
-    const json = await response.json()
-
-    if (json.success) {
+    try {
+      await postJson(`${publicRuntimeConfig.API_URL}/api/subscribers`, {
+        email: value
+      })
       setValue('')
-      setSuccess(json.message)
-    } else {
-      setError(json.message)
+      setError('')
+      setSuccess('Вы успешно подписаны на обновления!')
+    } catch {
+      setSuccess('')
+      setError('Не удалось подписаться. Проверьте адрес и попробуйте ещё раз.')
     }
 
     timer.current = setTimeout(() => {

@@ -18,82 +18,77 @@ export const HeaderMenu = () => {
           content={
             <ul className={styles.SecondList}>
               <li>
-                <Link href="/cooking/krem-i-glazur-dlya-tortov" passHref>
+                <Link href="/krem-i-glazur-dlya-tortov" passHref>
                   <a>Крем и глазурь для тортов</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/pirogi" passHref>
+                <Link href="/pirogi" passHref>
                   <a>Пироги</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/cakes" passHref>
+                <Link href="/cakes" passHref>
                   <a>Торты и пирожные</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/kartofelnye-bljuda" passHref>
+                <Link href="/kartofelnye-bljuda" passHref>
                   <a>Картофельные блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/ovoshhnye-bljuda" passHref>
+                <Link href="/ovoshhnye-bljuda" passHref>
                   <a>Овощные блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/mjasnye-bljuda" passHref>
+                <Link href="/mjasnye-bljuda" passHref>
                   <a>Мясные блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/gribnye-blyuda" passHref>
+                <Link href="/gribnye-blyuda" passHref>
                   <a>Грибные блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/cakes" passHref>
-                  <a>Торты, пироги и пирожные</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/cooking/drinks" passHref>
+                <Link href="/drinks" passHref>
                   <a>Напитки и десерты</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/salads" passHref>
+                <Link href="/salads" passHref>
                   <a>Салаты и закуски</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/conservation" passHref>
+                <Link href="/conservation" passHref>
                   <a>Консервация</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/baking" passHref>
+                <Link href="/baking" passHref>
                   <a>Выпечка</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/cookies" passHref>
+                <Link href="/cookies" passHref>
                   <a>Печенье</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/main-dishes" passHref>
+                <Link href="/main-dishes" passHref>
                   <a>Вторые блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/entrees" passHref>
+                <Link href="/entrees" passHref>
                   <a>Первые блюда</a>
                 </Link>
               </li>
               <li>
-                <Link href="/cooking/fish-dishes" passHref>
+                <Link href="/fish-dishes" passHref>
                   <a>Рыбные блюда</a>
                 </Link>
               </li>
@@ -106,9 +101,7 @@ export const HeaderMenu = () => {
         >
           {({ setReferenceElement, clickListeners, hoverListeners }) => (
             <li>
-              <Link href="/cooking" passHref>
-                <a {...hoverListeners}>Кулинария</a>
-              </Link>
+              <a {...hoverListeners}>Кулинария</a>
               <button
                 className={styles.Dropdown}
                 ref={setReferenceElement}
@@ -117,11 +110,6 @@ export const HeaderMenu = () => {
             </li>
           )}
         </Popover>
-        <li>
-          <Link href="/article/temples" passHref>
-            <a>Храмы</a>
-          </Link>
-        </li>
       </ul>
       <Link href="/" passHref>
         <a className={styles.Logo}>
@@ -129,95 +117,14 @@ export const HeaderMenu = () => {
         </a>
       </Link>
       <ul className={styles.List}>
-        <Popover
-          content={
-            <ul className={styles.SecondList}>
-              <li>
-                <Link href="/notes/zametki-o-vtoryh-blyudah" passHref>
-                  <a>Вторые блюда</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/zametki-o-vypechke" passHref>
-                  <a>Выпечка</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/zametki-o-pervyh-blyudah" passHref>
-                  <a>Первые блюда</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/useful-tips" passHref>
-                  <a>Полезные советы</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/notes/zametki-o-napitkah" passHref>
-                  <a>Заметки о напитках</a>
-                </Link>
-              </li>
-            </ul>
-          }
-          showClose={false}
-          wrapperStyle={{
-            maxWidth: 400
-          }}
-        >
-          {({ setReferenceElement, clickListeners, hoverListeners }) => (
-            <li>
-              <Link href="/notes" passHref>
-                <a {...hoverListeners}>Заметки</a>
-              </Link>
-              <button
-                className={styles.Dropdown}
-                ref={setReferenceElement}
-                {...clickListeners}
-              />
-            </li>
-          )}
-        </Popover>
-        <Popover
-          content={
-            <ul className={styles.SecondList}>
-              <li>
-                <Link href="/article/supernatural" passHref>
-                  <a>Сверхъестественное</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/article/relationship" passHref>
-                  <a>Отношения</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/article/subsection-2" passHref>
-                  <a>Жизненные истории</a>
-                </Link>
-              </li>
-            </ul>
-          }
-          showClose={false}
-          wrapperStyle={{
-            maxWidth: 400
-          }}
-        >
-          {({ setReferenceElement, clickListeners, hoverListeners }) => (
-            <li>
-              <Link href="/article" passHref>
-                <a {...hoverListeners}>Статьи</a>
-              </Link>
-              <button
-                className={styles.Dropdown}
-                ref={setReferenceElement}
-                {...clickListeners}
-              />
-            </li>
-          )}
-        </Popover>
         <li>
           <Link href="/albums" passHref>
             <a>Альбомы</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/sitemap" passHref>
+            <a>Карта сайта</a>
           </Link>
         </li>
       </ul>

@@ -1,6 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { postJson, deleteJson } from '@app/api/http'
 
 import { Spinner } from '@components/Spinner'
 import { HeartIcon } from '@components/Icon/heart'
@@ -9,53 +10,54 @@ const { publicRuntimeConfig } = getRuntimeConfig()
 
 export interface ArticleLikesProps {
   id: string
+  initialLikes?: number
 }
 
-export function ArticleLikes({ id }: ArticleLikesProps) {
-  const [loading, setLoadng] = React.useState(false)
-  const [count, setCount] = React.useState(0)
+export function ArticleLikes({ id, initialLikes = 0 }: ArticleLikesProps) {
+  const [loading, setLoading] = React.useState(false)
+  const [count, setCount] = React.useState(initialLikes)
   const [active, setActive] = React.useState(false)
-
-  const run = async (action) => {
-    setLoadng(true)
-    const response = await fetch(
-      `${publicRuntimeConfig.API_URL}/custom/articles/${id}/${action}`
-    )
-    const data = await response.json()
-    if (typeof data.data === 'number') {
-      setCount(data.data)
-    }
-    setLoadng(false)
-  }
 
   const getStoredIDs = () => {
     const storedLikes = localStorage.getItem('likes') || ''
-    return storedLikes.split(',')
+    return storedLikes.split(',').filter(Boolean)
+  }
+
+  const run = async (action: 'add' | 'remove') => {
+    setLoading(true)
+    try {
+      const url = `${publicRuntimeConfig.API_URL}/api/articles/${id}/like`
+      const data =
+        action === 'add' ? await postJson(url) : await deleteJson(url)
+      if (typeof data?.data?.likesCount === 'number') {
+        setCount(data.data.likesCount)
+      }
+    } catch {
+      // ignore request errors, keep current count
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handler = async () => {
     const arrayOfIds = getStoredIDs()
     const currentIndex = arrayOfIds.indexOf(id)
     if (currentIndex !== -1) {
-      await run('likes/remove')
+      await run('remove')
       arrayOfIds.splice(currentIndex, 1)
       setActive(false)
     } else {
-      await run('likes/add')
+      await run('add')
       arrayOfIds.push(id)
       setActive(true)
     }
     localStorage.setItem('likes', arrayOfIds.join(','))
   }
 
-  const init = async () => {
-    await run('likes/count')
-    setActive(getStoredIDs().includes(id))
-  }
-
   React.useEffect(() => {
-    init()
-  }, [id])
+    setCount(initialLikes)
+    setActive(getStoredIDs().includes(id))
+  }, [id, initialLikes])
 
   return (
     <button

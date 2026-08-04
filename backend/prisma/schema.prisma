@@ -17,6 +17,7 @@ model File {
   width             Int?
   height            Int?
   description       String?
+  blurhash          String?
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   articles       Article[]     @relation("ArticleThumbnail")
@@ -32,9 +33,13 @@ model Category {
   name           String
   content        String?
   alias          String  @unique
+  parentId       String? @map("parent") @db.Uuid
   seoTitle       String? @map("seo_title")
   seoKeywords    String? @map("seo_keywords")
   seoDescription String? @map("seo_description")
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryTree")
 
   articles Article[]
 

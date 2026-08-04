@@ -5,11 +5,9 @@ import Lightbox from 'react-image-lightbox'
 
 import { Image } from '@components/Image'
 import { MainLayout } from '@components/MainLayout'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { fileUrl } from '@app/api/images'
 
 import * as api from './api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 interface AlbumPageProps {
   alias: string
@@ -25,20 +23,22 @@ export function AlbumPage({ alias }: AlbumPageProps) {
 
   const { data: result } = useSWR<api.GetAlbumData>(key, fetcher)
 
-  const imagesSource = result?.data?.images || []
+  const imagesSource = result?.data?.photos || []
   const imagesFiltered = imagesSource.filter((item) => !!item.file)
-  const images =
-    imagesFiltered.map(
-      (item) =>
-        `${publicRuntimeConfig.API_URL}/assets/${item.file?.filename_disk}`
-    ) || []
+  const images = imagesFiltered.map((item) => fileUrl(item.file?.filenameDisk) || '') || []
 
   return (
     <MainLayout>
       <Head>
-        <title>{result?.data?.seo_title || result?.data?.name}</title>
-        <meta name="description" content={result?.data?.seo_description} />
-        <meta name="keywords" content={result?.data?.seo_keywords} />
+        <title>{result?.data?.seoTitle || result?.data?.name}</title>
+        <meta
+          name="description"
+          content={result?.data?.seoDescription || undefined}
+        />
+        <meta
+          name="keywords"
+          content={result?.data?.seoKeywords || undefined}
+        />
       </Head>
 
       <h1 className="mb-12">{result?.data?.name}</h1>
@@ -66,15 +66,15 @@ export function AlbumPage({ alias }: AlbumPageProps) {
         {imagesFiltered.map((item, i) => (
           <div
             className="overflow-hidden shadow-lg rounded-lg w-full bg-white dark:bg-gray-500 transition duration-300 ease-out"
-            key={item.file.id}
+            key={item.file?.id}
             onClick={() => {
               setLightboxIsOpen(true)
               setLightboxPhotoIndex(i)
             }}
           >
             <Image
-              src={`${publicRuntimeConfig.API_URL}/assets/${item.file?.filename_disk}`}
-              alt={item.file?.title}
+              src={fileUrl(item.file?.filenameDisk) || ''}
+              alt={item.file?.title || undefined}
               blurHash={item.file?.blurhash}
               width={320}
               height={280}

@@ -7,20 +7,19 @@ const blogPostsRssXml = articles => {
   let latestPostDate = ''
   let rssItemsXml = ''
   articles.forEach(article => {
-    const postDate = Date.parse(article.date_created)
+    const postDate = Date.parse(article.dateCreated)
 
-    // Remember to change this URL to your own!
-    const postHref = `${publicRuntimeConfig.CLIENT_URL}/${article.category.section.alias}/${article.category.alias}/${article.alias}`
+    const postHref = `${publicRuntimeConfig.CLIENT_URL}/${article.category.alias}/${article.alias}`
 
     if (!latestPostDate || postDate > Date.parse(latestPostDate)) {
-      latestPostDate = article.date_created
+      latestPostDate = article.dateCreated
     }
 
     rssItemsXml += `
       <item>
         <title><![CDATA[${article.name}]]></title>
         <link>${postHref}</link>
-        <pubDate>${article.date_created}</pubDate>
+        <pubDate>${article.dateCreated}</pubDate>
         <guid isPermaLink="false">${postHref}</guid>
         <description>
         <![CDATA[${article.excerpt}]]>
@@ -39,7 +38,6 @@ const blogPostsRssXml = articles => {
 const getRssXml = blogPosts => {
   const { rssItemsXml, latestPostDate } = blogPostsRssXml(blogPosts)
 
-  // Edit the '<link>' and '<description>' data here to reflect your own website details!
   return `<?xml version="1.0" ?>
   <rss
     xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -61,23 +59,14 @@ const getRssXml = blogPosts => {
 }
 
 const fetchMyPosts = async () => {
-  const res = await fetch(`${publicRuntimeConfig.API_URL}/items/articles?fields=alias,name,content,excerpt,date_created,category.alias,category.section.alias`)
+  const res = await fetch(`${publicRuntimeConfig.API_URL}/api/articles?limit=1000&sort=-dateCreated`)
   const articles = await res.json()
-  return articles.data
+  return articles.data || []
 }
 
-export async function getServerSideProps(context) {
-  const res = context.res
-  if (!res) {
-    return
-  }
+export default async function handler(req, res) {
   const posts = await fetchMyPosts()
   const xml = getRssXml(posts)
-  res.setHeader("Content-Type", "text/xml")
-  res.write(xml)
-  res.end()
-}
-
-export default function RssPage () {
-  return null
+  res.setHeader('Content-Type', 'text/xml')
+  res.status(200).send(xml)
 }

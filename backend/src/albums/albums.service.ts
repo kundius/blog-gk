@@ -53,6 +53,20 @@ export class AlbumsService {
     return album;
   }
 
+  async findByAlias(alias: string) {
+    const album = await this.prisma.album.findUnique({
+      where: { alias },
+      include: {
+        thumbnail: true,
+        photos: { include: { file: true }, orderBy: { sort: 'asc' } },
+      },
+    });
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+    return album;
+  }
+
   async create(dto: CreateAlbumDto) {
     if (dto.thumbnailId) {
       await this.validateFile(dto.thumbnailId);

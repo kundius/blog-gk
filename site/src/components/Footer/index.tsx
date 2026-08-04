@@ -1,6 +1,5 @@
 import React from 'react'
-import { AiOutlineCoffee } from 'react-icons/ai'
-import { BsBook, BsPencilSquare } from 'react-icons/bs'
+import { BsBook } from 'react-icons/bs'
 import { BiSitemap } from 'react-icons/bi'
 
 import { YandexMetrica } from '@components/YandexMetrica'
@@ -19,83 +18,39 @@ export const Footer = () => {
             <FooterMenu
               section={{
                 title: 'Кулинария',
-                href: '/cooking',
+                href: '/baking',
                 icon: <TablewareIcon />
               }}
               items={[{
                 title: 'Крем и глазурь для тортов',
-                href: '/cooking/krem-i-glazur-dlya-tortov'
+                href: '/krem-i-glazur-dlya-tortov'
               }, {
                 title: 'Торты, пироги и пирожные',
-                href: '/cooking/cakes'
+                href: '/cakes'
               }, {
                 title: 'Напитки и десерты',
-                href: '/cooking/drinks'
+                href: '/drinks'
               }, {
                 title: 'Салаты и закуски',
-                href: '/cooking/salads'
+                href: '/salads'
               }, {
                 title: 'Консервация',
-                href: '/cooking/conservation'
+                href: '/conservation'
               }, {
                 title: 'Выпечка',
-                href: '/cooking/baking'
+                href: '/baking'
               }, {
                 title: 'Печенье',
-                href: '/cooking/cookies'
+                href: '/cookies'
               }, {
                 title: 'Вторые блюда',
-                href: '/cooking/main-dishes'
+                href: '/main-dishes'
               }, {
                 title: 'Первые блюда',
-                href: '/cooking/entrees'
+                href: '/entrees'
               }, {
                 title: 'Рыбные блюда',
-                href: '/cooking/fish-dishes'
-              }]}
-            />
-          </div>
-          <div>
-            <FooterMenu
-              section={{
-                title: 'Статьи',
-                href: '/article',
-                icon: <BsPencilSquare />
-              }}
-              items={[{
-                title: 'Сверхъестественное',
-                href: '/article/supernatural'
-              }, {
-                title: 'Отношения',
-                href: '/article/relationship'
-              }, {
-                title: 'Жизненные истории',
-                href: '/article/subsection-2'
-              }]}
-            />
-          </div>
-          <div>
-            <FooterMenu
-              section={{
-                title: 'Заметки',
-                href: '/notes',
-                icon: <AiOutlineCoffee />
-              }}
-              items={[{
-                title: 'Вторые блюда',
-                href: '/notes/zametki-o-vtoryh-blyudah'
-              }, {
-                title: 'Выпечка',
-                href: '/notes/zametki-o-vypechke'
-              }, {
-                title: 'Первые блюда',
-                href: '/notes/zametki-o-pervyh-blyudah'
-              }, {
-                title: 'Полезные советы',
-                href: '/notes/useful-tips'
-              }, {
-                title: 'Заметки о напитках',
-                href: '/notes/zametki-o-napitkah'
+                href: '/fish-dishes'
               }]}
             />
           </div>
@@ -106,16 +61,7 @@ export const Footer = () => {
                 href: '/albums',
                 icon: <BsBook />
               }}
-              items={[{
-                title: 'Природа',
-                href: '/albums/nature'
-              }, {
-                title: 'Храмы',
-                href: '/albums/temples'
-              }, {
-                title: 'Альбомы',
-                href: '/albums/stuff'
-              }]}
+              items={[]}
             />
           </div>
           <div>

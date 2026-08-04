@@ -5,7 +5,6 @@ import { Footer } from '@components/Footer'
 import { Container } from '@components/Container'
 import { SideAuthor } from '@components/SideAuthor'
 import { SubscribeForm } from '@components/SubscribeForm'
-import { SideAdvert } from '@components/SideAdvert'
 import { SidePopular } from '@components/SidePopular'
 import { SideLatest } from '@components/SideLatest'
 
@@ -24,7 +23,6 @@ export function MainLayout({ children }: MainLayout) {
           <div className={styles.Content}>{children}</div>
           <div className={`${styles.Side} flex flex-col gap-24`}>
             <SideAuthor />
-            <SideAdvert />
             <SidePopular />
             <SubscribeForm />
             <SideLatest />

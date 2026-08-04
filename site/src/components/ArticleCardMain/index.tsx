@@ -103,7 +103,7 @@ export function ArticleCardMain({
               </span>
             </a>
           </Link>
-          <ArticleLikes id={id} />
+          <ArticleLikes id={id} initialLikes={likesCount} />
         </div>
       </div>
       {thumbnail && (
