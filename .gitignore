@@ -7,3 +7,4 @@ dist/
 *.log
 landing/public/widget/
 *.pgsql
+migrate/*.sql
