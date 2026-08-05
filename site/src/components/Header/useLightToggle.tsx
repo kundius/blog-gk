@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTrail, useSpring, animated } from 'react-spring'
+import { useTrail, useSpring, animated } from '@react-spring/web'
 
 import { ColorMode } from '@components/ThemeContext'
 

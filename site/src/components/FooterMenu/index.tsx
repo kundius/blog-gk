@@ -21,22 +21,18 @@ export function FooterMenu ({
 }: FooterMenuProps) {
   return (
     <div className={styles.Wrapper}>
-      <Link href={section.href} passHref>
-        <a className={styles.Section}>
+      <Link href={section.href} className={styles.Section}>
           <span className={`${styles.SectionIcon} text-gray-600 dark:text-gray-300`}>
             {section.icon}
           </span>
           <span className={styles.SectionName}>
             {section.title}
           </span>
-        </a>
-      </Link>
+        </Link>
       <ul className={styles.List}>
         {items.map((item, i) => (
           <li key={i}>
-            <Link href={item.href} passHref>
-              <a>{item.title}</a>
-            </Link>
+            <Link href={item.href}>{item.title}</Link>
           </li>
         ))}
       </ul>

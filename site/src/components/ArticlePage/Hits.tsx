@@ -1,10 +1,8 @@
 import React from 'react'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { API_URL } from '@app/utils/config'
 import { postJson } from '@app/api/http'
 
 import { EyeIcon } from '@components/Icon/eye'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 export interface HitsProps {
   id: string
@@ -18,7 +16,7 @@ export function Hits ({
   const [hits, setHits] = React.useState(initialHits)
 
   React.useEffect(() => {
-    postJson(`${publicRuntimeConfig.API_URL}/api/articles/${id}/hit`)
+    postJson(`${API_URL}/api/articles/${id}/hit`)
       .then((data) => {
         if (typeof data?.data?.hitsCount === 'number') {
           setHits(data.data.hitsCount)

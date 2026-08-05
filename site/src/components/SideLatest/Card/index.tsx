@@ -49,14 +49,10 @@ export const Card = ({
       )}
       <div className={styles.Info}>
         <div className={styles.Category}>
-          <Link href={category.href} passHref>
-            <a>{category.name}</a>
-          </Link>
+          <Link href={category.href}>{category.name}</Link>
         </div>
         <div className={styles.Title}>
-          <Link href={href} passHref>
-            <a>{name}</a>
-          </Link>
+          <Link href={href}>{name}</Link>
         </div>
         <div className={`${styles.Date} text-gray-400`}>
           {createdAt}

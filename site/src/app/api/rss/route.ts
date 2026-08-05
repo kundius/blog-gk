@@ -1,15 +1,12 @@
-import fetch from 'isomorphic-unfetch'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { API_URL, CLIENT_URL } from '@app/utils/config'
 
-const { publicRuntimeConfig } = getRuntimeConfig()
-
-const blogPostsRssXml = articles => {
+const blogPostsRssXml = (articles: any[]) => {
   let latestPostDate = ''
   let rssItemsXml = ''
   articles.forEach(article => {
     const postDate = Date.parse(article.dateCreated)
 
-    const postHref = `${publicRuntimeConfig.CLIENT_URL}/${article.category.alias}/${article.alias}`
+    const postHref = `${CLIENT_URL}/${article.category.alias}/${article.alias}`
 
     if (!latestPostDate || postDate > Date.parse(latestPostDate)) {
       latestPostDate = article.dateCreated
@@ -35,7 +32,7 @@ const blogPostsRssXml = articles => {
   }
 }
 
-const getRssXml = blogPosts => {
+const getRssXml = (blogPosts: any[]) => {
   const { rssItemsXml, latestPostDate } = blogPostsRssXml(blogPosts)
 
   return `<?xml version="1.0" ?>
@@ -59,14 +56,19 @@ const getRssXml = blogPosts => {
 }
 
 const fetchMyPosts = async () => {
-  const res = await fetch(`${publicRuntimeConfig.API_URL}/api/articles?limit=1000&sort=-dateCreated`)
+  const res = await fetch(`${API_URL}/api/articles?limit=1000&sort=-dateCreated`)
   const articles = await res.json()
   return articles.data || []
 }
 
-export default async function handler(req, res) {
+export const dynamic = 'force-dynamic'
+
+export async function GET () {
   const posts = await fetchMyPosts()
   const xml = getRssXml(posts)
-  res.setHeader('Content-Type', 'text/xml')
-  res.status(200).send(xml)
+  return new Response(xml, {
+    headers: {
+      'Content-Type': 'text/xml'
+    }
+  })
 }

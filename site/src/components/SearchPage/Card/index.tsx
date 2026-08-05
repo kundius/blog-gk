@@ -40,9 +40,7 @@ export const Card = ({
         {DateTime.fromISO(result.data.dateCreated).setLocale('ru').toFormat('DDD')}
       </div>
       <div className={styles.Title}>
-        <Link href={`/${result.data.category.alias}/${result.data.alias}`} passHref>
-          <a>{result.data.name}</a>
-        </Link>
+        <Link href={`/${result.data.category.alias}/${result.data.alias}`}>{result.data.name}</Link>
       </div>
       <div className={styles.Excerpt}>
         {result.data.excerpt}

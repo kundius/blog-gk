@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { FaSearch } from 'react-icons/fa'
-import { useSpring, animated, useSpringRef, useChain } from 'react-spring'
+import { useSpring, animated, useSpringRef, useChain } from '@react-spring/web'
 
 import styles from './styles.module.css'
 

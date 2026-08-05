@@ -1,6 +1,6 @@
+'use client'
 import React, { useContext } from 'react'
 import useSWR from 'swr'
-import Head from 'next/head'
 import { BsArrowRightShort } from 'react-icons/bs'
 import { FaVk, FaOdnoklassniki, FaFacebookF } from 'react-icons/fa'
 import { DateTime } from 'luxon'
@@ -46,17 +46,6 @@ export function HomePage() {
 
   return (
     <WideLayout>
-      <Head>
-        <title>Кулинарные рецепты Галины Кундиус</title>
-        <meta
-          name="description"
-          content="Блог с рецептами кулинарных блюд для домашнего приготовления и обычные истории из жизни. На сайте можно найти интересные рецепты; салатов, первых, вторых блюд и выпечки."
-        />
-        <meta
-          name="keywords"
-          content="блог кулинария рецепты кулинарные первые вторые блюда домашняя выпечка храмы церкви истории статьи путешествия по святым местам Галина Кундиус"
-        />
-      </Head>
       <div className="space-y-24">
         <section className="transition duration-300 ease-out space-y-6 bg-gray-100 dark:bg-gray-800 p-8 md:p-12 rounded-3xl">
           <div className="items-center grid grid-cols-5 gap-8 md:gap-12">
@@ -173,14 +162,12 @@ export function HomePage() {
       <section>
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-2">
           <h2 className="text-2xl md:text-3xl">{title}</h2>
-          <Link href={href} passHref>
-            <a className="text-red-500 inline-flex items-center md:mb-2 lg:mb-0">
+          <Link href={href} className="text-red-500 inline-flex items-center md:mb-2 lg:mb-0">
               смотреть все
               <span className="ml-1 text-xl">
                 <BsArrowRightShort />
               </span>
-            </a>
-          </Link>
+            </Link>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {data?.map((article) => (

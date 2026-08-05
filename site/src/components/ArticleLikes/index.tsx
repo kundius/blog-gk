@@ -1,12 +1,10 @@
 import React from 'react'
 import classNames from 'classnames'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { API_URL } from '@app/utils/config'
 import { postJson, deleteJson } from '@app/api/http'
 
 import { Spinner } from '@components/Spinner'
 import { HeartIcon } from '@components/Icon/heart'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 export interface ArticleLikesProps {
   id: string
@@ -26,7 +24,7 @@ export function ArticleLikes({ id, initialLikes = 0 }: ArticleLikesProps) {
   const run = async (action: 'add' | 'remove') => {
     setLoading(true)
     try {
-      const url = `${publicRuntimeConfig.API_URL}/api/articles/${id}/like`
+      const url = `${API_URL}/api/articles/${id}/like`
       const data =
         action === 'add' ? await postJson(url) : await deleteJson(url)
       if (typeof data?.data?.likesCount === 'number') {

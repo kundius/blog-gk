@@ -1,10 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { usePopper } from 'react-popper'
-import { Placement } from '@popperjs/core'
-import ReactDOM from 'react-dom'
-import { useTimeout } from 'rooks'
+import { useFloating, useDismiss, useRole, useInteractions, autoUpdate, offset as fuiOffset, flip, shift, arrow, FloatingPortal } from '@floating-ui/react'
+import { Placement } from '@floating-ui/react'
 
 import cssStyles from './styles.module.css'
+
+interface TimeoutController {
+  start: () => void
+  clear: () => void
+}
+
+function useTimeout (fn: Function, delay: number): TimeoutController {
+  const fnRef = useRef(fn)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  useEffect(() => {
+    fnRef.current = fn
+  }, [fn])
+
+  const clear = () => {
+    if (timerRef.current !== undefined) {
+      clearTimeout(timerRef.current)
+      timerRef.current = undefined
+    }
+  }
+
+  const start = () => {
+    clear()
+    timerRef.current = setTimeout(() => {
+      fnRef.current()
+    }, delay)
+  }
+
+  useEffect(() => () => clear(), [])
+
+  return { start, clear }
+}
 
 export interface RenderFunctionArgs<HandleType> {
   referenceElement: HandleType | null
@@ -31,17 +61,14 @@ export interface PopoverProps<HandleType> {
 
 const isVisible = (el: HTMLElement) => !!el && !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length)
 
-const calculateOffset = (size): [number, number] => {
+const calculateOffset = (size): number => {
   if (size === 's') {
-    return [-8, 8]
+    return 8
   }
   if (size === 'l') {
-    return [-24, 24]
+    return 24
   }
-  if (size === 'm') {
-    return [-16, 16]
-  }
-  return [-16, 16]
+  return 16
 }
 
 export function Popover<HandleType extends HTMLElement> ({
@@ -57,24 +84,42 @@ export function Popover<HandleType extends HTMLElement> ({
   const showTimeout = useTimeout(show, 300)
   const hideTimeout = useTimeout(hide, 200)
   const [clamp, setClamp] = useState(true)
-  const [referenceElement, setReferenceElement] = useState<HandleType | null>(null)
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
-  const [arrowElement, setArrowElement] = useState<HTMLDivElement | null>(null)
   const [isOpen, setIsOpen] = useState(false)
-  const { styles, attributes, forceUpdate } = usePopper(referenceElement, popperElement, {
-    placement: placement,
-    modifiers: [{
-      name: 'offset',
-      options: {
-        offset: calculateOffset(size)
-      }
-    }, {
-      name: 'flip'
-    }, {
-      name: 'arrow',
-      options: { element: arrowElement }
-    }]
+  const arrowRef = useRef<HTMLDivElement | null>(null)
+
+  const { x, y, strategy, refs, context, middlewareData } = useFloating<HandleType>({
+    placement,
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    middleware: [
+      fuiOffset(calculateOffset(size)),
+      flip(),
+      shift(),
+      arrow({ element: arrowRef })
+    ],
+    whileElementsMounted: autoUpdate
   })
+
+  const dismiss = useDismiss(context)
+  const role = useRole(context, { role: 'tooltip' })
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([dismiss, role])
+
+  function show () {
+    setIsOpen(true)
+  }
+
+  function hide () {
+    setIsOpen(false)
+  }
+
+  function toggle () {
+    setIsOpen(prev => !prev)
+  }
+
+  const setReferenceElement = (el: HandleType | null) => {
+    refs.setReference(el)
+  }
 
   const hoverListeners = {
     onMouseEnter: () => {
@@ -96,6 +141,12 @@ export function Popover<HandleType extends HTMLElement> ({
     }
   }
 
+  useEffect(() => {
+    if (isOpen) {
+      setClamp(false)
+    }
+  }, [isOpen])
+
   const wrapperListeners = {
     onMouseEnter: () => {
       if (clamp) return
@@ -108,51 +159,8 @@ export function Popover<HandleType extends HTMLElement> ({
     }
   }
 
-  useEffect(() => {
-    if (isOpen) {
-      // обновить позицию при открытии
-      forceUpdate?.()
-      // старый добрый костыль, дождемся завершения клика изменившего isOpen
-      setTimeout(addOutsideClickListener)
-    }
-    return removeOutsideClickListener
-  }, [isOpen])
-
-  function show () {
-    setIsOpen(true)
-  }
-
-  function hide () {
-    setIsOpen(false)
-  }
-
-  function toggle () {
-    setIsOpen(prev => !prev)
-  }
-
-  const outsideClickListener = (e: MouseEvent) => {
-    if (
-      popperElement &&
-      !popperElement.contains(e.target as Node) &&
-      isVisible(popperElement) &&
-      referenceElement &&
-      !referenceElement.contains(e.target as Node) &&
-      referenceElement !== e.target
-    ) {
-      hide()
-    }
-  }
-
-  const removeOutsideClickListener = () => {
-    document.removeEventListener('click', outsideClickListener)
-  }
-
-  const addOutsideClickListener = () => {
-    document.addEventListener('click', outsideClickListener)
-  }
-
   const api: RenderFunctionArgs<HandleType> = {
-    referenceElement,
+    referenceElement: refs.reference as unknown as HandleType | null,
     setReferenceElement,
     hoverListeners,
     clickListeners,
@@ -160,6 +168,8 @@ export function Popover<HandleType extends HTMLElement> ({
     hide,
     toggle
   }
+
+  const arrowVisible = !!middlewareData.arrow
 
   const html = (
     <div
@@ -170,12 +180,14 @@ export function Popover<HandleType extends HTMLElement> ({
         ${size === 'm' ? cssStyles.WrapperMedium : ''}
         ${size === 'l' ? cssStyles.WrapperLarge : ''}
       `}
-      ref={setPopperElement}
+      ref={refs.setFloating}
       style={{
-        ...styles.popper,
+        position: strategy,
+        top: y ?? 0,
+        left: x ?? 0,
         ...wrapperStyle
       }}
-      {...attributes.popper}
+      {...getFloatingProps()}
       {...wrapperListeners}
     >
       {((typeof showClose === 'undefined' && clamp) || showClose) && (
@@ -187,7 +199,14 @@ export function Popover<HandleType extends HTMLElement> ({
       {content && (
         <div className={cssStyles.Content}>{typeof content === 'function' ? content(api) : content}</div>
       )}
-      <div className={cssStyles.Arrow} ref={setArrowElement} style={styles.arrow} />
+      <div
+        className={cssStyles.Arrow}
+        ref={arrowRef}
+        style={{
+          left: middlewareData.arrow?.x ?? '',
+          visibility: arrowVisible ? 'visible' : 'hidden'
+        }}
+      />
     </div>
   )
 
@@ -195,7 +214,9 @@ export function Popover<HandleType extends HTMLElement> ({
     <>
       {children(api)}
       {!usePortal && html}
-      {(typeof document !== 'undefined' && usePortal) && ReactDOM.createPortal(html, document.body)}
+      {typeof document !== 'undefined' && usePortal && (
+        <FloatingPortal>{html}</FloatingPortal>
+      )}
     </>
   )
 }

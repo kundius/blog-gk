@@ -1,9 +1,7 @@
 import React, { useState, useRef } from 'react'
 
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { API_URL } from '@app/utils/config'
 import { postJson } from '@app/api/http'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 export function SubscribeForm () {
   const [value, setValue] = useState('')
@@ -19,7 +17,7 @@ export function SubscribeForm () {
     }
 
     try {
-      await postJson(`${publicRuntimeConfig.API_URL}/api/subscribers`, {
+      await postJson(`${API_URL}/api/subscribers`, {
         email: value
       })
       setValue('')

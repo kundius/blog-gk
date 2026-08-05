@@ -81,47 +81,47 @@
   box-shadow: rgb(255 255 255 / 2%) 0px -5.9px 2.7px, rgb(255 255 255 / 2%) 0px -1.2px 6.9px, rgb(255 255 255 / 3%) 0px 8px 14.2px, rgb(255 255 255 / 4%) 0px 21.9px 29.2px, rgb(255 255 255 / 7%) 0px 49px 80px;
 }
 
-.Wrapper[data-popper-placement^="bottom"] > .Arrow {
+.Wrapper[data-placement^="bottom"] > .Arrow {
   top: -16px;
   border-width: 0 16px 16px 16px;
   border-color: transparent transparent #ffffff transparent;
   filter: drop-shadow(0px -4px 4px rgb(0 0 0 / 8%));
 }
 
-:global(.dark) .Wrapper[data-popper-placement^="bottom"] > .Arrow {
+:global(.dark) .Wrapper[data-placement^="bottom"] > .Arrow {
   border-color: transparent transparent #6b7280 transparent;
   filter: drop-shadow(0px -4px 4px rgb(255 255 255 / 8%));
 }
 
-.Wrapper[data-popper-placement^="right"] > .Arrow {
+.Wrapper[data-placement^="right"] > .Arrow {
   left: -16px;
   border-width: 16px 16px 16px 0;
   border-color: transparent #ffffff transparent transparent;
 }
 
-:global(.dark) .Wrapper[data-popper-placement^="right"] > .Arrow {
+:global(.dark) .Wrapper[data-placement^="right"] > .Arrow {
   border-color: transparent #6b7280 transparent transparent;
 }
 
-.Wrapper[data-popper-placement^="top"] > .Arrow {
+.Wrapper[data-placement^="top"] > .Arrow {
   bottom: -16px;
   border-width: 16px 16px 0 16px;
   border-color: #ffffff transparent transparent transparent;
   filter: drop-shadow(0px -4px 4px rgb(0 0 0 / 8%));
 }
 
-:global(.dark) .Wrapper[data-popper-placement^="top"] > .Arrow {
+:global(.dark) .Wrapper[data-placement^="top"] > .Arrow {
   border-color: #6b7280 transparent transparent transparent;
   filter: drop-shadow(0px 4px 4px rgb(255 255 255 / 8%));
 }
 
-.Wrapper[data-popper-placement^="left"] > .Arrow {
+.Wrapper[data-placement^="left"] > .Arrow {
   right: -16px;
   border-width: 16px 0 16px 16px;
   border-color: transparent transparent transparent #ffffff;
 }
 
-:global(.dark) .Wrapper[data-popper-placement^="left"] > .Arrow {
+:global(.dark) .Wrapper[data-placement^="left"] > .Arrow {
   border-color: transparent transparent transparent #6b7280;
 }
 
@@ -136,22 +136,22 @@
   max-width: 180px;
 }
 
-.WrapperSmall[data-popper-placement^="bottom"] > .Arrow {
+.WrapperSmall[data-placement^="bottom"] > .Arrow {
   top: -8px;
   border-width: 0 8px 8px 8px;
 }
 
-.WrapperSmall[data-popper-placement^="right"] > .Arrow {
+.WrapperSmall[data-placement^="right"] > .Arrow {
   left: -8px;
   border-width: 8px 8px 8px 0;
 }
 
-.WrapperSmall[data-popper-placement^="top"] > .Arrow {
+.WrapperSmall[data-placement^="top"] > .Arrow {
   bottom: -8px;
   border-width: 8px 8px 0 8px;
 }
 
-.WrapperSmall[data-popper-placement^="left"] > .Arrow {
+.WrapperSmall[data-placement^="left"] > .Arrow {
   right: -8px;
   border-width: 8px 0 8px 8px;
 }
@@ -186,22 +186,22 @@
   max-width: 340px;
 }
 
-.WrapperLarge[data-popper-placement^="bottom"] > .Arrow {
+.WrapperLarge[data-placement^="bottom"] > .Arrow {
   top: -24px;
   border-width: 0 24px 24px 24px;
 }
 
-.WrapperLarge[data-popper-placement^="right"] > .Arrow {
+.WrapperLarge[data-placement^="right"] > .Arrow {
   left: -24px;
   border-width: 24px 24px 24px 0;
 }
 
-.WrapperLarge[data-popper-placement^="top"] > .Arrow {
+.WrapperLarge[data-placement^="top"] > .Arrow {
   bottom: -24px;
   border-width: 24px 24px 0 24px;
 }
 
-.WrapperLarge[data-popper-placement^="left"] > .Arrow {
+.WrapperLarge[data-placement^="left"] > .Arrow {
   right: -24px;
   border-width: 24px 0 24px 24px;
 }

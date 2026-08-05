@@ -33,8 +33,7 @@ export function ArticleCardRelated ({
 }: ArticleCardRelatedProps) {
   return (
     <div className={styles.Wrapper}>
-      <Link href={url} passHref>
-        <a className={styles.MainLink}>
+      <Link href={url} className={styles.MainLink}>
           {thumbnail && (
             <figure className={styles.Thumbnail}>
               <Image
@@ -53,19 +52,14 @@ export function ArticleCardRelated ({
               <BsImage />
             </figure>
           )}
-        </a>
-      </Link>
+        </Link>
 
       <div className={styles.Inner}>
         <div className={styles.Info}>
-          <Link href={category.url} passHref>
-            <a className={styles.Category}>{category.name}</a>
-          </Link>
+          <Link href={category.url} className={styles.Category}>{category.name}</Link>
           <div className={styles.Date}>{createdAt}</div>
           <div className={styles.Excerpt}>{excerpt}</div>
-          <Link href={url} passHref>
-            <a className={styles.More}>Читать дальше</a>
-          </Link>
+          <Link href={url} className={styles.More}>Читать дальше</Link>
         </div>
         <div className={styles.Name}>{name}</div>
       </div>

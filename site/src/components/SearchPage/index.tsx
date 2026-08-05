@@ -1,17 +1,15 @@
+'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import useSWR from 'swr'
-import Head from 'next/head'
 
 import { MainLayout } from '@components/MainLayout'
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { Pagination } from '@components/Pagination'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { CLIENT_URL } from '@app/utils/config'
 
 import { Form } from './Form'
 import { Card } from './Card'
 import * as api from './api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 export interface SearchPageProps {
   query: string
@@ -56,15 +54,6 @@ export function SearchPage({ query }: SearchPageProps) {
 
   return (
     <MainLayout>
-      <Head>
-        <title>{`Поиск «${query || '...'}»`}</title>
-
-        <link
-          rel="canonical"
-          href={`${publicRuntimeConfig.CLIENT_URL}/search/${query}`}
-        />
-      </Head>
-
       <Breadcrumbs
         items={[
           {

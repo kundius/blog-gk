@@ -1,7 +1,7 @@
+'use client'
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
-import Head from 'next/head'
 import { DateTime } from 'luxon'
 import { AiOutlineTag } from 'react-icons/ai'
 import {
@@ -28,7 +28,7 @@ import { Image } from '@components/Image'
 import { ClocheIcon } from '@components/Icon/cloche'
 import { ToqueIcon } from '@components/Icon/toque'
 import { CommentsIcon } from '@components/Icon/comments'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
+import { CLIENT_URL } from '@app/utils/config'
 import { fileUrl } from '@app/api/images'
 import { WideLayout } from '@components/WideLayout'
 import { ArticleRelated } from '@components/ArticleRelated'
@@ -38,8 +38,6 @@ import { ArticleLikes } from '@components/ArticleLikes'
 
 import { Hits } from './Hits'
 import * as api from './api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 interface ArticlePageProps {
   alias: string
@@ -69,34 +67,12 @@ export function ArticlePage({ alias }: ArticlePageProps) {
     nextApi?.[1] || null
   )
 
-  const pageUrl = `${publicRuntimeConfig.CLIENT_URL}/${result?.data?.category.alias}/${result?.data?.alias}`
+  const pageUrl = `${CLIENT_URL}/${result?.data?.category.alias}/${result?.data?.alias}`
   const imageUrl = fileUrl(result?.data?.thumbnail?.filenameDisk)
   const isRecipe = !!result?.data?.ingredients
 
   return (
     <WideLayout>
-      <Head>
-        <title>{result?.data?.seoTitle || result?.data?.name}</title>
-        <meta
-          name="description"
-          content={result?.data?.seoDescription || undefined}
-        />
-        <meta
-          name="keywords"
-          content={result?.data?.seoKeywords || undefined}
-        />
-
-        <meta property="og:title" content={result?.data?.name} />
-        <meta
-          property="og:description"
-          content={result?.data?.seoDescription || undefined}
-        />
-        <meta property="og:image" content={imageUrl} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={pageUrl} />
-
-        <link rel="canonical" href={pageUrl} />
-      </Head>
       {result?.data && (
         <div
           className="grid gap-24"
@@ -117,12 +93,10 @@ export function ArticlePage({ alias }: ArticlePageProps) {
                   itemScope
                   itemType="http://schema.org/ListItem"
                 >
-                  <Link href={`/${result.data.category.alias}`} passHref>
-                    <a className="hover:text-red-400" itemProp="item">
+                  <Link href={`/${result.data.category.alias}`} className="hover:text-red-400" itemProp="item">
                       <span itemProp="name">{result.data.category.name}</span>
                       <meta itemProp="position" content="1" />
-                    </a>
-                  </Link>
+                    </Link>
                 </span>
               </div>
               <div className="hidden">
@@ -334,31 +308,23 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               {previousResult?.data && (
                 <Link
                   href={`/${previousResult.data.category.alias}/${previousResult.data.alias}`}
-                  passHref
+                  rel="prev"
+                  className="flex items-center bg-red-400 hover:bg-red-600 text-white text-xs md:text-sm md:tracking-widest leading-8 md:leading-8 uppercase px-5 rounded-full"
+                  title={previousResult.data.name}
                 >
-                  <a
-                    rel="prev"
-                    className="flex items-center bg-red-400 hover:bg-red-600 text-white text-xs md:text-sm md:tracking-widest leading-8 md:leading-8 uppercase px-5 rounded-full"
-                    title={previousResult.data.name}
-                  >
-                    <HiOutlineChevronDoubleLeft className="mr-1" />
-                    Предыдущая
-                  </a>
+                  <HiOutlineChevronDoubleLeft className="mr-1" />
+                  Предыдущая
                 </Link>
               )}
               {nextResult?.data && (
                 <Link
                   href={`/${nextResult.data.category.alias}/${nextResult.data.alias}`}
-                  passHref
+                  rel="prev"
+                  className="flex items-center bg-red-400 hover:bg-red-600 text-white text-xs md:text-sm md:tracking-widest leading-8 md:leading-8 uppercase px-5 rounded-full"
+                  title={nextResult.data.name}
                 >
-                  <a
-                    rel="prev"
-                    className="flex items-center bg-red-400 hover:bg-red-600 text-white text-xs md:text-sm md:tracking-widest leading-8 md:leading-8 uppercase px-5 rounded-full"
-                    title={nextResult.data.name}
-                  >
-                    Следующая
-                    <HiOutlineChevronDoubleRight className="mr-1" />
-                  </a>
+                  Следующая
+                  <HiOutlineChevronDoubleRight className="mr-1" />
                 </Link>
               )}
             </div>

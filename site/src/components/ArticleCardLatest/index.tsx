@@ -52,9 +52,7 @@ export function ArticleCardLatest ({
         />
       )}
       <div className="p-6">
-        <Link href={category.url} passHref>
-          <a className="uppercase relative z-10 tracking-widest text-xs title-font font-medium text-gray-400 mb-1 hover:text-red-400">{category.name}</a>
-        </Link>
+        <Link href={category.url} className="uppercase relative z-10 tracking-widest text-xs title-font font-medium text-gray-400 mb-1 hover:text-red-400">{category.name}</Link>
         <h3 className="text-xl font-bold leading-tight mb-3 text-gray-800 dark:text-gray-100 transition duration-300 ease-out">
           {name}
         </h3>
@@ -64,14 +62,12 @@ export function ArticleCardLatest ({
           </p>
         )}
         <div className="flex items-center flex-wrap">
-          <Link href={url} passHref>
-            <a className={`${styles.More} text-red-500 items-center md:mb-2 lg:mb-0`}>
+          <Link href={url} className={`${styles.More} text-red-500 items-center md:mb-2 lg:mb-0`}>
               Читать дальше
               <span className="ml-1 text-xl">
                 <BsArrowRightShort />
               </span>
-            </a>
-          </Link>
+            </Link>
           <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200 dark:border-gray-600 transition duration-300 ease-out">
             <div className="mr-1">
               <FiEye />

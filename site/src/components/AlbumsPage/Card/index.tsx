@@ -42,7 +42,7 @@ export function Card ({
         </figure>
       )}
       <div className={styles.Inner}>
-        <Link href={href} passHref>
+        <Link href={href}>
           <div className={styles.Name}>{name}</div>
         </Link>
       </div>

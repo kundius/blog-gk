@@ -1,7 +1,10 @@
+'use client'
 import React, { useContext, useState } from 'react'
 import useSWR from 'swr'
-import Head from 'next/head'
-import Lightbox from 'react-image-lightbox'
+import Lightbox from 'yet-another-react-lightbox'
+import Counter from 'yet-another-react-lightbox/plugins/counter'
+import 'yet-another-react-lightbox/styles.css'
+import 'yet-another-react-lightbox/plugins/counter.css'
 
 import { Image } from '@components/Image'
 import { MainLayout } from '@components/MainLayout'
@@ -29,38 +32,18 @@ export function AlbumPage({ alias }: AlbumPageProps) {
 
   return (
     <MainLayout>
-      <Head>
-        <title>{result?.data?.seoTitle || result?.data?.name}</title>
-        <meta
-          name="description"
-          content={result?.data?.seoDescription || undefined}
-        />
-        <meta
-          name="keywords"
-          content={result?.data?.seoKeywords || undefined}
-        />
-      </Head>
-
       <h1 className="mb-12">{result?.data?.name}</h1>
 
-      {lightboxIsOpen && (
-        <Lightbox
-          mainSrc={images[lightboxPhotoIndex]}
-          nextSrc={images[(lightboxPhotoIndex + 1) % images.length]}
-          prevSrc={
-            images[(lightboxPhotoIndex + images.length - 1) % images.length]
-          }
-          onCloseRequest={() => setLightboxIsOpen(false)}
-          onMovePrevRequest={() =>
-            setLightboxPhotoIndex(
-              (lightboxPhotoIndex + images.length - 1) % images.length
-            )
-          }
-          onMoveNextRequest={() =>
-            setLightboxPhotoIndex((lightboxPhotoIndex + 1) % images.length)
-          }
-        />
-      )}
+      <Lightbox
+        open={lightboxIsOpen}
+        close={() => setLightboxIsOpen(false)}
+        index={lightboxPhotoIndex}
+        on={{
+          view: ({ index }) => setLightboxPhotoIndex(index)
+        }}
+        slides={images.map((src) => ({ src }))}
+        plugins={[Counter]}
+      />
 
       <div className="gap-4 grid grid-cols-3">
         {imagesFiltered.map((item, i) => (

@@ -50,15 +50,11 @@ export function ArticleCardMain({
   return (
     <div className={styles.Wrapper}>
       <div className={styles.Meta}>
-        <Link href={category.url} passHref>
-          <a className={styles.Category}>{category.name}</a>
-        </Link>
+        <Link href={category.url} className={styles.Category}>{category.name}</Link>
         <div className={styles.Date}>{createdAt}</div>
       </div>
       <div className={styles.Name}>
-        <Link href={url} passHref>
-          <a>{name}</a>
-        </Link>
+        <Link href={url}>{name}</Link>
       </div>
       <div
         className={`${styles.Info} flex items-center justify-between border-b border-gray-200 dark:border-gray-600 gap-4 md:gap-8 flex-col md:flex-row`}
@@ -93,16 +89,14 @@ export function ArticleCardMain({
               <span className="text-xs uppercase">{hitsCount}</span>
             </span>
           </span>
-          <Link href={`${url}#comments`} passHref>
-            <a className="flex items-center gap-8">
+          <Link href={`${url}#comments`} className="flex items-center gap-8">
               <span className="flex items-center gap-2">
                 <span className="transition duration-300 ease-out text-lg text-gray-600 dark:text-gray-200">
                   <CommentsIcon />
                 </span>
                 <span className="text-xs uppercase">{commentsCount}</span>
               </span>
-            </a>
-          </Link>
+            </Link>
           <ArticleLikes id={id} initialLikes={likesCount} />
         </div>
       </div>
@@ -122,9 +116,7 @@ export function ArticleCardMain({
         </Link>
       )}
       {excerpt && <div className={styles.Excerpt}>{excerpt}</div>}
-      <Link href={url} passHref>
-        <a className={styles.More}>Читать дальше</a>
-      </Link>
+      <Link href={url} className={styles.More}>Читать дальше</Link>
     </div>
   )
 }

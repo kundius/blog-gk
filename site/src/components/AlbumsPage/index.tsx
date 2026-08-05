@@ -1,6 +1,6 @@
+'use client'
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import useSWR from 'swr'
-import Head from 'next/head'
 import { DateTime } from 'luxon'
 
 import { Pagination } from '@components/Pagination'
@@ -21,10 +21,6 @@ export function AlbumsPage() {
 
   return (
     <MainLayout>
-      <Head>
-        <title>Альбомы</title>
-      </Head>
-
       <h1 className="mb-12">Альбомы</h1>
 
       {(albumsResult?.data?.length || 0) === 0 && (

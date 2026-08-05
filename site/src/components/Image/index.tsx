@@ -1,50 +1,52 @@
-// @ts-nocheck
 import React from 'react'
 import { default as NextImage, ImageProps as NextImageProps } from 'next/image'
-import { decode, isBlurhashValid } from 'blurhash'
 
+import { blurHashToDataUrl } from '@app/utils/blurHashToDataUrl'
 import styles from './styles.module.css'
 
-export type ImageProps = Omit<NextImageProps, 'placeholder' | 'blurDataURL' | 'className'> & {
+export type ImageProps = Omit<
+  NextImageProps,
+  'placeholder' | 'blurDataURL' | 'className' | 'layout' | 'objectFit' | 'objectPosition' | 'alt'
+> & {
+  src?: string
+  alt?: string
   blurHash?: string | null
+  layout?: 'responsive' | 'fill' | 'fixed' | 'intrinsic'
+  objectFit?: string
 }
 
-function getDataUrlFromBlurHash(blurHash: string): string | undefined {
-  if (typeof window === 'undefined') return
-  if (!(blurHash && isBlurhashValid(blurHash))) return
+export const Image = ({ blurHash, layout, objectFit, src, alt, ...props }: ImageProps) => {
+  const blurDataURL = blurHashToDataUrl(blurHash)
+  const imageSrc = src || ''
 
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-
-  canvas.width = 32
-  canvas.height = 32
-
-  if (!ctx) return
-
-  const imageData = ctx.createImageData(32, 32)
-  imageData.data.set(decode(blurHash, 32, 32))
-  ctx.putImageData(imageData, 0, 0)
-  return canvas.toDataURL()
-}
-
-export const Image = ({ blurHash, ...props }: ImageProps) => {
-  if (blurHash) {
-    const dataUrl = getDataUrlFromBlurHash(blurHash)
-    if (dataUrl) {
-      return (
-        <NextImage
-          className={styles.Element}
-          placeholder="blur"
-          blurDataURL={dataUrl}
-          {...props}
-        />
-      )
-    }
+  if (layout === 'fill') {
+    return (
+      <NextImage
+        className={styles.Element}
+        fill
+        src={imageSrc}
+        alt={alt || ''}
+        style={{ objectFit: objectFit as React.CSSProperties['objectFit'] }}
+        placeholder={blurDataURL ? 'blur' : 'empty'}
+        blurDataURL={blurDataURL}
+        {...props}
+      />
+    )
   }
+
   return (
     <NextImage
       className={styles.Element}
-      placeholder="empty"
+      src={imageSrc}
+      alt={alt || ''}
+      sizes={props.sizes || '100vw'}
+      style={{
+        width: '100%',
+        height: 'auto',
+        objectFit: objectFit as React.CSSProperties['objectFit']
+      }}
+      placeholder={blurDataURL ? 'blur' : 'empty'}
+      blurDataURL={blurDataURL}
       {...props}
     />
   )

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { FaRss } from 'react-icons/fa'
-import { useSpring, animated } from 'react-spring'
+import { useSpring, animated } from '@react-spring/web'
 import { throttle } from 'throttle-debounce'
 
 import { ScrollTop } from '@components/ScrollTop'

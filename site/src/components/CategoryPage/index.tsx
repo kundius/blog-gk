@@ -1,17 +1,14 @@
+'use client'
 import React, { useState, useContext, useEffect, useRef } from 'react'
 import useSWR from 'swr'
-import Head from 'next/head'
 import { DateTime } from 'luxon'
 
 import { Pagination } from '@components/Pagination'
 import { ArticleCardMain } from '@components/ArticleCardMain'
 import { fileUrl } from '@app/api/images'
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
 import { MainLayout } from '@components/MainLayout'
 
 import * as api from './api'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
 
 interface CategoryPageProps {
   alias: string
@@ -65,25 +62,6 @@ export function CategoryPage({ alias }: CategoryPageProps) {
 
   return (
     <MainLayout>
-      <Head>
-        <title>
-          {categoryResult?.data?.seoTitle || categoryResult?.data?.name}
-        </title>
-        <meta
-          name="description"
-          content={categoryResult?.data?.seoDescription || undefined}
-        />
-        <meta
-          name="keywords"
-          content={categoryResult?.data?.seoKeywords || undefined}
-        />
-
-        <link
-          rel="canonical"
-          href={`${publicRuntimeConfig.CLIENT_URL}/${categoryResult?.data?.alias}`}
-        />
-      </Head>
-
       <div
         className="grid gap-32"
         ref={listRef}

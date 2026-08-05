@@ -25,76 +25,48 @@ export const MobileMenu = () => {
       <div className={`${styles.Drawer} ${isShowMenu ? styles.DrawerIsVisible : ''}`}>
         <ul className={styles.List}>
           <li>
-            <Link href="/pages/about" passHref>
-              <a>Обо мне</a>
-            </Link>
+            <Link href="/pages/about" >Обо мне</Link>
           </li>
           <li>
-            <Link href="/krem-i-glazur-dlya-tortov" passHref>
-              <a>Кулинария</a>
-            </Link>
+            <Link href="/krem-i-glazur-dlya-tortov" >Кулинария</Link>
             <ul className={styles.SecondList}>
               <li>
-                <Link href="/krem-i-glazur-dlya-tortov" passHref>
-                  <a>Крем и глазурь для тортов</a>
-                </Link>
+                <Link href="/krem-i-glazur-dlya-tortov" >Крем и глазурь для тортов</Link>
               </li>
               <li>
-                <Link href="/cakes" passHref>
-                  <a>Торты, пироги и пирожные</a>
-                </Link>
+                <Link href="/cakes" >Торты, пироги и пирожные</Link>
               </li>
               <li>
-                <Link href="/drinks" passHref>
-                  <a>Напитки и десерты</a>
-                </Link>
+                <Link href="/drinks" >Напитки и десерты</Link>
               </li>
               <li>
-                <Link href="/salads" passHref>
-                  <a>Салаты и закуски</a>
-                </Link>
+                <Link href="/salads" >Салаты и закуски</Link>
               </li>
               <li>
-                <Link href="/conservation" passHref>
-                  <a>Консервация</a>
-                </Link>
+                <Link href="/conservation" >Консервация</Link>
               </li>
               <li>
-                <Link href="/baking" passHref>
-                  <a>Выпечка</a>
-                </Link>
+                <Link href="/baking" >Выпечка</Link>
               </li>
               <li>
-                <Link href="/cookies" passHref>
-                  <a>Печенье</a>
-                </Link>
+                <Link href="/cookies" >Печенье</Link>
               </li>
               <li>
-                <Link href="/main-dishes" passHref>
-                  <a>Вторые блюда</a>
-                </Link>
+                <Link href="/main-dishes" >Вторые блюда</Link>
               </li>
               <li>
-                <Link href="/entrees" passHref>
-                  <a>Первые блюда</a>
-                </Link>
+                <Link href="/entrees" >Первые блюда</Link>
               </li>
               <li>
-                <Link href="/fish-dishes" passHref>
-                  <a>Рыбные блюда</a>
-                </Link>
+                <Link href="/fish-dishes" >Рыбные блюда</Link>
               </li>
             </ul>
           </li>
           <li>
-            <Link href="/albums" passHref>
-              <a>Альбомы</a>
-            </Link>
+            <Link href="/albums" >Альбомы</Link>
           </li>
           <li>
-            <Link href="/sitemap" passHref>
-              <a>Карта сайта</a>
-            </Link>
+            <Link href="/sitemap" >Карта сайта</Link>
           </li>
         </ul>
         <div className={styles.Buttons}>

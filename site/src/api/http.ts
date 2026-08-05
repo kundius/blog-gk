@@ -1,9 +1,7 @@
-import { getRuntimeConfig } from '@app/utils/getRuntimeConfig'
-
-const { publicRuntimeConfig } = getRuntimeConfig()
+import { API_URL } from '@app/utils/config'
 
 export function getApiUrl(): string {
-  return publicRuntimeConfig.API_URL
+  return API_URL
 }
 
 export async function fetchDetail(url: string): Promise<any> {

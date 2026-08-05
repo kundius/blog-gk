@@ -18,9 +18,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
       {items.map((item, i) => (
         <li>
           {item.href ? (
-            <Link href={item.href} passHref>
-              <a>{item.title}</a>
-            </Link>
+            <Link href={item.href}>{item.title}</Link>
           ) : (
             <span className="text-gray-600 dark:text-gray-200">
               {item.title}

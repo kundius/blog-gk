@@ -1,10 +1,19 @@
 import React from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
+
+import '@components/ThemeContext/globals.css'
+import '@components/Pagination/styles.css'
+
+import { Providers } from './providers'
 import {
   VARIABLES,
   COLOR_MODE_KEY,
   INITIAL_COLOR_MODE_CSS_PROP
 } from '@components/ThemeContext/constants'
+import { CLIENT_URL } from '@app/utils/config'
+
+export const metadata = {
+  metadataBase: new URL(CLIENT_URL)
+}
 
 function setColorsByTheme () {
   const variables = '🌈';
@@ -39,25 +48,20 @@ const MagicScriptTag = () => {
   const boundFn = String(setColorsByTheme)
     .replace("'🌈'", JSON.stringify(VARIABLES))
     .replace('🔑', COLOR_MODE_KEY)
-    .replace('⚡️', INITIAL_COLOR_MODE_CSS_PROP);
+    .replace('⚡️', INITIAL_COLOR_MODE_CSS_PROP)
 
-  let calledFunction = `(${boundFn})()`;
+  let calledFunction = `(${boundFn})()`
 
-  // eslint-disable-next-line react/no-danger
-  return <script dangerouslySetInnerHTML={{ __html: calledFunction }} />;
+  return <script dangerouslySetInnerHTML={{ __html: calledFunction }} />
 }
 
-export default class MyDocument extends Document {
-  render () {
-    return (
-      <Html lang="ru">
-        <Head />
-        <body>
-          <MagicScriptTag />
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    )
-  }
+export default function RootLayout ({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ru" suppressHydrationWarning>
+      <body>
+        <MagicScriptTag />
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  )
 }
