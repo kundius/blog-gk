@@ -48,7 +48,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
               active
-                ? 'bg-muted text-foreground'
+                ? 'bg-red-400/10 text-red-600 dark:text-red-400'
                 : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
             )}
           >
@@ -118,7 +118,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AdminShellContext.Provider value={{ openMobile, setOpenMobile }}>
-      <div className="min-h-svh bg-muted text-foreground">
+      <div className="admin-page-bg min-h-svh text-foreground">
         <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 p-2 lg:block">
           <div className="flex h-full flex-col">
             <div className="flex h-14 shrink-0 items-center px-4">

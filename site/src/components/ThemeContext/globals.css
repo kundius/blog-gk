@@ -173,6 +173,9 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --admin-glow-rose: oklch(0.78 0.09 30 / 0.3);
+  --admin-glow-teal: oklch(0.86 0.05 190 / 0.28);
+  --admin-glow-amber: oklch(0.86 0.08 90 / 0.22);
 }
 
 .dark {
@@ -207,6 +210,9 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --admin-glow-rose: oklch(0.5 0.09 30 / 0.26);
+  --admin-glow-teal: oklch(0.56 0.05 190 / 0.22);
+  --admin-glow-amber: oklch(0.56 0.08 90 / 0.18);
 }
 
 @layer base {
@@ -219,4 +225,13 @@ body {
   html {
     @apply font-sans;
   }
+}
+
+.admin-page-bg {
+  background-color: var(--color-muted);
+  background-attachment: fixed;
+  background-image:
+    radial-gradient(80% 55% at 10% 0%, var(--admin-glow-rose), transparent 60%),
+    radial-gradient(90% 70% at 95% 10%, var(--admin-glow-teal), transparent 55%),
+    radial-gradient(70% 60% at 90% 100%, var(--admin-glow-amber), transparent 60%);
 }

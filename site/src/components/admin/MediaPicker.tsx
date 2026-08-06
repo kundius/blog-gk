@@ -128,6 +128,7 @@ export function MediaPicker({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
+            className="bg-red-400 text-white hover:bg-red-400/90"
           >
             <Upload className="size-4" />
             {uploading ? 'Загрузка...' : 'Загрузить'}
@@ -179,7 +180,11 @@ export function MediaPicker({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Отмена
           </Button>
-          <Button onClick={confirm} disabled={selected.size === 0}>
+          <Button
+            onClick={confirm}
+            disabled={selected.size === 0}
+            className="bg-red-400 text-white hover:bg-red-400/90"
+          >
             Выбрать ({selected.size})
           </Button>
         </DialogFooter>

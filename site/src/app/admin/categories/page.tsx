@@ -137,7 +137,7 @@ export default function AdminCategoriesPage() {
       <PageHeader
         title="Категории"
         actions={
-          <Button onClick={openNew}>
+          <Button onClick={openNew} className="bg-red-400 text-white hover:bg-red-400/90">
             <Plus className="size-4" />
             Новая категория
           </Button>

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { api } from '@app/lib/admin/client'
 import type { ArticleRecord, CommentRecord } from '@app/lib/admin/types'
+import { cn } from '@app/lib/utils'
 import { PageHeader, LoadingState, ErrorState } from '@components/admin/common'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { ArticleStatusBadge } from '@components/admin/ArticleStatusBadge'
@@ -25,12 +26,48 @@ function useCount(path: string) {
 }
 
 const STATS = [
-  { href: '/admin/articles', key: '/articles?limit=1', label: 'Статьи', icon: FileText },
-  { href: '/admin/categories', key: '/categories?limit=1', label: 'Категории', icon: FolderTree },
-  { href: '/admin/albums', key: '/albums?limit=1', label: 'Альбомы', icon: Images },
-  { href: '/admin/files', key: '/files?limit=1', label: 'Файлы', icon: FolderOpen },
-  { href: '/admin/subscribers', key: '/subscribers?limit=1', label: 'Подписчики', icon: Users },
-  { href: '/admin/comments', key: '/comments?limit=1', label: 'Комментарии', icon: MessageSquare },
+  {
+    href: '/admin/articles',
+    key: '/articles?limit=1',
+    label: 'Статьи',
+    icon: FileText,
+    color: 'bg-red-400/10 text-red-500 dark:text-red-400',
+  },
+  {
+    href: '/admin/categories',
+    key: '/categories?limit=1',
+    label: 'Категории',
+    icon: FolderTree,
+    color: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+  },
+  {
+    href: '/admin/albums',
+    key: '/albums?limit=1',
+    label: 'Альбомы',
+    icon: Images,
+    color: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+  },
+  {
+    href: '/admin/files',
+    key: '/files?limit=1',
+    label: 'Файлы',
+    icon: FolderOpen,
+    color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+  },
+  {
+    href: '/admin/subscribers',
+    key: '/subscribers?limit=1',
+    label: 'Подписчики',
+    icon: Users,
+    color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  },
+  {
+    href: '/admin/comments',
+    key: '/comments?limit=1',
+    label: 'Комментарии',
+    icon: MessageSquare,
+    color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+  },
 ]
 
 export default function AdminDashboardPage() {
@@ -55,7 +92,14 @@ export default function AdminDashboardPage() {
             <Link key={stat.href} href={stat.href}>
               <Card className="transition-colors hover:bg-muted/40">
                 <CardContent className="flex items-center gap-3 p-4">
-                  <Icon className="size-5 text-muted-foreground" />
+                  <div
+                    className={cn(
+                      'flex size-10 shrink-0 items-center justify-center rounded-lg',
+                      stat.color,
+                    )}
+                  >
+                    <Icon className="size-5" />
+                  </div>
                   <div className="min-w-0">
                     <div className="text-2xl font-semibold leading-none">
                       {count ?? '—'}

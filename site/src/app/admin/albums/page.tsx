@@ -33,7 +33,7 @@ export default function AdminAlbumsPage() {
         title="Альбомы"
         actions={
           <Link href="/admin/albums/new">
-            <Button>
+            <Button className="bg-red-400 text-white hover:bg-red-400/90">
               <Plus className="size-4" />
               Новый альбом
             </Button>

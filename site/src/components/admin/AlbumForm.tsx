@@ -203,7 +203,11 @@ export function AlbumForm({ album }: AlbumFormProps) {
         >
           Отмена
         </Button>
-        <Button type="submit" disabled={saving}>
+        <Button
+          type="submit"
+          disabled={saving}
+          className="bg-red-400 text-white hover:bg-red-400/90"
+        >
           {saving && <Loader2 className="size-4 animate-spin" />}
           <Save className="size-4" />
           Сохранить

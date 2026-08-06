@@ -77,7 +77,7 @@ export default function AdminArticlesPage() {
         title="Статьи"
         actions={
           <Link href="/admin/articles/new">
-            <Button>
+            <Button className="bg-red-400 text-white hover:bg-red-400/90">
               <Plus className="size-4" />
               Новая статья
             </Button>

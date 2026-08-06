@@ -30,7 +30,7 @@ export function PageHeader({
   const { setOpenMobile } = useAdminShell()
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-2">
+      <div className="flex items-start gap-2">
         <Button
           variant="ghost"
           size="icon"
@@ -40,6 +40,7 @@ export function PageHeader({
         >
           <Menu className="size-5" />
         </Button>
+        <span className="mt-0.5 h-7 w-1 shrink-0 rounded-full bg-red-400" />
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           {description && (

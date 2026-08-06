@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="admin-page-bg flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-center">Вход в админку</CardTitle>
@@ -75,7 +75,11 @@ export default function AdminLoginPage() {
                 {error}
               </p>
             )}
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button
+              type="submit"
+              className="w-full bg-red-400 text-white hover:bg-red-400/90"
+              disabled={submitting}
+            >
               {submitting ? 'Вход...' : 'Войти'}
             </Button>
           </form>

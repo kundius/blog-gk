@@ -111,6 +111,7 @@ export default function AdminFilesPage() {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
+          className="bg-red-400 text-white hover:bg-red-400/90"
         >
           <Upload className="size-4" />
           {uploading ? 'Загрузка...' : 'Загрузить'}

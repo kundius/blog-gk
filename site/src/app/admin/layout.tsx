@@ -71,13 +71,13 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="font-sans">
+    <>
       <AuthProvider>
         <NuqsAdapter>
           <Gate>{children}</Gate>
           <Toaster />
         </NuqsAdapter>
       </AuthProvider>
-    </div>
+    </>
   )
 }
