@@ -16,14 +16,12 @@ const ARTICLE_LIST_INCLUDE = {
 const ARTICLE_DETAIL_INCLUDE = {
   category: true,
   thumbnail: true,
-  tags: { include: { tag: true }, orderBy: { sort: 'asc' } },
   files: { include: { file: true }, orderBy: { sort: 'asc' } },
 } satisfies Prisma.ArticleInclude;
 
 const EXTRA_INCLUDES: Record<string, Prisma.ArticleInclude> = {
   category: { category: true },
   thumbnail: { thumbnail: true },
-  tags: { tags: { include: { tag: true }, orderBy: { sort: 'asc' } } },
   files: { files: { include: { file: true }, orderBy: { sort: 'asc' } } },
   comments: { comments: true },
 };
@@ -37,8 +35,9 @@ export class ArticlesService {
       ...(query.status ? { status: query.status } : {}),
       ...(query.categoryId ? { categoryId: query.categoryId } : {}),
       ...(query.categoryAlias ? { category: { alias: query.categoryAlias } } : {}),
-      ...(query.tagId ? { tags: { some: { tagId: query.tagId } } } : {}),
-      ...(query.tagAlias ? { tags: { some: { tag: { alias: query.tagAlias } } } } : {}),
+      ...(query.search
+        ? { name: { contains: query.search, mode: 'insensitive' as const } }
+        : {}),
     };
 
     if (query.categories) {
@@ -111,7 +110,6 @@ export class ArticlesService {
         seoKeywords: dto.seoKeywords,
         seoDescription: dto.seoDescription,
         dateCreated: new Date(),
-        tags: { create: (dto.tags ?? []).map((tagId, i) => ({ tagId, sort: i })) },
         files: { create: (dto.files ?? []).map((fileId, i) => ({ fileId, sort: i })) },
       },
       include: ARTICLE_DETAIL_INCLUDE,
@@ -123,15 +121,6 @@ export class ArticlesService {
     await this.validateReferences(dto);
 
     return this.prisma.$transaction(async (tx) => {
-      if (dto.tags) {
-        await tx.articleTag.deleteMany({ where: { articleId: id } });
-        if (dto.tags.length) {
-          await tx.articleTag.createMany({
-            data: dto.tags.map((tagId, i) => ({ articleId: id, tagId, sort: i })),
-          });
-        }
-      }
-
       if (dto.files) {
         await tx.articleFile.deleteMany({ where: { articleId: id } });
         if (dto.files.length) {
@@ -336,7 +325,6 @@ export class ArticlesService {
   private async validateReferences(dto: {
     categoryId?: string;
     thumbnailId?: string;
-    tags?: string[];
     files?: string[];
   }) {
     if (dto.categoryId) {
@@ -356,13 +344,6 @@ export class ArticlesService {
       });
       if (!thumbnail) {
         throw new BadRequestException('Thumbnail file not found');
-      }
-    }
-
-    if (dto.tags?.length) {
-      const count = await this.prisma.tag.count({ where: { id: { in: dto.tags } } });
-      if (count !== dto.tags.length) {
-        throw new BadRequestException('Some tags do not exist');
       }
     }
 

@@ -31,7 +31,7 @@ export function SitemapPage() {
           <Link href="/">Кулинарный блог Галины Кундиус</Link>
         </li>
         <li>
-          <Link href="/pages/about">Обо мне</Link>
+          <Link href="/about">Обо мне</Link>
         </li>
         {resultCategories?.data?.map((category) => (
           <li key={category.id}>

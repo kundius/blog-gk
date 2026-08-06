@@ -56,15 +56,6 @@ export interface ArticleListItem {
   thumbnail?: File | null
 }
 
-export interface ArticleTag {
-  id: number
-  tag: {
-    id: string
-    name: string
-    alias: string
-  }
-}
-
 export interface ArticleFile {
   id: number
   sort?: number | null
@@ -76,7 +67,6 @@ export interface ArticleDetail extends ArticleListItem {
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null
-  tags: ArticleTag[]
   files: ArticleFile[]
 }
 
@@ -89,16 +79,6 @@ export interface Album {
   seoDescription?: string | null
   thumbnail?: File | null
   photos?: ArticleFile[]
-}
-
-export interface Page {
-  id: string
-  name: string
-  alias: string
-  content?: string | null
-  seoTitle?: string | null
-  seoKeywords?: string | null
-  seoDescription?: string | null
 }
 
 export interface CommentItem {

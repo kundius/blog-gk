@@ -10,6 +10,10 @@ import {
   INITIAL_COLOR_MODE_CSS_PROP
 } from '@components/ThemeContext/constants'
 import { CLIENT_URL } from '@app/utils/config'
+import { Geist } from "next/font/google";
+import { cn } from "@app/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata = {
   metadataBase: new URL(CLIENT_URL)
@@ -57,7 +61,7 @@ const MagicScriptTag = () => {
 
 export default function RootLayout ({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body>
         <MagicScriptTag />
         <Providers>{children}</Providers>

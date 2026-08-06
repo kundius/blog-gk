@@ -1,22 +1,19 @@
 'use client'
 import React from 'react'
-import useSWR from 'swr'
 
 import { Content } from '@components/Content'
 import { MainLayout } from '@components/MainLayout'
 
-import * as api from './api'
-
-interface ContentPageProps {
-  alias: string
+export interface StaticPage {
+  name: string
+  content?: string | null
 }
 
-export function ContentPage({ alias }: ContentPageProps) {
-  const [key, fetcher] = api.getPage({ alias })
-  const { data: result } = useSWR<api.GetPageData>(key, fetcher)
+interface ContentPageProps {
+  page: StaticPage
+}
 
-  const page = result?.data
-
+export function ContentPage({ page }: ContentPageProps) {
   return (
     <MainLayout>
       <h1 className="mb-12">{page?.name}</h1>

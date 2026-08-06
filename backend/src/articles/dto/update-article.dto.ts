@@ -47,12 +47,6 @@ export class UpdateArticleDto {
   @IsArray()
   @ArrayUnique()
   @IsUUID('4', { each: true })
-  tags?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @ArrayUnique()
-  @IsUUID('4', { each: true })
   files?: string[];
 
   @IsOptional()

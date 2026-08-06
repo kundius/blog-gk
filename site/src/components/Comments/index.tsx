@@ -35,6 +35,7 @@ export function Comments({ threadId, threadType }: CommentsProps) {
   const [authorName, setAuthorName] = useState<string | undefined>()
   const [authorEmail, setAuthorEmail] = useState<string | undefined>()
   const [creating, setCreating] = useState(false)
+  const [createdNotice, setCreatedNotice] = useState<string | null>(null)
 
   // refs
   const createFormRef = useRef<HTMLDivElement | null>(null)
@@ -86,6 +87,12 @@ export function Comments({ threadId, threadType }: CommentsProps) {
             fieldRef={createFieldRef}
             scrollToComment={scrollToComment}
           />
+
+          {createdNotice && (
+            <div className="mt-4 rounded-md bg-emerald-50 p-3 text-sm text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
+              {createdNotice}
+            </div>
+          )}
 
           {!commentsResult && <CommentsItemSkeleton />}
 
@@ -171,6 +178,7 @@ export function Comments({ threadId, threadType }: CommentsProps) {
     setAuthorEmail('')
     setAuthorName('')
     setCreateReply(undefined)
+    setCreatedNotice('Комментарий отправлен и появится после проверки модератором')
     await fetchMore()
   }
 

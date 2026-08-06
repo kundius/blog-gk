@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
@@ -24,8 +24,4 @@ export class CreateCommentDto {
   @IsOptional()
   @IsUUID()
   articleId?: string;
-
-  @IsOptional()
-  @IsIn(['published', 'pending'])
-  status?: string;
 }

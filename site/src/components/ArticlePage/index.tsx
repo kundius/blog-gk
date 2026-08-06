@@ -3,7 +3,6 @@ import React, { useState, useContext, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
 import { DateTime } from 'luxon'
-import { AiOutlineTag } from 'react-icons/ai'
 import {
   HiOutlineChevronDoubleLeft,
   HiOutlineChevronDoubleRight
@@ -254,20 +253,6 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               dangerouslySetInnerHTML={{ __html: result.data.content }}
               itemProp={isRecipe ? 'recipeInstructions' : 'articleBody'}
             />
-
-            {result.data.tags?.[0] && (
-              <div className="flex items-start leading-none mt-16">
-                <div className="flex items-center">
-                  <AiOutlineTag />
-                  <div className="text-sm ml-2">Теги</div>
-                </div>
-                <div className="ml-4 flex flex-wrap text-sm text-gray-400 uppercase gap-1">
-                  {result.data.tags.map((item) => (
-                    <a key={item.tag.alias}>#{item.tag.name}</a>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="transition duration-300 ease-out flex flex-col md:flex-row items-center justify-between gap-4 pt-4 pb-4 border-t border-b border-gray-200 dark:border-gray-600">

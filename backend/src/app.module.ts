@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { StorageModule } from './storage/storage.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 import { FilesModule } from './files/files.module';
 import { CategoriesModule } from './categories/categories.module';
-import { TagsModule } from './tags/tags.module';
 import { ArticlesModule } from './articles/articles.module';
 import { AlbumsModule } from './albums/albums.module';
 import { CommentsModule } from './comments/comments.module';
-import { PagesModule } from './pages/pages.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 
 @Module({
@@ -16,14 +18,17 @@ import { SubscribersModule } from './subscribers/subscribers.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     StorageModule,
+    AuthModule,
     FilesModule,
     CategoriesModule,
-    TagsModule,
     ArticlesModule,
     AlbumsModule,
     CommentsModule,
-    PagesModule,
     SubscribersModule,
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
   ],
 })
 export class AppModule {}

@@ -23,6 +23,11 @@ module.exports = {
         source: '/cooking/:category',
         destination: '/:category',
         permanent: true
+      },
+      {
+        source: '/pages/:slug',
+        destination: '/:slug',
+        permanent: true
       }
     ]
   },

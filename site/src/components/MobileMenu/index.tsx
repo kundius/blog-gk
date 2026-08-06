@@ -25,7 +25,7 @@ export const MobileMenu = () => {
       <div className={`${styles.Drawer} ${isShowMenu ? styles.DrawerIsVisible : ''}`}>
         <ul className={styles.List}>
           <li>
-            <Link href="/pages/about" >Обо мне</Link>
+            <Link href="/about" >Обо мне</Link>
           </li>
           <li>
             <Link href="/krem-i-glazur-dlya-tortov" >Кулинария</Link>

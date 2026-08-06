@@ -73,10 +73,10 @@ export const Footer = () => {
               }}
               items={[{
                 title: 'Политика конфиденциальности',
-                href: '/pages/privacy-policy'
+                href: '/privacy-policy'
               }, {
                 title: 'Пользовательское соглашение',
-                href: '/pages/user-agreement'
+                href: '/user-agreement'
               }]}
             />
           </div>

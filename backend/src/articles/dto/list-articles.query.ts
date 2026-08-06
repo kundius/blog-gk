@@ -4,6 +4,10 @@ import { PaginationDto } from '../../common/dto/pagination.dto';
 export class ListArticlesQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsString()
   status?: string;
 
   @IsOptional()
@@ -21,14 +25,6 @@ export class ListArticlesQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   categoriesNotIn?: string;
-
-  @IsOptional()
-  @IsUUID()
-  tagId?: string;
-
-  @IsOptional()
-  @IsString()
-  tagAlias?: string;
 
   @IsOptional()
   @IsString()

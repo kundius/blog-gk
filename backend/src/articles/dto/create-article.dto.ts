@@ -44,11 +44,6 @@ export class CreateArticleDto {
   @IsOptional()
   @IsArray()
   @IsUUID('4', { each: true })
-  tags?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsUUID('4', { each: true })
   files?: string[];
 
   @IsOptional()

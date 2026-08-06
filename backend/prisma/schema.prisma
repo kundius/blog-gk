@@ -69,33 +69,10 @@ model Article {
 
   category  Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   thumbnail File?         @relation("ArticleThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
-  tags      ArticleTag[]
   files     ArticleFile[]
   comments  Comment[]
 
   @@map("articles")
-}
-
-model Tag {
-  id    String @id @default(uuid()) @db.Uuid
-  name  String
-  alias String @unique
-
-  articles ArticleTag[]
-
-  @@map("tags")
-}
-
-model ArticleTag {
-  id        Int     @id @default(autoincrement())
-  articleId String? @map("article") @db.Uuid
-  tagId     String? @map("tag") @db.Uuid
-  sort      Int?
-
-  article Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  tag     Tag?     @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@map("articles_tags")
 }
 
 model ArticleFile {
@@ -156,22 +133,23 @@ model Comment {
   @@map("comments")
 }
 
-model Page {
-  id             String  @id @default(uuid()) @db.Uuid
-  name           String
-  content        String?
-  alias          String  @unique
-  seoTitle       String? @map("seo_title")
-  seoKeywords    String? @map("seo_keywords")
-  seoDescription String? @map("seo_description")
-
-  @@map("pages")
-}
-
 model Subscriber {
   id          String    @id @default(uuid()) @db.Uuid
   dateCreated DateTime? @map("date_created") @db.Timestamptz(6)
   email       String    @unique
 
   @@map("subscribers")
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  name         String
+  role         String    @default("user")
+  status       String    @default("active")
+  dateCreated  DateTime? @map("date_created") @db.Timestamptz(6)
+  dateUpdated  DateTime? @map("date_updated") @db.Timestamptz(6)
+
+  @@map("users")
 }

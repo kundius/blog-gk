@@ -10,7 +10,7 @@ export const HeaderMenu = () => {
     <div className={styles.Wrapper}>
       <ul className={styles.List}>
         <li>
-          <Link href="/pages/about" >Обо мне</Link>
+          <Link href="/about" >Обо мне</Link>
         </li>
         <Popover
           content={

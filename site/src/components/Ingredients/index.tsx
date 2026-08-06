@@ -5,7 +5,8 @@ import styles from './styles.module.css'
 export interface IngredientsProps {
   items: {
     name: string
-    amount: string
+    amount?: string
+    value?: string
   }[]
 }
 
@@ -21,12 +22,12 @@ export function Ingredients({ items }: IngredientsProps) {
             itemProp="recipeIngredient"
           >
             <div>{item.name}</div>
-            {item.amount && (
+            {item.amount ?? item.value ? (
               <>
                 <div className="transition duration-300 ease-out flex-grow border-b border-dotted border-gray-300 dark:border-gray-600"> </div>
-                <div className="text-right">{item.amount}</div>
+                <div className="text-right">{item.amount ?? item.value}</div>
               </>
-            )}
+            ) : null}
           </div>
         ))}
       </div>

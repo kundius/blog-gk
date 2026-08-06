@@ -76,7 +76,7 @@ export class CommentsService {
           authorEmail: dto.authorEmail,
           parentId: dto.parentId,
           articleId,
-          status: dto.status ?? 'published',
+          status: 'pending',
           dateCreated: new Date(),
         },
       });
