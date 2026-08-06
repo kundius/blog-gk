@@ -141,7 +141,7 @@ export function RichTextEditor({
   }
 
   return (
-    <div className="overflow-hidden rounded-md border bg-background">
+    <div className="mx-auto max-w-200 overflow-hidden rounded-md border bg-background">
       <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/40 p-1">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}

@@ -53,7 +53,7 @@ export function IngredientsEditor({ items, onChange }: IngredientsEditorProps) {
             <Button
               type="button"
               variant="ghost"
-              size="icon-xs"
+              size="icon-sm"
               onClick={() => move(index, -1)}
               disabled={index === 0}
             >
@@ -62,7 +62,7 @@ export function IngredientsEditor({ items, onChange }: IngredientsEditorProps) {
             <Button
               type="button"
               variant="ghost"
-              size="icon-xs"
+              size="icon-sm"
               onClick={() => move(index, 1)}
               disabled={index === items.length - 1}
             >
@@ -71,7 +71,7 @@ export function IngredientsEditor({ items, onChange }: IngredientsEditorProps) {
             <Button
               type="button"
               variant="ghost"
-              size="icon-xs"
+              size="icon-sm"
               onClick={() => remove(index)}
               className="text-destructive hover:text-destructive"
             >

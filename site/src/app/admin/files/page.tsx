@@ -147,7 +147,7 @@ export default function AdminFilesPage() {
                   <div className="absolute inset-x-0 bottom-0 flex justify-end gap-0.5 bg-gradient-to-t from-black/50 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button
                       variant="ghost"
-                      size="icon-xs"
+                      size="icon-sm"
                       className="bg-background/80 text-foreground"
                       onClick={() => void copyLink(file.id)}
                     >
@@ -164,7 +164,7 @@ export default function AdminFilesPage() {
                       trigger={
                         <Button
                           variant="ghost"
-                          size="icon-xs"
+                          size="icon-sm"
                           className="bg-background/80 text-destructive"
                         >
                           <Trash2 className="size-3.5" />

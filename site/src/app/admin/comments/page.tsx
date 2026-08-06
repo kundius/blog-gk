@@ -3,13 +3,13 @@
 import React, { useEffect } from 'react'
 import useSWR from 'swr'
 import { useQueryState, parseAsInteger, parseAsStringEnum } from 'nuqs'
-import { Check, Trash2, X } from 'lucide-react'
+import { Check, Trash2 } from 'lucide-react'
 import { api } from '@app/lib/admin/client'
 import type { CommentRecord } from '@app/lib/admin/types'
 import { toast } from 'sonner'
 import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components/admin/common'
 import { Button } from '@components/ui/button'
-import { Badge } from '@components/ui/badge'
+import { CommentStatusBadge } from '@components/admin/CommentStatusBadge'
 import {
   Tabs,
   TabsContent,
@@ -109,13 +109,14 @@ export default function AdminCommentsPage() {
                     <TableHead>Комментарий</TableHead>
                     <TableHead className="hidden md:table-cell">Автор</TableHead>
                     <TableHead className="hidden lg:table-cell">Статья</TableHead>
+                    <TableHead className="w-32">Статус</TableHead>
                     <TableHead className="w-28 text-right">Действия</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {data.data.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                      <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
                         Комментариев нет
                       </TableCell>
                     </TableRow>
@@ -161,22 +162,25 @@ export default function AdminCommentsPage() {
                           '—'
                         )}
                       </TableCell>
+                      <TableCell>
+                        <CommentStatusBadge status={comment.status} />
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
                           {comment.status === 'pending' ? (
-                            <Button variant="ghost" size="icon-xs" onClick={() => void approve(comment)}>
+                            <Button variant="ghost" size="icon-sm" onClick={() => void approve(comment)}>
                               <Check className="size-4 text-emerald-600" />
                             </Button>
                           ) : (
-                            <Badge variant="secondary">опубл.</Badge>
+                            <span />
                           )}
                           <ConfirmDelete
                             title="Отклонить комментарий?"
                             description="Комментарий будет удалён безвозвратно."
                             onConfirm={() => decline(comment)}
                             trigger={
-                              <Button variant="ghost" size="icon-xs" className="text-destructive">
-                                <X className="size-4" />
+                              <Button variant="ghost" size="icon-sm" className="text-destructive">
+                                <Trash2 className="size-4" />
                               </Button>
                             }
                           />

@@ -36,7 +36,7 @@ function CategoryRow({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-xs"
+                size="icon-sm"
                 onClick={() => onToggle(category.id)}
               >
                 {isOpen ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
@@ -62,7 +62,7 @@ function CategoryRow({
         </td>
         <td className="py-2 text-right">
           <div className="flex justify-end gap-1">
-            <Button variant="ghost" size="icon-xs" onClick={() => onEdit(category)}>
+            <Button variant="ghost" size="icon-sm" onClick={() => onEdit(category)}>
               <Pencil className="size-4" />
             </Button>
             <ConfirmDelete
@@ -77,7 +77,7 @@ function CategoryRow({
                 }
               }}
               trigger={
-                <Button variant="ghost" size="icon-xs" className="text-destructive">
+                <Button variant="ghost" size="icon-sm" className="text-destructive">
                   <Trash2 className="size-4" />
                 </Button>
               }

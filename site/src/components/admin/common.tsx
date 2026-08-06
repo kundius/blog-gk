@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Menu } from 'lucide-react'
 import { Button } from '@components/ui/button'
 import { Card } from '@components/ui/card'
 import { Skeleton } from '@components/ui/skeleton'
+import { useAdminShell } from '@components/admin/Shell'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,13 +27,25 @@ export function PageHeader({
   description?: string
   actions?: React.ReactNode
 }) {
+  const { setOpenMobile } = useAdminShell()
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        {description && (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        )}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="shrink-0 lg:hidden"
+          aria-label="Открыть меню"
+          onClick={() => setOpenMobile(true)}
+        >
+          <Menu className="size-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          {description && (
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          )}
+        </div>
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>

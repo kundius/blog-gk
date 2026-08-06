@@ -136,7 +136,7 @@ export default function AdminSubscribersPage() {
                       description={`${subscriber.email} больше не будет получать рассылку.`}
                       onConfirm={() => handleDelete(subscriber)}
                       trigger={
-                        <Button variant="ghost" size="icon-xs" className="text-destructive">
+                        <Button variant="ghost" size="icon-sm" className="text-destructive">
                           <Trash2 className="size-4" />
                         </Button>
                       }

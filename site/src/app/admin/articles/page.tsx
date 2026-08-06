@@ -136,7 +136,7 @@ export default function AdminArticlesPage() {
                 )}
                 {data.data.map((article) => (
                   <TableRow key={article.id}>
-                    <TableCell className="max-w-[300px]">
+                    <TableCell className="max-w-75">
                       <span className="block truncate font-medium">{article.name}</span>
                       {article.alias && (
                         <a
@@ -162,7 +162,7 @@ export default function AdminArticlesPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Button asChild variant="ghost" size="icon-xs">
+                        <Button asChild variant="ghost" size="icon-sm">
                           <Link href={`/admin/articles/${article.id}`}>
                             <Pencil className="size-4" />
                           </Link>
@@ -172,7 +172,7 @@ export default function AdminArticlesPage() {
                           description={`«${article.name}» будет удалена безвозвратно.`}
                           onConfirm={() => handleDelete(article.id)}
                           trigger={
-                            <Button variant="ghost" size="icon-xs" className="text-destructive">
+                            <Button variant="ghost" size="icon-sm" className="text-destructive">
                               <Trash2 className="size-4" />
                             </Button>
                           }

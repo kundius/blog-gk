@@ -21,6 +21,10 @@ function Gate({ children }: { children: React.ReactNode }) {
     }
   }, [loading, user, isLoginPage, router])
 
+  useEffect(() => {
+    document.title = adminPageTitle(pathname)
+  }, [pathname])
+
   if (isLoginPage) {
     return <>{children}</>
   }
@@ -40,17 +44,40 @@ function Gate({ children }: { children: React.ReactNode }) {
   return <AdminShell>{children}</AdminShell>
 }
 
+const ADMIN_TITLES: Record<string, string> = {
+  '/admin': 'Администрирование',
+  '/admin/login': 'Вход в админку',
+  '/admin/articles': 'Статьи',
+  '/admin/articles/new': 'Новая статья',
+  '/admin/categories': 'Категории',
+  '/admin/comments': 'Комментарии',
+  '/admin/files': 'Файлы',
+  '/admin/subscribers': 'Подписчики',
+  '/admin/albums': 'Альбомы',
+  '/admin/albums/new': 'Новый альбом',
+}
+
+function adminPageTitle(pathname: string): string {
+  const title = ADMIN_TITLES[pathname]
+  if (title) return `${title} — админка`
+  if (/^\/admin\/articles\/.+$/.test(pathname)) return 'Редактирование статьи — админка'
+  if (/^\/admin\/albums\/.+$/.test(pathname)) return 'Редактирование альбома — админка'
+  return 'Администрирование'
+}
+
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <AuthProvider>
-      <NuqsAdapter>
-        <Gate>{children}</Gate>
-        <Toaster />
-      </NuqsAdapter>
-    </AuthProvider>
+    <div className="font-sans">
+      <AuthProvider>
+        <NuqsAdapter>
+          <Gate>{children}</Gate>
+          <Toaster />
+        </NuqsAdapter>
+      </AuthProvider>
+    </div>
   )
 }

@@ -84,7 +84,7 @@ export default function AdminAlbumsPage() {
                   <span className="text-xs text-muted-foreground">/{album.alias}</span>
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  <Button asChild variant="ghost" size="icon-xs">
+                  <Button asChild variant="ghost" size="icon-sm">
                     <Link href={`/admin/albums/${album.id}`}>
                       <Pencil className="size-4" />
                     </Link>
@@ -94,7 +94,7 @@ export default function AdminAlbumsPage() {
                     description={`«${album.name}» будет удалён безвозвратно.`}
                     onConfirm={() => handleDelete(album)}
                     trigger={
-                      <Button variant="ghost" size="icon-xs" className="text-destructive">
+                      <Button variant="ghost" size="icon-sm" className="text-destructive">
                         <Trash2 className="size-4" />
                       </Button>
                     }
