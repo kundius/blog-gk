@@ -71,7 +71,7 @@ function BrandLink() {
         height={36}
         className="size-9 shrink-0"
       />
-      <span className="text-sm font-semibold leading-tight">blog-gk.ru</span>
+      <span className="text-sm font-semibold leading-tight uppercase">blog-gk.ru</span>
     </Link>
   )
 }
@@ -119,22 +119,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <AdminShellContext.Provider value={{ openMobile, setOpenMobile }}>
       <div className="admin-page-bg min-h-svh text-foreground">
-        <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 p-2 lg:block">
-          <div className="flex h-full flex-col">
-            <div className="flex h-14 shrink-0 items-center px-4">
-              <BrandLink />
+        <div className="mx-auto flex min-h-svh w-full max-w-[1440px]">
+          <aside className="sticky top-0 hidden h-svh w-64 shrink-0 p-2 lg:block">
+            <div className="flex h-full flex-col">
+              <div className="flex h-14 shrink-0 items-center px-4">
+                <BrandLink />
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <NavLinks />
+              </div>
+              <div className="shrink-0 border-t p-2">
+                <UserMenu />
+              </div>
             </div>
-            <div className="flex-1 overflow-y-auto">
-              <NavLinks />
-            </div>
-            <div className="shrink-0 border-t p-2">
-              <UserMenu />
-            </div>
-          </div>
-        </aside>
+          </aside>
 
-        <div className="lg:pl-64">
-          <div className="flex min-h-svh flex-col p-2 md:p-3">
+          <div className="flex min-w-0 flex-1 flex-col p-2 md:p-3">
             <div className="flex flex-1 flex-col overflow-hidden rounded-xl bg-background shadow-sm">
               <main className="flex-1 p-4 md:p-6">{children}</main>
             </div>

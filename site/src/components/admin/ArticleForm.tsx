@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Save, ImagePlus, X, GripVertical } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
@@ -23,26 +23,13 @@ import {
 } from '@components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { AliasInput } from '@components/admin/AliasInput'
+import { CategoryMultiSelect } from '@components/admin/CategoryMultiSelect'
 import { IngredientsEditor, type IngredientItem } from '@components/admin/IngredientsEditor'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import { RichTextEditor } from '@components/admin/RichTextEditor'
 import { SeoFields, type SeoValues } from '@components/admin/SeoFields'
+import { ThumbnailField } from '@components/admin/ThumbnailField'
 import { BlurImage } from '@components/admin/BlurImage'
-
-interface FlattenedCategory {
-  id: string
-  name: string
-  depth: number
-}
-
-function flattenTree(nodes: CategoryRecord[], depth = 0): FlattenedCategory[] {
-  const out: FlattenedCategory[] = []
-  for (const node of nodes) {
-    out.push({ id: node.id, name: node.name, depth })
-    if (node.children?.length) out.push(...flattenTree(node.children, depth + 1))
-  }
-  return out
-}
 
 const emptyIngredients: IngredientItem[] = []
 
@@ -57,7 +44,19 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const [name, setName] = useState(article?.name ?? '')
   const [alias, setAlias] = useState(article?.alias ?? '')
   const [status, setStatus] = useState(article?.status ?? 'draft')
-  const [categoryId, setCategoryId] = useState(article?.categoryId ?? '')
+  const memberCategoryIds = article?.categories
+    ?.map((c) => c.categoryId ?? '')
+    .filter(Boolean) ?? []
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    memberCategoryIds.length
+      ? memberCategoryIds
+      : article?.categoryId
+        ? [article.categoryId]
+        : [],
+  )
+  const [categoryId, setCategoryId] = useState(
+    article?.categoryId ?? selectedCategories[0] ?? '',
+  )
   const [excerpt, setExcerpt] = useState(article?.excerpt ?? '')
   const [content, setContent] = useState(article?.content ?? '')
   const [portionCount, setPortionCount] = useState(article?.portionCount ?? '')
@@ -92,7 +91,14 @@ export function ArticleForm({ article }: ArticleFormProps) {
     void loadOptions()
   }, [])
 
-  const categoryOptions = useMemo(() => flattenTree(categories), [categories])
+  const handleCategoriesChange = (ids: string[]) => {
+    setSelectedCategories(ids)
+    if (ids.length === 0) {
+      setCategoryId('')
+    } else if (!ids.includes(categoryId)) {
+      setCategoryId(ids[0])
+    }
+  }
 
   const handlePickerConfirm = (files: FileRecord[]) => {
     if (picker === 'thumbnail' && files[0]) setThumbnail(files[0])
@@ -114,6 +120,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
         alias,
         status,
         categoryId,
+        categories: selectedCategories,
         excerpt,
         content,
         portionCount,
@@ -158,34 +165,27 @@ export function ArticleForm({ article }: ArticleFormProps) {
             <Label>Алиас</Label>
             <AliasInput value={alias} onChange={setAlias} name={name} />
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Статус</Label>
-              <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Черновик</SelectItem>
-                  <SelectItem value="published">Опубликована</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Категория *</Label>
-              <Select value={categoryId || undefined} onValueChange={setCategoryId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Выберите категорию" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryOptions.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {'—'.repeat(cat.depth)} {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label>Статус</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Черновик</SelectItem>
+                <SelectItem value="published">Опубликована</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Категории *</Label>
+            <CategoryMultiSelect
+              categories={categories}
+              value={selectedCategories}
+              onChange={handleCategoriesChange}
+              primaryId={categoryId}
+              onPrimaryChange={setCategoryId}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="excerpt">Анонс</Label>
@@ -245,36 +245,11 @@ export function ArticleForm({ article }: ArticleFormProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Миниатюра</Label>
-            <div className="flex items-start gap-3">
-              {thumbnail ? (
-                <div className="relative size-32 overflow-hidden rounded-md border">
-                  <BlurImage
-                    src={fileStreamUrl(thumbnail.id)}
-                    blurHash={thumbnail.blurhash}
-                    alt={thumbnail.title ?? ''}
-                    className="h-full w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setThumbnail(null)}
-                    className="absolute right-1 top-1 rounded-full bg-background/90 p-1 text-foreground hover:text-destructive"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex size-32 items-center justify-center rounded-md border border-dashed text-muted-foreground">
-                  <ImagePlus className="size-6" />
-                </div>
-              )}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setPicker('thumbnail')}
-              >
-                Выбрать
-              </Button>
-            </div>
+            <ThumbnailField
+              file={thumbnail}
+              onClear={() => setThumbnail(null)}
+              onPick={() => setPicker('thumbnail')}
+            />
           </div>
 
           <div className="space-y-2">

@@ -61,6 +61,7 @@ export function CategoryDialog({
   const [name, setName] = useState('')
   const [alias, setAlias] = useState('')
   const [parentId, setParentId] = useState<string>('')
+  const [sort, setSort] = useState<string>('')
   const [content, setContent] = useState('')
   const [seo, setSeo] = useState<SeoValues>({})
   const [saving, setSaving] = useState(false)
@@ -70,6 +71,7 @@ export function CategoryDialog({
       setName(category?.name ?? '')
       setAlias(category?.alias ?? '')
       setParentId(category?.parentId ?? '')
+      setSort(category?.sort != null ? String(category.sort) : '')
       setContent(category?.content ?? '')
       setSeo({
         seoTitle: category?.seoTitle ?? '',
@@ -89,6 +91,7 @@ export function CategoryDialog({
         name,
         alias,
         parentId: parentId || undefined,
+        sort: sort === '' ? undefined : Number(sort),
         content,
         ...seo,
       }
@@ -141,6 +144,19 @@ export function CategoryDialog({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cat-sort">Сортировка</Label>
+            <Input
+              id="cat-sort"
+              type="number"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              placeholder="Например, 1"
+            />
+            <p className="text-xs text-muted-foreground">
+              Меньшее значение — ближе к началу списка.
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="cat-content">Описание</Label>

@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Upload, Check } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
 import type { FileRecord } from '@app/lib/admin/types'
+import { toast } from 'sonner'
 import { cn } from '@app/lib/utils'
 import { Button } from '@components/ui/button'
 import { SearchInput } from '@components/admin/SearchInput'
@@ -90,8 +91,10 @@ export function MediaPicker({
         await api.upload<FileRecord>('/files', formData)
       }
       await load(search)
-      input.value = ''
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Ошибка загрузки')
     } finally {
+      input.value = ''
       setUploading(false)
     }
   }

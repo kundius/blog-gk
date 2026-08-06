@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import useSWR from 'swr'
+import React, { useState } from 'react'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { Trash2, Upload, Link as LinkIcon, Copy, Check } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
+import { usePaginatedList } from '@app/lib/admin/usePaginatedList'
 import type { FileRecord } from '@app/lib/admin/types'
 import { toast } from 'sonner'
 import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components/admin/common'
@@ -36,17 +36,12 @@ export default function AdminFilesPage() {
     return `/files?${params.toString()}`
   }
 
-  const { data, error, isLoading, mutate } = useSWR(buildKey(), () =>
-    api.list<FileRecord>(buildKey()),
+  const { data, error, isLoading, mutate, totalPages } = usePaginatedList<FileRecord>(
+    buildKey(),
+    PAGE_SIZE,
+    page,
+    (p) => void setPage(p),
   )
-
-  const totalPages = Math.max(1, Math.ceil((data?.meta?.total ?? 0) / PAGE_SIZE))
-
-  useEffect(() => {
-    if (data && page > totalPages) {
-      void setPage(totalPages)
-    }
-  }, [data, page, totalPages, setPage])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target

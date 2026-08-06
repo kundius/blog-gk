@@ -19,8 +19,9 @@ export interface CategoryRecord {
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null
+  sort?: number | null
   children?: CategoryRecord[]
-  _count?: { articles: number }
+  _count?: { articles?: number; articleCategories?: number }
 }
 
 export interface ArticleRecord {
@@ -44,6 +45,12 @@ export interface ArticleRecord {
   seoKeywords?: string | null
   seoDescription?: string | null
   category?: CategoryRecord
+  categories?: Array<{
+    id: number
+    category?: CategoryRecord | null
+    categoryId?: string | null
+    sort?: number | null
+  }>
   thumbnail?: FileRecord | null
   files?: Array<{ id: number; file?: FileRecord | null; fileId?: string | null }>
 }

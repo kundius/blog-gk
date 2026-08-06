@@ -17,6 +17,7 @@ const ARTICLE_DETAIL_INCLUDE = {
   category: true,
   thumbnail: true,
   files: { include: { file: true }, orderBy: { sort: 'asc' } },
+  categories: { include: { category: true }, orderBy: { sort: 'asc' } },
 } satisfies Prisma.ArticleInclude;
 
 const EXTRA_INCLUDES: Record<string, Prisma.ArticleInclude> = {
@@ -41,17 +42,14 @@ export class ArticlesService {
     };
 
     if (query.categories) {
-      const ids = await this.subtreeIds(query.categories);
-      if (ids === null) {
-        return { data: [], meta: buildPaginationMeta(0, query.page, query.limit) };
-      }
-      where.categoryId = { in: ids };
+      const ids = await this.categoryIdsByAliases(query.categories);
+      where.categories = { some: { categoryId: { in: ids } } };
     }
 
     if (query.categoriesNotIn) {
-      const ids = await this.subtreeIds(query.categoriesNotIn);
-      if (ids !== null && ids.length > 0) {
-        where.categoryId = { ...(where.categoryId as object), notIn: ids };
+      const ids = await this.categoryIdsByAliases(query.categoriesNotIn);
+      if (ids.length > 0) {
+        where.categories = { none: { categoryId: { in: ids } } };
       }
     }
 
@@ -92,7 +90,12 @@ export class ArticlesService {
   }
 
   async create(dto: CreateArticleDto) {
-    await this.validateReferences(dto);
+    const categoryIds = this.normalizeCategoryIds(dto.categories, dto.categoryId);
+    await this.validateReferences({
+      categories: categoryIds,
+      thumbnailId: dto.thumbnailId,
+      files: dto.files,
+    });
 
     return this.prisma.article.create({
       data: {
@@ -111,6 +114,9 @@ export class ArticlesService {
         seoDescription: dto.seoDescription,
         dateCreated: new Date(),
         files: { create: (dto.files ?? []).map((fileId, i) => ({ fileId, sort: i })) },
+        categories: {
+          create: categoryIds.map((categoryId, i) => ({ categoryId, sort: i })),
+        },
       },
       include: ARTICLE_DETAIL_INCLUDE,
     });
@@ -118,7 +124,26 @@ export class ArticlesService {
 
   async update(id: string, dto: UpdateArticleDto) {
     await this.ensureExists(id);
-    await this.validateReferences(dto);
+
+    let categoryIds: string[] | undefined;
+    if (dto.categories !== undefined || dto.categoryId !== undefined) {
+      const current = await this.prisma.article.findUnique({
+        where: { id },
+        select: { categoryId: true },
+      });
+      const base = dto.categories ?? (current ? [current.categoryId] : []);
+      categoryIds = this.normalizeCategoryIds(
+        base,
+        dto.categoryId ?? current?.categoryId,
+      );
+    }
+
+    await this.validateReferences({
+      categoryId: dto.categoryId,
+      categories: categoryIds,
+      thumbnailId: dto.thumbnailId,
+      files: dto.files,
+    });
 
     return this.prisma.$transaction(async (tx) => {
       if (dto.files) {
@@ -126,6 +151,15 @@ export class ArticlesService {
         if (dto.files.length) {
           await tx.articleFile.createMany({
             data: dto.files.map((fileId, i) => ({ articleId: id, fileId, sort: i })),
+          });
+        }
+      }
+
+      if (categoryIds !== undefined) {
+        await tx.articleCategory.deleteMany({ where: { articleId: id } });
+        if (categoryIds.length) {
+          await tx.articleCategory.createMany({
+            data: categoryIds.map((categoryId, i) => ({ articleId: id, categoryId, sort: i })),
           });
         }
       }
@@ -233,10 +267,14 @@ export class ArticlesService {
     });
   }
 
-  private async subtreeIds(categoriesCsv: string): Promise<string[] | null> {
+  private normalizeCategoryIds(categories: string[] | undefined, primary?: string): string[] {
+    return Array.from(new Set([...(categories ?? []), ...(primary ? [primary] : [])]));
+  }
+
+  private async categoryIdsByAliases(categoriesCsv: string): Promise<string[]> {
     const aliases = categoriesCsv.split(',').map((part) => part.trim()).filter(Boolean);
     if (aliases.length === 0) {
-      return null;
+      return [];
     }
 
     const rows = await this.prisma.category.findMany({
@@ -244,31 +282,7 @@ export class ArticlesService {
       select: { id: true },
     });
 
-    if (rows.length !== aliases.length) {
-      return null;
-    }
-
-    const all = await this.prisma.category.findMany({
-      select: { id: true, parentId: true },
-    });
-
-    const fullChildrenMap = new Map<string, string[]>();
-    for (const row of all) {
-      if (row.parentId) {
-        const list = fullChildrenMap.get(row.parentId) ?? [];
-        list.push(row.id);
-        fullChildrenMap.set(row.parentId, list);
-      }
-    }
-
-    const ids: string[] = [];
-    const queue = rows.map((row) => row.id);
-    while (queue.length) {
-      const current = queue.shift()!;
-      ids.push(current);
-      queue.push(...(fullChildrenMap.get(current) ?? []));
-    }
-    return ids;
+    return rows.map((row) => row.id);
   }
 
   async search(query: SearchArticlesQueryDto) {
@@ -324,16 +338,19 @@ export class ArticlesService {
 
   private async validateReferences(dto: {
     categoryId?: string;
+    categories?: string[];
     thumbnailId?: string;
     files?: string[];
   }) {
-    if (dto.categoryId) {
-      const category = await this.prisma.category.findUnique({
-        where: { id: dto.categoryId },
-        select: { id: true },
+    const categoryIds = Array.from(
+      new Set([...(dto.categories ?? []), ...(dto.categoryId ? [dto.categoryId] : [])]),
+    );
+    if (categoryIds.length > 0) {
+      const count = await this.prisma.category.count({
+        where: { id: { in: categoryIds } },
       });
-      if (!category) {
-        throw new BadRequestException('Category not found');
+      if (count !== categoryIds.length) {
+        throw new BadRequestException('Some categories do not exist');
       }
     }
 

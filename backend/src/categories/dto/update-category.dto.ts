@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateCategoryDto {
   @IsOptional()
@@ -9,6 +9,9 @@ export class UpdateCategoryDto {
   @IsUUID()
   parentId?: string;
 
+  @IsOptional()
+  @IsInt()
+  sort?: number;
 
   @IsOptional()
   @IsString()

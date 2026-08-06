@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { ArticlePage } from '@components/ArticlePage'
 import { articleByAlias, relatedArticles, listArticles } from '@app/api/articles'
 import { fileUrl } from '@app/api/images'
@@ -56,7 +56,7 @@ export async function generateMetadata ({ params }: { params: Promise<ArticlePag
 }
 
 export default async function ArticleRoute ({ params }: { params: Promise<ArticlePageParams> }) {
-  const { article } = await params
+  const { category, article } = await params
 
   const preloadData: Record<string, unknown> = {}
 
@@ -68,7 +68,12 @@ export default async function ArticleRoute ({ params }: { params: Promise<Articl
     notFound()
   }
 
-  const [relatedKey, relatedFetcher] = relatedArticles(articleData.data.id, 2)
+  const { data } = articleData
+  if (data.category?.alias && category !== data.category.alias) {
+    redirect(`/${data.category.alias}/${data.alias}`)
+  }
+
+  const [relatedKey, relatedFetcher] = relatedArticles(data.id, 2)
   preloadData[relatedKey] = await relatedFetcher(relatedKey)
 
   return (

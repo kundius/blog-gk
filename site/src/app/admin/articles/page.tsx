@@ -1,17 +1,18 @@
 'use client'
 
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import Link from 'next/link'
-import useSWR from 'swr'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { Plus, Trash2, Pencil } from 'lucide-react'
-import { api } from '@app/lib/admin/client'
+import { api, fileStreamUrl } from '@app/lib/admin/client'
+import { usePaginatedList } from '@app/lib/admin/usePaginatedList'
 import type { ArticleRecord } from '@app/lib/admin/types'
 import { toast } from 'sonner'
 import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components/admin/common'
 import { Button } from '@components/ui/button'
 import { SearchInput } from '@components/admin/SearchInput'
 import { ArticleStatusBadge } from '@components/admin/ArticleStatusBadge'
+import { BlurImage } from '@components/admin/BlurImage'
 import {
   Select,
   SelectContent,
@@ -49,8 +50,11 @@ export default function AdminArticlesPage() {
     return `/articles?${params.toString()}`
   }, [q, status, page])
 
-  const { data, error, isLoading, mutate } = useSWR(buildKey(), () =>
-    api.list<ArticleRecord>(buildKey()),
+  const { data, error, isLoading, mutate, totalPages } = usePaginatedList<ArticleRecord>(
+    buildKey(),
+    PAGE_SIZE,
+    page,
+    (p) => void setPage(p),
   )
 
   const handleDelete = async (id: string) => {
@@ -62,14 +66,6 @@ export default function AdminArticlesPage() {
       toast.error(e instanceof Error ? e.message : 'Ошибка удаления')
     }
   }
-
-  const totalPages = Math.max(1, Math.ceil((data?.meta?.total ?? 0) / PAGE_SIZE))
-
-  useEffect(() => {
-    if (data && page > totalPages) {
-      void setPage(totalPages)
-    }
-  }, [data, page, totalPages, setPage])
 
   return (
     <div>
@@ -119,11 +115,11 @@ export default function AdminArticlesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Название</TableHead>
-                  <TableHead className="hidden md:table-cell">Категория</TableHead>
-                  <TableHead>Статус</TableHead>
-                  <TableHead className="hidden sm:table-cell">Дата</TableHead>
-                  <TableHead className="w-24 text-right">Действия</TableHead>
+                    <TableHead>Название</TableHead>
+                    <TableHead className="hidden md:table-cell">Категория</TableHead>
+                    <TableHead className="hidden sm:table-cell">Дата</TableHead>
+                    <TableHead>Статус</TableHead>
+                    <TableHead className="w-24 text-right">Действия</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -136,29 +132,45 @@ export default function AdminArticlesPage() {
                 )}
                 {data.data.map((article) => (
                   <TableRow key={article.id}>
-                    <TableCell className="max-w-75">
-                      <span className="block truncate font-medium">{article.name}</span>
-                      {article.alias && (
-                        <a
-                          href={`/${article.category?.alias ?? ''}/${article.alias}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="block truncate text-xs text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                          /{article.alias}
-                        </a>
-                      )}
+                    <TableCell className="max-w-75 whitespace-normal">
+                      <div className="flex items-start gap-2">
+                        {article.thumbnail ? (
+                          <div className="relative size-10 shrink-0 overflow-hidden rounded-md border bg-muted">
+                            <BlurImage
+                              src={fileStreamUrl(article.thumbnail.id)}
+                              blurHash={article.thumbnail.blurhash}
+                              alt={article.thumbnail.title ?? ''}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="size-10 shrink-0 rounded-md border border-dashed bg-muted" />
+                        )}
+                        <div className="min-w-0">
+                          <span className="mb-0.5 block font-medium">{article.name}</span>
+                          {article.alias && (
+                            <a
+                              href={`/${article.category?.alias ?? ''}/${article.alias}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block truncate text-xs text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                              /{article.alias}
+                            </a>
+                          )}
+                        </div>
+                      </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="hidden md:table-cell whitespace-normal">
                       {article.category?.name ?? '—'}
                     </TableCell>
-                    <TableCell>
-                      <ArticleStatusBadge status={article.status} />
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell text-muted-foreground">
+                    <TableCell className="hidden whitespace-nowrap text-muted-foreground sm:table-cell">
                       {article.dateCreated
                         ? new Date(article.dateCreated).toLocaleDateString('ru-RU')
                         : '—'}
+                    </TableCell>
+                    <TableCell>
+                      <ArticleStatusBadge status={article.status} />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">

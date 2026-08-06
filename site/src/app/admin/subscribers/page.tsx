@@ -1,12 +1,13 @@
 'use client'
 
-import React, { useEffect } from 'react'
-import useSWR from 'swr'
+import React from 'react'
 import { useQueryState, parseAsInteger } from 'nuqs'
 import { Trash2, Download } from 'lucide-react'
 import { api } from '@app/lib/admin/client'
+import { usePaginatedList } from '@app/lib/admin/usePaginatedList'
 import { toast } from 'sonner'
 import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components/admin/common'
+import { PaginationControls } from '@components/admin/Pagination'
 import { Button } from '@components/ui/button'
 import { SearchInput } from '@components/admin/SearchInput'
 import {
@@ -42,17 +43,12 @@ export default function AdminSubscribersPage() {
     return `/subscribers?${params.toString()}`
   }
 
-  const { data, error, isLoading, mutate } = useSWR(buildKey(), () =>
-    api.list<SubscriberRecord>(buildKey()),
+  const { data, error, isLoading, mutate, totalPages } = usePaginatedList<SubscriberRecord>(
+    buildKey(),
+    PAGE_SIZE,
+    page,
+    (p) => void setPage(p),
   )
-
-  const totalPages = Math.max(1, Math.ceil((data?.meta?.total ?? 0) / PAGE_SIZE))
-
-  useEffect(() => {
-    if (data && page > totalPages) {
-      void setPage(totalPages)
-    }
-  }, [data, page, totalPages, setPage])
 
   const handleDelete = async (subscriber: SubscriberRecord) => {
     try {
@@ -75,7 +71,9 @@ export default function AdminSubscribersPage() {
     const a = document.createElement('a')
     a.href = url
     a.download = 'subscribers.csv'
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 
@@ -150,26 +148,12 @@ export default function AdminSubscribersPage() {
       )}
 
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page === 1}
-            onClick={() => void setPage((p) => Math.max(1, p - 1))}
-          >
-            Назад
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            {page} / {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page === totalPages}
-            onClick={() => void setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Вперёд
-          </Button>
+        <div className="mt-4">
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            onPageChange={(p) => void setPage(p)}
+          />
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { IsArray, IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { ArrayUnique, IsArray, IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { IsJsonValue } from '../../common/validators/is-json-value';
 
 export class CreateArticleDto {
@@ -24,6 +24,12 @@ export class CreateArticleDto {
 
   @IsUUID()
   categoryId!: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
+  categories?: string[];
 
   @IsOptional()
   @IsUUID()

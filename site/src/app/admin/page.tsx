@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import useSWR from 'swr'
 import {
@@ -17,13 +17,6 @@ import { cn } from '@app/lib/utils'
 import { PageHeader, LoadingState, ErrorState } from '@components/admin/common'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { ArticleStatusBadge } from '@components/admin/ArticleStatusBadge'
-
-function useCount(path: string) {
-  const { data, error } = useSWR(path, () => api.list(path), {
-    revalidateOnFocus: false,
-  })
-  return data?.meta?.total ?? (error ? null : undefined)
-}
 
 const STATS = [
   {
@@ -79,14 +72,20 @@ export default function AdminDashboardPage() {
     '/comments?status=pending&limit=5',
     () => api.list<CommentRecord>('/comments?status=pending&limit=5'),
   )
+  const { data: totals, error: totalsError } = useSWR(
+    '/dashboard-stats',
+    () =>
+      Promise.all(STATS.map((stat) => api.list(stat.key).then((r) => r.meta.total))),
+    { revalidateOnFocus: false },
+  )
 
   return (
     <div>
       <PageHeader title="Дашборд" description="Обзор контента блога" />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {STATS.map((stat) => {
-          const count = useCount(stat.key)
+        {STATS.map((stat, index) => {
+          const count = totals?.[index] ?? (totalsError ? null : undefined)
           const Icon = stat.icon
           return (
             <Link key={stat.href} href={stat.href}>

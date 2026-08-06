@@ -58,7 +58,7 @@ function CategoryRow({
           </div>
         </td>
         <td className="hidden py-2 text-sm text-muted-foreground md:table-cell">
-          {category._count?.articles ?? 0}
+          {category._count?.articleCategories ?? 0}
         </td>
         <td className="py-2 text-right">
           <div className="flex justify-end gap-1">

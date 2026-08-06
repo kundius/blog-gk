@@ -28,6 +28,12 @@ export class UpdateArticleDto {
   categoryId?: string;
 
   @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsUUID('4', { each: true })
+  categories?: string[];
+
+  @IsOptional()
   @IsUUID()
   thumbnailId?: string;
 

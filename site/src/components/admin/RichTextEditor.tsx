@@ -39,6 +39,15 @@ import {
 } from 'lucide-react'
 import { cn } from '@app/lib/utils'
 import { Button } from '@components/ui/button'
+import { Input } from '@components/ui/input'
+import { Label } from '@components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@components/ui/dialog'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import type { FileRecord } from '@app/lib/admin/types'
 
@@ -90,6 +99,8 @@ export function RichTextEditor({
   minHeight = 320,
 }: RichTextEditorProps) {
   const [showImagePicker, setShowImagePicker] = useState(false)
+  const [showLinkDialog, setShowLinkDialog] = useState(false)
+  const [linkUrl, setLinkUrl] = useState('')
 
   const editor = useEditor({
     extensions: [
@@ -118,15 +129,20 @@ export function RichTextEditor({
 
   if (!editor) return null
 
-  const setLink = () => {
-    const previous = editor.getAttributes('link').href as string | undefined
-    const url = window.prompt('Ссылка (URL):', previous ?? 'https://')
-    if (url === null) return
-    if (url === '') {
-      editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
-    }
+  const openLinkDialog = () => {
+    setLinkUrl((editor.getAttributes('link').href as string | undefined) ?? '')
+    setShowLinkDialog(true)
+  }
+
+  const applyLink = () => {
+    const url = linkUrl.trim()
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+    setShowLinkDialog(false)
+  }
+
+  const removeLink = () => {
+    editor.chain().focus().extendMarkRange('link').unsetLink().run()
+    setShowLinkDialog(false)
   }
 
   const insertImage = (files: FileRecord[]) => {
@@ -239,7 +255,7 @@ export function RichTextEditor({
         </ToolbarButton>
         <Divider />
         <ToolbarButton
-          onClick={setLink}
+          onClick={openLinkDialog}
           active={editor.isActive('link')}
           title="Ссылка"
         >
@@ -310,6 +326,35 @@ export function RichTextEditor({
       </div>
 
       <EditorContent editor={editor} />
+
+      <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ссылка</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="link-url">URL</Label>
+            <Input
+              id="link-url"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') applyLink()
+              }}
+              placeholder="https://"
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={removeLink}>
+              Убрать
+            </Button>
+            <Button type="button" onClick={applyLink}>
+              Сохранить
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <MediaPicker
         open={showImagePicker}

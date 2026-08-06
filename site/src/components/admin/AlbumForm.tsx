@@ -12,14 +12,16 @@ import { Label } from '@components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { AliasInput } from '@components/admin/AliasInput'
 import { MediaPicker } from '@components/admin/MediaPicker'
+import { ThumbnailField } from '@components/admin/ThumbnailField'
 import { SeoFields, type SeoValues } from '@components/admin/SeoFields'
 import { BlurImage } from '@components/admin/BlurImage'
 
 interface AlbumFormProps {
   album?: AlbumRecord | null
+  mutate?: () => void
 }
 
-export function AlbumForm({ album }: AlbumFormProps) {
+export function AlbumForm({ album, mutate }: AlbumFormProps) {
   const router = useRouter()
   const isEdit = Boolean(album)
 
@@ -68,7 +70,7 @@ export function AlbumForm({ album }: AlbumFormProps) {
     try {
       await api.post(`/albums/${album.id}/photos`, { fileIds: files.map((f) => f.id) })
       toast.success('Фотографии добавлены')
-      router.refresh()
+      mutate?.()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Ошибка добавления')
     }
@@ -79,7 +81,7 @@ export function AlbumForm({ album }: AlbumFormProps) {
     try {
       await api.delete(`/albums/${album.id}/photos/${fileId}`)
       toast.success('Фотография удалена')
-      router.refresh()
+      mutate?.()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Ошибка удаления')
     }
@@ -107,36 +109,11 @@ export function AlbumForm({ album }: AlbumFormProps) {
           </div>
           <div className="space-y-2">
             <Label>Обложка</Label>
-            <div className="flex items-start gap-3">
-              {thumbnail ? (
-                <div className="relative size-32 overflow-hidden rounded-md border">
-                  <BlurImage
-                    src={fileStreamUrl(thumbnail.id)}
-                    blurHash={thumbnail.blurhash}
-                    alt={thumbnail.title ?? ''}
-                    className="h-full w-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setThumbnail(null)}
-                    className="absolute right-1 top-1 rounded-full bg-background/90 p-1 text-foreground hover:text-destructive"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex size-32 items-center justify-center rounded-md border border-dashed text-muted-foreground">
-                  <ImagePlus className="size-6" />
-                </div>
-              )}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setPicker('thumbnail')}
-              >
-                Выбрать
-              </Button>
-            </div>
+            <ThumbnailField
+              file={thumbnail}
+              onClear={() => setThumbnail(null)}
+              onPick={() => setPicker('thumbnail')}
+            />
           </div>
         </CardContent>
       </Card>

@@ -7,6 +7,13 @@ import { ListCategoriesQueryDto } from './dto/list-categories.query';
 import { buildPaginationMeta } from '../common/dto/pagination.dto';
 import { parseSort } from '../common/utils/sort';
 
+const CATEGORY_COUNT_INCLUDE = { _count: { select: { articleCategories: true } } } as const;
+
+const CATEGORY_SORT_ORDER = [
+  { sort: { sort: 'asc', nulls: 'last' } as const },
+  { name: 'asc' as const },
+];
+
 @Injectable()
 export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
@@ -21,12 +28,14 @@ export class CategoriesService {
         }
       : {};
 
+    const orderBy = query.sort ? parseSort(query.sort, { name: 'asc' }) : CATEGORY_SORT_ORDER;
+
     const [total, data] = await Promise.all([
       this.prisma.category.count({ where }),
       this.prisma.category.findMany({
         where,
-        include: { _count: { select: { articles: true } } },
-        orderBy: parseSort(query.sort, { name: 'asc' }),
+        include: CATEGORY_COUNT_INCLUDE,
+        orderBy,
         skip: (query.page - 1) * query.limit,
         take: query.limit,
       }),
@@ -38,7 +47,7 @@ export class CategoriesService {
   async findOne(id: string) {
     const category = await this.prisma.category.findUnique({
       where: { id },
-      include: { _count: { select: { articles: true } } },
+      include: CATEGORY_COUNT_INCLUDE,
     });
     if (!category) {
       throw new NotFoundException('Category not found');
@@ -52,10 +61,10 @@ export class CategoriesService {
       include: {
         parent: true,
         children: {
-          include: { _count: { select: { articles: true } } },
-          orderBy: { name: 'asc' },
+          include: CATEGORY_COUNT_INCLUDE,
+          orderBy: CATEGORY_SORT_ORDER,
         },
-        _count: { select: { articles: true } },
+        _count: { select: { articleCategories: true } },
       },
     });
     if (!category) {
@@ -66,13 +75,13 @@ export class CategoriesService {
 
   async tree() {
     type CategoryRow = Prisma.CategoryGetPayload<{
-      include: { _count: { select: { articles: true } } };
+      include: typeof CATEGORY_COUNT_INCLUDE;
     }>;
     type CategoryNode = CategoryRow & { children: CategoryNode[] };
 
     const rows = await this.prisma.category.findMany({
-      include: { _count: { select: { articles: true } } },
-      orderBy: { name: 'asc' },
+      include: CATEGORY_COUNT_INCLUDE,
+      orderBy: CATEGORY_SORT_ORDER,
     });
 
     const byId = new Map<string, CategoryNode>();
