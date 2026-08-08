@@ -41,7 +41,7 @@ export function HomePage() {
   const { data: fresh } = useSWR<{ data: ArticleListItem[] }>(keyFresh, fetcherFresh)
 
   return (
-    <div className="my-20">
+    <div className="my-16">
       <Container>
         <Hero />
       </Container>

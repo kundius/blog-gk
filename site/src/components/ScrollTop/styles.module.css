@@ -1,8 +1,10 @@
 .ScrollTop {
   opacity: 0;
-  transition: .3 ease;
+  transition: .3s ease;
+  pointer-events: none;
 }
 
-:global(.isHeaderFixed) .ScrollTop {
+.ScrollTopVisible {
   opacity: 1;
+  pointer-events: auto;
 }
