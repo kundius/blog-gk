@@ -1,8 +1,7 @@
 .Hero {
   --hero-text: #3d352e;
-  --hero-accent: #c49a6c;
+  --hero-accent: var(--main-color);
   --hero-radius: 12px;
-  --hero-font: 'Georgia', serif;
   --photo-pos: 50% 25%;
   --photo-zoom: 1.18;
 
@@ -13,9 +12,11 @@
   background-size: 16px 16px, 100% 100%;
   background-position: 0 0, 0 0;
 
+    /*background: #fefbfa;
+    border: 1px solid #f4ece8;*/
+
   padding: 70px 20px;
   border-radius: 24px;
-  font-family: var(--hero-font);
   color: var(--hero-text);
 }
 
@@ -48,7 +49,7 @@
   font-size: 2rem;
   line-height: 1.2;
   margin: 0 0 16px 0;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--hero-text);
 }
 
@@ -99,7 +100,7 @@
 
 :global(.dark) .Hero {
   --hero-text: #e7e5e4;
-  --hero-accent: #d4a373;
+  --hero-accent: var(--main-color);
   background-color: #292524;
   background-image:
     radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px),

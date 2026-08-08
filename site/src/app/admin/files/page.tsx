@@ -11,9 +11,9 @@ import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components
 import { Button } from '@components/ui/button'
 import { Card, CardContent } from '@components/ui/card'
 import { Skeleton } from '@components/ui/skeleton'
-import { BlurImage } from '@components/admin/BlurImage'
 import { PaginationControls } from '@components/admin/Pagination'
 import { SearchInput } from '@components/admin/SearchInput'
+import { CoverImage } from '@components/CoverImage'
 
 const PAGE_SIZE = 24
 
@@ -133,12 +133,12 @@ export default function AdminFilesPage() {
             {data.data.map((file) => (
               <Card key={file.id} className="overflow-hidden gap-0 py-0">
                 <div className="group relative aspect-square bg-muted">
-                  <BlurImage
+                  <CoverImage
                     src={fileStreamUrl(file.id)}
-                    blurHash={file.blurhash}
                     alt={file.title ?? file.filenameDownload}
+                    blurHash={file.blurhash}
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                     loading="lazy"
-                    className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-x-0 bottom-0 flex justify-end gap-0.5 bg-gradient-to-t from-black/50 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button

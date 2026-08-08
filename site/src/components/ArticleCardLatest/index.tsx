@@ -4,7 +4,7 @@ import { BsArrowRightShort } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
 import { FiEye } from 'react-icons/fi'
 
-import { Image } from '@components/Image'
+import { CoverImage } from '@components/CoverImage'
 
 import * as styles from './styles.module.css'
 
@@ -41,15 +41,15 @@ export function ArticleCardLatest ({
   return (
     <div className="relative h-full border-2 border-gray-200 dark:border-gray-600 transition duration-300 ease-out border-opacity-60 rounded-lg overflow-hidden">
       {thumbnail && (
-        <Image
-          src={thumbnail.url}
-          alt={thumbnail.name}
-          blurHash={thumbnail.blurHash}
-          width={640}
-          height={480}
-          objectFit="cover"
-          layout="responsive"
-        />
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <CoverImage
+            src={thumbnail.url}
+            alt={thumbnail.name || ''}
+            blurHash={thumbnail.blurHash}
+            sizes="100vw"
+            loading="lazy"
+          />
+        </div>
       )}
       <div className="p-6">
         <Link href={category.url} className="uppercase relative z-10 tracking-widest text-xs title-font font-medium text-gray-400 mb-1 hover:text-red-400">{category.name}</Link>

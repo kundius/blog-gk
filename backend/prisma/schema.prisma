@@ -24,6 +24,7 @@ model File {
   articleGallery ArticleFile[]
   albums         Album[]       @relation("AlbumThumbnail")
   albumGallery   AlbumFile[]
+  categories     Category[]    @relation("CategoryThumbnail")
 
   @@map("files")
 }
@@ -35,12 +36,15 @@ model Category {
   alias          String  @unique
   parentId       String? @map("parent") @db.Uuid
   sort           Int?
+  thumbnailId    String? @map("thumbnail") @db.Uuid
   seoTitle       String? @map("seo_title")
   seoKeywords    String? @map("seo_keywords")
   seoDescription String? @map("seo_description")
 
   parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
   children Category[] @relation("CategoryTree")
+
+  thumbnail File? @relation("CategoryThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
 
   articles          Article[]           @relation("ArticlePrimaryCategory")
   articleCategories ArticleCategory[]

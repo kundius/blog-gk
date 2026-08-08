@@ -14,6 +14,10 @@ export class UpdateCategoryDto {
   sort?: number;
 
   @IsOptional()
+  @IsUUID()
+  thumbnailId?: string;
+
+  @IsOptional()
   @IsString()
   content?: string;
 

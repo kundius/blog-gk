@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from '@components/ui/dialog'
 import { Skeleton } from '@components/ui/skeleton'
-import { BlurImage } from '@components/admin/BlurImage'
+import { CoverImage } from '@components/CoverImage'
 
 interface MediaPickerProps {
   open: boolean
@@ -157,12 +157,12 @@ export function MediaPicker({
                     : 'border-border hover:border-ring',
                 )}
               >
-                <BlurImage
+                <CoverImage
                   src={fileStreamUrl(file.id)}
-                  blurHash={file.blurhash}
                   alt={file.title ?? file.filenameDownload}
+                  blurHash={file.blurhash}
+                  sizes="(max-width: 640px) 50vw, 25vw"
                   loading="lazy"
-                  className="h-full w-full object-cover"
                 />
                 {selected.has(file.id) && (
                   <span className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">

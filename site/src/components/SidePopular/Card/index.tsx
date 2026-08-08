@@ -2,11 +2,11 @@ import { DateTime } from 'luxon'
 import React, { useState, useRef, useEffect } from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
-import { Image } from '@components/Image'
 import Skeleton from 'react-loading-skeleton'
 
 import * as api from '../api'
 import styles from './styles.module.css'
+import { CoverImage } from '@components/CoverImage'
 
 export interface CardProps {
   name: string
@@ -37,15 +37,13 @@ export const Card = ({
       </div>
       {thumbnail && (
         <Link href={href}>
-          <div className={styles.Thumbnail}>
-            <Image
+          <div className={`${styles.Thumbnail} relative`}>
+            <CoverImage
               src={thumbnail.url}
-              alt={thumbnail.name}
+              alt={thumbnail.name || ''}
               blurHash={thumbnail.blurHash}
-              width={240}
-              height={240}
-              objectFit="cover"
-              layout="responsive"
+              sizes="240px"
+              loading="lazy"
             />
           </div>
         </Link>

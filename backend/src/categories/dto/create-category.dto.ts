@@ -13,6 +13,10 @@ export class CreateCategoryDto {
   sort?: number;
 
   @IsOptional()
+  @IsUUID()
+  thumbnailId?: string;
+
+  @IsOptional()
   @IsString()
   content?: string;
 

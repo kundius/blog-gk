@@ -17,6 +17,8 @@ export interface Category {
   content?: string | null
   alias: string
   parentId?: string | null
+  thumbnailId?: string | null
+  thumbnail?: File | null
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null

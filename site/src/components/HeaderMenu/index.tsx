@@ -89,13 +89,17 @@ export const HeaderMenu = () => {
   return (
     <div className={styles.Wrapper}>
       <ul className={styles.List}>
-        {leftItems.map(renderMenuItem)}
+        {leftItems.map((item) => (
+          <React.Fragment key={item.href}>{renderMenuItem(item)}</React.Fragment>
+        ))}
       </ul>
       <Link href="/" className={styles.Logo}>
           <img src="/images/logo.png" alt="" />
         </Link>
       <ul className={styles.List}>
-        {rightItems.map(renderMenuItem)}
+        {rightItems.map((item) => (
+          <React.Fragment key={item.href}>{renderMenuItem(item)}</React.Fragment>
+        ))}
       </ul>
     </div>
   )

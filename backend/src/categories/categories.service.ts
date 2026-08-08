@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -7,7 +7,10 @@ import { ListCategoriesQueryDto } from './dto/list-categories.query';
 import { buildPaginationMeta } from '../common/dto/pagination.dto';
 import { parseSort } from '../common/utils/sort';
 
-const CATEGORY_COUNT_INCLUDE = { _count: { select: { articleCategories: true } } } as const;
+const CATEGORY_COUNT_INCLUDE = {
+  _count: { select: { articleCategories: true } },
+  thumbnail: true,
+} as const;
 
 const CATEGORY_SORT_ORDER = [
   { sort: { sort: 'asc', nulls: 'last' } as const },
@@ -103,17 +106,30 @@ export class CategoriesService {
   }
 
   async create(dto: CreateCategoryDto) {
+    await this.validateThumbnail(dto.thumbnailId);
     return this.prisma.category.create({ data: dto });
   }
 
   async update(id: string, dto: UpdateCategoryDto) {
     await this.ensureExists(id);
+    await this.validateThumbnail(dto.thumbnailId);
     return this.prisma.category.update({ where: { id }, data: dto });
   }
 
   async remove(id: string) {
     await this.ensureExists(id);
     await this.prisma.category.delete({ where: { id } });
+  }
+
+  private async validateThumbnail(thumbnailId?: string) {
+    if (!thumbnailId) return;
+    const thumbnail = await this.prisma.file.findUnique({
+      where: { id: thumbnailId },
+      select: { id: true },
+    });
+    if (!thumbnail) {
+      throw new BadRequestException('Thumbnail file not found');
+    }
   }
 
   private async ensureExists(id: string) {

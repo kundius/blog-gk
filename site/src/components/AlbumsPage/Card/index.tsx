@@ -1,8 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-
-import { Image } from '@components/Image'
 import { BsImage } from 'react-icons/bs'
+import { CoverImage } from '@components/CoverImage'
 
 import * as styles from './styles.module.css'
 
@@ -24,15 +23,13 @@ export function Card ({
   return (
     <div className={styles.Wrapper}>
       {thumbnail && (
-        <figure className={styles.Thumbnail}>
-          <Image
+        <figure className={`${styles.Thumbnail} aspect-[5/6] overflow-hidden`}>
+          <CoverImage
             src={thumbnail.url}
-            alt={thumbnail.name}
+            alt={thumbnail.name || ''}
             blurHash={thumbnail.blurHash}
-            width={350}
-            height={420}
-            objectFit="cover"
-            layout="responsive"
+            sizes="(max-width: 768px) 50vw, 33vw"
+            loading="lazy"
           />
         </figure>
       )}

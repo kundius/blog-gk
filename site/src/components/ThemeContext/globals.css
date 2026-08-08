@@ -141,6 +141,7 @@ body {
 }
 
 :root {
+  --main-color: #d36d6d;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -234,4 +235,20 @@ body {
     radial-gradient(80% 55% at 10% 0%, var(--admin-glow-rose), transparent 60%),
     radial-gradient(90% 70% at 95% 10%, var(--admin-glow-teal), transparent 55%),
     radial-gradient(70% 60% at 90% 100%, var(--admin-glow-amber), transparent 60%);
+}
+
+.hero-surface {
+  background-color: #fdfbf7;
+  background-image:
+    radial-gradient(circle, rgba(61, 53, 46, 0.05) 1px, transparent 1px),
+    linear-gradient(135deg, #fdfbf7 0%, #f4f9f4 35%, #f9f4f2 70%, #f4f4f9 100%);
+  background-size: 16px 16px, 100% 100%;
+}
+
+.dark .hero-surface {
+  background-color: #292524;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(135deg, #292524 0%, #1c1917 35%, #292524 70%, #1c1917 100%);
+  background-size: 16px 16px, 100% 100%;
 }

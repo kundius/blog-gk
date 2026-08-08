@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components/admin/common'
 import { Button } from '@components/ui/button'
 import { Card, CardContent } from '@components/ui/card'
-import { BlurImage } from '@components/admin/BlurImage'
+import { CoverImage } from '@components/CoverImage'
 
 export default function AdminAlbumsPage() {
   const { data, error, isLoading, mutate } = useSWR('/albums?limit=200', () =>
@@ -57,11 +57,12 @@ export default function AdminAlbumsPage() {
               <Link href={`/admin/albums/${album.id}`}>
                 <div className="relative aspect-[4/3] bg-muted">
                   {album.thumbnail ? (
-                    <BlurImage
+                    <CoverImage
                       src={fileStreamUrl(album.thumbnail.id)}
-                      blurHash={album.thumbnail.blurhash}
                       alt={album.name}
-                      className="h-full w-full object-cover"
+                      blurHash={album.thumbnail.blurhash}
+                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">

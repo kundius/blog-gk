@@ -16,6 +16,8 @@ export interface CategoryRecord {
   alias: string
   parentId?: string | null
   content?: string | null
+  thumbnailId?: string | null
+  thumbnail?: FileRecord | null
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null

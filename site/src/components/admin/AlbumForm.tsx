@@ -14,7 +14,7 @@ import { AliasInput } from '@components/admin/AliasInput'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import { ThumbnailField } from '@components/admin/ThumbnailField'
 import { SeoFields, type SeoValues } from '@components/admin/SeoFields'
-import { BlurImage } from '@components/admin/BlurImage'
+import { CoverImage } from '@components/CoverImage'
 
 interface AlbumFormProps {
   album?: AlbumRecord | null
@@ -130,11 +130,12 @@ export function AlbumForm({ album, mutate }: AlbumFormProps) {
                   key={file.id}
                   className="group relative size-28 overflow-hidden rounded-md border"
                 >
-                  <BlurImage
+                  <CoverImage
                     src={fileStreamUrl(file.id)}
-                    blurHash={file.blurhash}
                     alt={file.title ?? ''}
-                    className="h-full w-full object-cover"
+                    blurHash={file.blurhash}
+                    sizes="112px"
+                    loading="lazy"
                   />
                   <button
                     type="button"

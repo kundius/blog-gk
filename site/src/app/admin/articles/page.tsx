@@ -12,7 +12,7 @@ import { PageHeader, LoadingState, ErrorState, ConfirmDelete } from '@components
 import { Button } from '@components/ui/button'
 import { SearchInput } from '@components/admin/SearchInput'
 import { ArticleStatusBadge } from '@components/admin/ArticleStatusBadge'
-import { BlurImage } from '@components/admin/BlurImage'
+import { CoverImage } from '@components/CoverImage'
 import {
   Select,
   SelectContent,
@@ -136,11 +136,12 @@ export default function AdminArticlesPage() {
                       <div className="flex items-start gap-2">
                         {article.thumbnail ? (
                           <div className="relative size-10 shrink-0 overflow-hidden rounded-md border bg-muted">
-                            <BlurImage
+                            <CoverImage
                               src={fileStreamUrl(article.thumbnail.id)}
-                              blurHash={article.thumbnail.blurhash}
                               alt={article.thumbnail.title ?? ''}
-                              className="h-full w-full object-cover"
+                              blurHash={article.thumbnail.blurhash}
+                              sizes="40px"
+                              loading="lazy"
                             />
                           </div>
                         ) : (

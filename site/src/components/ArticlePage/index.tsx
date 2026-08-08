@@ -23,13 +23,13 @@ import {
 } from 'react-share'
 
 import { Content } from '@components/Content'
-import { Image } from '@components/Image'
 import { ClocheIcon } from '@components/Icon/cloche'
 import { ToqueIcon } from '@components/Icon/toque'
 import { CommentsIcon } from '@components/Icon/comments'
 import { CLIENT_URL } from '@app/utils/config'
 import { fileUrl } from '@app/api/images'
 import { Container } from '@components/Container'
+import { CoverImage } from '@components/CoverImage'
 import { ArticleRelated } from '@components/ArticleRelated'
 import { Comments } from '@components/Comments'
 import { Ingredients } from '@components/Ingredients'
@@ -202,36 +202,28 @@ export function ArticlePage({ alias }: ArticlePageProps) {
 
             {result.data.thumbnail && (
               <figure
-                className="mt-8 mb-8 overflow-hidden"
+                className="relative mt-8 mb-8 overflow-hidden"
                 itemScope
                 itemProp="image"
                 itemType="http://schema.org/ImageObject"
+                style={{
+                  aspectRatio: `${result.data.thumbnail.width || 1} / ${result.data.thumbnail.height || 1}`
+                }}
               >
-                <Image
+                <CoverImage
                   src={fileUrl(result.data.thumbnail?.filenameDisk) || ''}
-                  alt={result.data.thumbnail?.title || undefined}
+                  alt={result.data.thumbnail?.title || ''}
                   blurHash={result.data.thumbnail.blurhash}
-                  width={675}
-                  height={
-                    (675 / (result.data.thumbnail.width || 1)) *
-                    (result.data.thumbnail.height || 1)
-                  }
-                  objectFit="cover"
-                  layout="responsive"
+                  sizes="100vw"
+                  loading="lazy"
                 />
                 <img
                   className="hidden"
                   itemProp="url contentUrl"
                   src={fileUrl(result.data.thumbnail?.filenameDisk) || ''}
                 />
-                <meta itemProp="width" content={String(675)} />
-                <meta
-                  itemProp="height"
-                  content={String(
-                    (675 / (result.data.thumbnail.width || 1)) *
-                      (result.data.thumbnail.height || 1)
-                  )}
-                />
+                <meta itemProp="width" content={String(result.data.thumbnail.width || 1)} />
+                <meta itemProp="height" content={String(result.data.thumbnail.height || 1)} />
               </figure>
             )}
 

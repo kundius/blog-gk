@@ -41,6 +41,13 @@ export class ArticlesService {
         : {}),
     };
 
+    if (query.dateFrom || query.dateTo) {
+      where.dateCreated = {
+        ...(query.dateFrom ? { gte: new Date(query.dateFrom) } : {}),
+        ...(query.dateTo ? { lte: new Date(query.dateTo) } : {}),
+      };
+    }
+
     if (query.categories) {
       const ids = await this.categoryIdsByAliases(query.categories);
       where.categories = { some: { categoryId: { in: ids } } };

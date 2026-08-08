@@ -1,13 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { Image } from '@components/Image'
 import { ClocheIcon } from '@components/Icon/cloche'
 import { ToqueIcon } from '@components/Icon/toque'
 import { EyeIcon } from '@components/Icon/eye'
 import { HeartIcon } from '@components/Icon/heart'
 import { CommentsIcon } from '@components/Icon/comments'
 import { ArticleLikes } from '@components/ArticleLikes'
+import { CoverImage } from '@components/CoverImage'
 
 import * as styles from './styles.module.css'
 
@@ -102,15 +102,13 @@ export function ArticleCardMain({
       </div>
       {thumbnail && (
         <Link href={url}>
-          <figure className={styles.Thumbnail}>
-            <Image
+          <figure className={`${styles.Thumbnail} relative aspect-[4/3] overflow-hidden`}>
+            <CoverImage
               src={thumbnail.url}
-              alt={thumbnail.name}
+              alt={thumbnail.name || ''}
               blurHash={thumbnail.blurHash}
-              width={640}
-              height={480}
-              objectFit="cover"
-              layout="responsive"
+              sizes="100vw"
+              loading="lazy"
             />
           </figure>
         </Link>

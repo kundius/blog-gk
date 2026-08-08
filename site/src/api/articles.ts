@@ -13,6 +13,8 @@ export interface ListArticlesArgs {
   page?: number
   limit?: number
   sort?: string
+  dateFrom?: string
+  dateTo?: string
 }
 
 export function listArticles(args: ListArticlesArgs = {}): KeyedFetcher<any> {
@@ -25,7 +27,9 @@ export function listArticles(args: ListArticlesArgs = {}): KeyedFetcher<any> {
     categoryAlias: args.categoryAlias,
     status: args.status,
     page: args.page,
-    limit: args.limit
+    limit: args.limit,
+    dateFrom: args.dateFrom,
+    dateTo: args.dateTo
   })
   const key = `${getApiUrl()}/api/articles?${params}`
   return [key, (url) => fetchJson(url)]

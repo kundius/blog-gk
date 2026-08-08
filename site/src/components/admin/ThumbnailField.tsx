@@ -5,7 +5,7 @@ import { ImagePlus, X } from 'lucide-react'
 import { fileStreamUrl } from '@app/lib/admin/client'
 import type { FileRecord } from '@app/lib/admin/types'
 import { Button } from '@components/ui/button'
-import { BlurImage } from '@components/admin/BlurImage'
+import { CoverImage } from '@components/CoverImage'
 
 interface ThumbnailFieldProps {
   file: FileRecord | null
@@ -18,11 +18,11 @@ export function ThumbnailField({ file, onClear, onPick }: ThumbnailFieldProps) {
     <div className="flex items-start gap-3">
       {file ? (
         <div className="relative size-32 overflow-hidden rounded-md border">
-          <BlurImage
+          <CoverImage
             src={fileStreamUrl(file.id)}
-            blurHash={file.blurhash}
             alt={file.title ?? ''}
-            className="h-full w-full object-cover"
+            blurHash={file.blurhash}
+            sizes="128px"
           />
           <button
             type="button"

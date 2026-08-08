@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsISO8601, IsOptional, IsString, IsUUID } from 'class-validator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 
 export class ListArticlesQueryDto extends PaginationDto {
@@ -29,4 +29,12 @@ export class ListArticlesQueryDto extends PaginationDto {
   @IsOptional()
   @IsString()
   include?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  dateFrom?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  dateTo?: string;
 }

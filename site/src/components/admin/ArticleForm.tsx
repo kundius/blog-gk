@@ -29,7 +29,7 @@ import { MediaPicker } from '@components/admin/MediaPicker'
 import { RichTextEditor } from '@components/admin/RichTextEditor'
 import { SeoFields, type SeoValues } from '@components/admin/SeoFields'
 import { ThumbnailField } from '@components/admin/ThumbnailField'
-import { BlurImage } from '@components/admin/BlurImage'
+import { CoverImage } from '@components/CoverImage'
 
 const emptyIngredients: IngredientItem[] = []
 
@@ -260,11 +260,12 @@ export function ArticleForm({ article }: ArticleFormProps) {
                   key={file.id}
                   className="relative size-24 overflow-hidden rounded-md border"
                 >
-                  <BlurImage
+                  <CoverImage
                     src={fileStreamUrl(file.id)}
-                    blurHash={file.blurhash}
                     alt={file.title ?? ''}
-                    className="h-full w-full object-cover"
+                    blurHash={file.blurhash}
+                    sizes="96px"
+                    loading="lazy"
                   />
                   <button
                     type="button"

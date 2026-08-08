@@ -25,6 +25,9 @@ import {
 } from '@components/ui/select'
 import { AliasInput } from '@components/admin/AliasInput'
 import { SeoFields, type SeoValues } from '@components/admin/SeoFields'
+import { ThumbnailField } from '@components/admin/ThumbnailField'
+import { MediaPicker } from '@components/admin/MediaPicker'
+import type { FileRecord } from '@app/lib/admin/types'
 
 interface FlattenedCategory {
   id: string
@@ -63,8 +66,10 @@ export function CategoryDialog({
   const [parentId, setParentId] = useState<string>('')
   const [sort, setSort] = useState<string>('')
   const [content, setContent] = useState('')
+  const [thumbnail, setThumbnail] = useState<FileRecord | null>(category?.thumbnail ?? null)
   const [seo, setSeo] = useState<SeoValues>({})
   const [saving, setSaving] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   useEffect(() => {
     if (open) {
@@ -73,6 +78,7 @@ export function CategoryDialog({
       setParentId(category?.parentId ?? '')
       setSort(category?.sort != null ? String(category.sort) : '')
       setContent(category?.content ?? '')
+      setThumbnail(category?.thumbnail ?? null)
       setSeo({
         seoTitle: category?.seoTitle ?? '',
         seoKeywords: category?.seoKeywords ?? '',
@@ -93,6 +99,7 @@ export function CategoryDialog({
         parentId: parentId || undefined,
         sort: sort === '' ? undefined : Number(sort),
         content,
+        thumbnailId: thumbnail?.id,
         ...seo,
       }
       if (isEdit && category) {
@@ -167,6 +174,14 @@ export function CategoryDialog({
               rows={3}
             />
           </div>
+          <div className="space-y-2">
+            <Label>Превью</Label>
+            <ThumbnailField
+              file={thumbnail}
+              onClear={() => setThumbnail(null)}
+              onPick={() => setPickerOpen(true)}
+            />
+          </div>
           <SeoFields values={seo} onChange={setSeo} />
           <DialogFooter>
             <Button
@@ -189,6 +204,15 @@ export function CategoryDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+      <MediaPicker
+        open={pickerOpen}
+        onOpenChange={(open) => !open && setPickerOpen(false)}
+        multiple={false}
+        onConfirm={(files) => {
+          if (files[0]) setThumbnail(files[0])
+          setPickerOpen(false)
+        }}
+      />
     </Dialog>
   )
 }

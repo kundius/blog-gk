@@ -6,10 +6,10 @@ import Counter from 'yet-another-react-lightbox/plugins/counter'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/counter.css'
 
-import { Image } from '@components/Image'
 import { MainLayout } from '@components/MainLayout'
 import { Container } from '@components/Container'
 import { fileUrl } from '@app/api/images'
+import { CoverImage } from '@components/CoverImage'
 
 import * as api from './api'
 
@@ -57,15 +57,15 @@ export function AlbumPage({ alias }: AlbumPageProps) {
               setLightboxPhotoIndex(i)
             }}
           >
-            <Image
-              src={fileUrl(item.file?.filenameDisk) || ''}
-              alt={item.file?.title || undefined}
-              blurHash={item.file?.blurhash}
-              width={320}
-              height={280}
-              objectFit="cover"
-              layout="responsive"
-            />
+            <div className="relative aspect-[8/7] overflow-hidden">
+              <CoverImage
+                src={fileUrl(item.file?.filenameDisk) || ''}
+                alt={item.file?.title || ''}
+                blurHash={item.file?.blurhash}
+                sizes="(max-width: 768px) 33vw, 25vw"
+                loading="lazy"
+              />
+            </div>
             <div className="w-full p-4">
               <p className="text-gray-800 dark:text-white transition duration-300 ease-out text-lg font-medium mb-2">
                 {item.file?.title}

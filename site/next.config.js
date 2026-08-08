@@ -2,6 +2,7 @@ const IMAGE_DOMAINS = process.env.IMAGE_DOMAINS || 'localhost'
 
 module.exports = {
   images: {
+    dangerouslyAllowLocalIP: true,
     remotePatterns: IMAGE_DOMAINS.split(',').filter(Boolean).flatMap((hostname) => [
       { protocol: 'http', hostname },
       { protocol: 'https', hostname }

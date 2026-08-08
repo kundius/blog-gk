@@ -3,7 +3,6 @@ import { FaRss } from 'react-icons/fa'
 import { useSpring, animated } from '@react-spring/web'
 import { throttle } from 'throttle-debounce'
 
-import { ScrollTop } from '@components/ScrollTop'
 import { Container } from '@components/Container'
 import { HeaderMenu } from '@components/HeaderMenu'
 import { MobileMenu } from '@components/MobileMenu'
@@ -72,7 +71,6 @@ export const Header = () => {
         </Container>
       </animated.div>
       <MobileMenu />
-      <ScrollTop />
     </div>
   )
 }
