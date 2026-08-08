@@ -3,6 +3,7 @@ import React from 'react'
 
 import { Content } from '@components/Content'
 import { MainLayout } from '@components/MainLayout'
+import { Container } from '@components/Container'
 
 export interface StaticPage {
   name: string
@@ -15,10 +16,12 @@ interface ContentPageProps {
 
 export function ContentPage({ page }: ContentPageProps) {
   return (
-    <MainLayout>
-      <h1 className="mb-12">{page?.name}</h1>
+    <Container className="mt-20 mb-20">
+      <MainLayout>
+        <h1 className="mb-12">{page?.name}</h1>
 
-      <Content dangerouslySetInnerHTML={{ __html: page?.content || '' }} />
-    </MainLayout>
+        <Content dangerouslySetInnerHTML={{ __html: page?.content || '' }} />
+      </MainLayout>
+    </Container>
   )
 }

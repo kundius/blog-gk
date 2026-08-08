@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import { AlbumPage } from '@components/AlbumPage'
 import { albumByAlias, listAlbums } from '@app/api/albums'
 
-import { SWRPreload } from '../../swr-preload'
+import { SWRPreload } from '../../../swr-preload'
 
 export const revalidate = 10
 export const dynamicParams = true

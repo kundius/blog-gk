@@ -1,32 +1,23 @@
 services:
   backend:
     volumes:
-      - ./backend/src:/app/src
-      - ./backend/prisma:/app/prisma
-      - ./backend/package.json:/app/package.json
-      - ./backend/package-lock.json:/app/package-lock.json
-      - ./backend/tsconfig.json:/app/tsconfig.json
-      - ./backend/tsconfig.build.json:/app/tsconfig.build.json
-      - ./backend/nest-cli.json:/app/nest-cli.json
-      - ./backend/prisma.config.ts:/app/prisma.config.ts
+      - ./backend/src:/app/src:z
+      - ./backend/prisma:/app/prisma:z
+      - ./backend/package.json:/app/package.json:z
+      - ./backend/package-lock.json:/app/package-lock.json:z
+      - ./backend/tsconfig.json:/app/tsconfig.json:z
+      - ./backend/tsconfig.build.json:/app/tsconfig.build.json:z
+      - ./backend/nest-cli.json:/app/nest-cli.json:z
+      - ./backend/prisma.config.ts:/app/prisma.config.ts:z
     command: sh -c "npx prisma generate && npx nest start --watch"
     ports:
       - "51212:51212"
 
   site:
     volumes:
-      - ./site/src:/app/src
-      - ./site/package.json:/app/package.json
-      - ./site/package-lock.json:/app/package-lock.json
-      - ./site/next.config.js:/app/next.config.js
-      - ./site/.env:/app/.env
+      - ./site/src:/app/src:z
+      - ./site/package.json:/app/package.json:z
+      - ./site/package-lock.json:/app/package-lock.json:z
+      - ./site/next.config.js:/app/next.config.js:z
+      - ./site/.env:/app/.env:z
     command: npm run dev
-
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: unless-stopped
-    ports:
-      - "5050:80"
-    env_file: ./.env
-    depends_on:
-      - postgres

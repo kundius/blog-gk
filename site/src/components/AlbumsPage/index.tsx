@@ -7,6 +7,7 @@ import { Pagination } from '@components/Pagination'
 import { ArticleCardMain } from '@components/ArticleCardMain'
 import { fileUrl } from '@app/api/images'
 import { MainLayout } from '@components/MainLayout'
+import { Container } from '@components/Container'
 
 import * as api from './api'
 import { Card } from './Card'
@@ -20,8 +21,9 @@ export function AlbumsPage() {
   )
 
   return (
-    <MainLayout>
-      <h1 className="mb-12">Альбомы</h1>
+    <Container className="mt-20 mb-20">
+      <MainLayout>
+        <h1 className="mb-12">Альбомы</h1>
 
       {(albumsResult?.data?.length || 0) === 0 && (
         <div className="text-center text-xl">
@@ -47,6 +49,7 @@ export function AlbumsPage() {
           />
         ))}
       </div>
-    </MainLayout>
+      </MainLayout>
+    </Container>
   )
 }

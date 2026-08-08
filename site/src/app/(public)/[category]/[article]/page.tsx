@@ -5,7 +5,7 @@ import { articleByAlias, relatedArticles, listArticles } from '@app/api/articles
 import { fileUrl } from '@app/api/images'
 import { CLIENT_URL } from '@app/utils/config'
 
-import { SWRPreload } from '../../swr-preload'
+import { SWRPreload } from '../../../swr-preload'
 
 export const revalidate = 900
 export const dynamicParams = true

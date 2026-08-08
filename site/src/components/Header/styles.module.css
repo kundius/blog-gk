@@ -25,7 +25,6 @@
   display: block;
   width: 100%;
   background: url("/images/header-bottom.png") no-repeat calc(50% - 20px) 0;
-  background-size: cover;
   transition: 300ms ease-out;
 }
 
@@ -45,7 +44,6 @@
   display: block;
   width: 100%;
   background: url("/images/header-top.png") no-repeat calc(50% - 20px) 0;
-  background-size: cover;
   transition: 300ms ease-out;
 }
 
@@ -190,87 +188,3 @@
   position: fixed;
 }
 
-.Garland1 {
-  background: url('/images/ng-left-top-2-red.png') no-repeat 50% 50%;
-  background-size: contain;
-  height: 600px;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  top: -163px;
-  width: 297px;
-  z-index: -1;
-}
-
-@media (--below-md) {
-  .Garland1 {
-    left: -93px;
-  }
-}
-
-.Garland2 {
-  background: url('/images/ng-right-top-2-red.png') no-repeat 50% 50%;
-  background-size: contain;
-  height: 600px;
-  pointer-events: none;
-  position: absolute;
-  right: -170px;
-  top: -163px;
-  width: 529px;
-  z-index: -1;
-}
-
-@media (--below-md) {
-  .Garland2 {
-    right: -380px;
-  }
-}
-
-@media (--below-sm) {
-  .Garland2 {
-    right: -460px;
-  }
-}
-
-.Garland3 {
-  background: url('/images/ng-left-top-1-red.png') no-repeat 50% 50%;
-  height: 518px;
-  left: -257px;
-  position: absolute;
-  top: -36px;
-  width: 428px;
-  z-index: -1;
-}
-
-@media (--below-md) {
-  .Garland3 {
-    display: none;
-  }
-}
-
-.Garland4 {
-  background: url('/images/ng-right-top-1.png') no-repeat;
-  height: 126px;
-  position: absolute;
-  right: 200px;
-  top: 0;
-  width: 398px;
-  z-index: -1;
-}
-
-@media (--below-lg) {
-  .Garland4 {
-    display: none;
-  }
-}
-
-.Garland5 {
-  background: url('/images/ng-middle-top-1.png') no-repeat;
-  height: 42px;
-  left: 50%;
-  transform: translateX(-50%);
-  position: absolute;
-  top: 0;
-  width: 133px;
-  z-index: -1;
-}

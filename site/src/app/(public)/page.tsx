@@ -1,7 +1,7 @@
 import { HomePage } from '@components/HomePage'
 import { listArticles } from '@app/api/articles'
 
-import { SWRPreload } from './swr-preload'
+import { SWRPreload } from '../swr-preload'
 
 export const revalidate = 10
 
@@ -23,7 +23,7 @@ export default async function HomePageRoute () {
   })
 
   const [keyDesserts, fetcherDesserts] = listArticles({
-    categories: ['desserts'],
+    categories: ['drinks'],
     limit: 6
   })
 

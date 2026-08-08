@@ -4,8 +4,24 @@ import useSWR from 'swr'
 import Link from 'next/link'
 
 import { MainLayout } from '@components/MainLayout'
+import { Container } from '@components/Container'
+import type { CategoryWithChildren } from '@app/api/types'
 
 import * as api from './api'
+
+function renderCategories (categories: CategoryWithChildren[], depth = 0) {
+  return (
+    <ul className={depth === 0 ? '' : 'ml-8 mt-2 space-y-2'}>
+      {categories.map((category) => (
+        <li key={category.id}>
+          <Link href={`/${category.alias}`}>{category.name}</Link>
+          {category.children && category.children.length > 0 &&
+            renderCategories(category.children, depth + 1)}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export function SitemapPage() {
   const [keyCategories, fetcherCategories] = api.getCategories()
@@ -22,8 +38,9 @@ export function SitemapPage() {
   )
 
   return (
-    <MainLayout>
-      <h1 className="mb-12">Карта сайта</h1>
+    <Container className="mt-20 mb-20">
+      <MainLayout>
+        <h1 className="mb-12">Карта сайта</h1>
 
       <h2 className="text-3xl mb-4 mt-24">Разделы</h2>
       <ul className="uppercase text-sm leading-tight text-red-400 space-y-2">
@@ -33,20 +50,7 @@ export function SitemapPage() {
         <li>
           <Link href="/about">Обо мне</Link>
         </li>
-        {resultCategories?.data?.map((category) => (
-          <li key={category.id}>
-            <Link href={`/${category.alias}`}>{category.name}</Link>
-            {category.children && category.children.length > 0 && (
-              <ul className="ml-8 mt-2 space-y-2">
-                {category.children.map((child) => (
-                  <li key={child.id}>
-                    <Link href={`/${child.alias}`}>{child.name}</Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+        {renderCategories(resultCategories?.data || [])}
         <li>
           <Link href="/albums">Альбомы</Link>
         </li>
@@ -60,6 +64,7 @@ export function SitemapPage() {
           </li>
         ))}
       </ul>
-    </MainLayout>
+      </MainLayout>
+    </Container>
   )
 }

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import useSWR from 'swr'
 
 import { MainLayout } from '@components/MainLayout'
+import { Container } from '@components/Container'
 import { Breadcrumbs } from '@components/Breadcrumbs'
 import { Pagination } from '@components/Pagination'
 import { CLIENT_URL } from '@app/utils/config'
@@ -53,18 +54,19 @@ export function SearchPage({ query }: SearchPageProps) {
   }
 
   return (
-    <MainLayout>
-      <Breadcrumbs
-        items={[
-          {
-            title: 'Главная',
-            href: '/'
-          },
-          {
-            title: `Поиск «${query || '...'}»`
-          }
-        ]}
-      />
+    <Container className="mt-20 mb-20">
+      <MainLayout>
+        <Breadcrumbs
+          items={[
+            {
+              title: 'Главная',
+              href: '/'
+            },
+            {
+              title: `Поиск «${query || '...'}»`
+            }
+          ]}
+        />
 
       <h1 className="mb-8 mt-16">Поиск</h1>
 
@@ -96,6 +98,7 @@ export function SearchPage({ query }: SearchPageProps) {
           />
         )}
       </div>
-    </MainLayout>
+      </MainLayout>
+    </Container>
   )
 }

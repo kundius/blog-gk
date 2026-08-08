@@ -3,7 +3,7 @@ import { SearchPage } from '@components/SearchPage'
 import { searchArticles } from '@app/api/articles'
 import { CLIENT_URL } from '@app/utils/config'
 
-import { SWRPreload } from '../../swr-preload'
+import { SWRPreload } from '../../../swr-preload'
 
 export const revalidate = 900
 export const dynamicParams = true

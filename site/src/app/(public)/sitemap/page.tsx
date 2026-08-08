@@ -2,7 +2,7 @@ import { SitemapPage } from '@components/SitemapPage'
 import { listArticles } from '@app/api/articles'
 import { categoriesTree } from '@app/api/categories'
 
-import { SWRPreload } from '../swr-preload'
+import { SWRPreload } from '../../swr-preload'
 
 export const revalidate = 10
 

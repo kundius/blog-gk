@@ -8,6 +8,7 @@ import 'yet-another-react-lightbox/plugins/counter.css'
 
 import { Image } from '@components/Image'
 import { MainLayout } from '@components/MainLayout'
+import { Container } from '@components/Container'
 import { fileUrl } from '@app/api/images'
 
 import * as api from './api'
@@ -31,8 +32,9 @@ export function AlbumPage({ alias }: AlbumPageProps) {
   const images = imagesFiltered.map((item) => fileUrl(item.file?.filenameDisk) || '') || []
 
   return (
-    <MainLayout>
-      <h1 className="mb-12">{result?.data?.name}</h1>
+    <Container className="mt-20 mb-20">
+      <MainLayout>
+        <h1 className="mb-12">{result?.data?.name}</h1>
 
       <Lightbox
         open={lightboxIsOpen}
@@ -75,6 +77,7 @@ export function AlbumPage({ alias }: AlbumPageProps) {
           </div>
         ))}
       </div>
-    </MainLayout>
+      </MainLayout>
+    </Container>
   )
 }

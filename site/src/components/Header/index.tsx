@@ -11,7 +11,6 @@ import { ThemeContext } from '@components/ThemeContext'
 
 import { useLightToggle } from './useLightToggle'
 import { Search } from './Search'
-import { Garland } from './Garland'
 import styles from './styles.module.css'
 
 export const Header = () => {
@@ -48,14 +47,7 @@ export const Header = () => {
           transform: isFixed ? headerSpring.y.to(y => `translateY(${y}%)`) : undefined
         }}
       >
-
-{/*         <div className={styles.Garland1}></div> */}
-{/*         <div className={styles.Garland2}></div> */}
         <Container style={{ position: 'relative' }}>
-{/*           <div className={styles.Garland3}></div> */}
-{/*           <div className={styles.Garland4}></div> */}
-{/*           <div className={styles.Garland5}></div> */}
-        <Garland />
           <div className={styles.Inner}>
             <div className={styles.Search}>
               <Search />

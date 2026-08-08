@@ -9,7 +9,18 @@
 }
 
 .SecondList {
-  display: none;
+  margin-top: 8px;
+}
+
+.SecondList > li {
+  padding: 6px 0 6px 24px;
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.SecondList > li > a {
+  text-decoration: none;
+  color: var(--color-text);
 }
 
 .Drawer {

@@ -1,17 +1,9 @@
 .List {
   width: 100%;
+  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-@media (--below-xl) {
-  .List {
-    margin-left: 0;
-    margin-right: 0;
-  }
+  align-items: stretch;
+  justify-content: space-around;
 }
 
 @media (--below-md) {
@@ -21,26 +13,19 @@
 }
 
 .List li {
-  margin-left: 20px;
-  margin-right: 20px;
   position: relative;
-}
-
-@media (--below-lg) {
-  .List li {
-    margin-left: 8px;
-    margin-right: 8px;
-  }
+  display: flex;
 }
 
 .List li a {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
   color: inherit;
   position: relative;
   letter-spacing: 0.1em;
-  display: block;
+  display: flex;
+  align-items: center;
   white-space: nowrap;
 }
 
@@ -51,26 +36,68 @@
 }
 
 .List li a:hover {
-  color: #c99;
+  color: #d36d6d;
+}
+
+.List li a span {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  transition: background 150ms ease-out;
+}
+
+.List li a:hover span {
+  background: var(--muted);
+}
+
+.List li:hover .SecondList {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  box-shadow: rgb(0 0 0 / 2%) 0px -5.9px 2.7px, rgb(0 0 0 / 2%) 0px -1.2px 6.9px, rgb(0 0 0 / 3%) 0px 8px 14.2px, rgb(0 0 0 / 4%) 0px 21.9px 29.2px, rgb(0 0 0 / 7%) 0px 49px 80px;
 }
 
 .SecondList {
-  width: 100%;
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
-  gap: 1rem;
-  padding: 0.5rem;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -10px);
+  width: max-content;
+  min-width: 240px;
+  box-sizing: border-box;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border-radius: 6px;
+  box-shadow: rgb(0 0 0 / 2%) 0px -2.95px 1.35px, rgb(0 0 0 / 2%) 0px -0.6px 3.45px, rgb(0 0 0 / 3%) 0px 4px 7.1px, rgb(0 0 0 / 4%) 0px 10.95px 14.6px, rgb(0 0 0 / 7%) 0px 24.5px 40px;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .SecondList li a {
-  font-size: 16px;
-  color: inherit;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 0.6rem;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--popover-foreground);
   position: relative;
-  display: block;
+  white-space: nowrap;
+  transition: background 150ms ease-out;
 }
 
 .SecondList li a:hover {
-  color: #c99;
+  background: var(--muted);
+  color: #d36d6d;
 }
 
 .Logo {
@@ -78,8 +105,8 @@
   position: absolute;
   z-index: 2;
   left: 50%;
-  top: -28px;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 118px;
   height: 118px;
   flex-shrink: 0;
@@ -87,7 +114,6 @@
 
 @media (--below-lg) {
   .Logo {
-    top: -12px;
     width: 100px;
     height: 100px;
   }
@@ -96,6 +122,9 @@
 @media (--below-md) {
   .Logo {
     top: -72px;
+    transform: translateX(-50%);
+    width: 118px;
+    height: 118px;
   }
 }
 
@@ -104,7 +133,6 @@
 }
 
 :global(.isHeaderFixed) .Logo {
-  top: 0;
   width: 60px;
   height: 60px;
 }
@@ -112,43 +140,10 @@
 @media (--below-md) {
   :global(.isHeaderFixed) .Logo {
     top: 5px;
+    transform: translateX(-50%);
     width: 54px;
     height: 54px;
   }
-}
-
-.Dropdown {
-  background: #e1bfbf;
-  width: 14px;
-  height: 14px;
-  box-sizing: border-box;
-  position: absolute;
-  display: inline-block;
-  border-radius: 50%;
-  cursor: pointer;
-  top: 50%;
-  transform: translateY(-50%);
-  right: -20px;
-}
-
-@media (--below-lg) {
-  .Dropdown {
-    right: -16px;
-  }
-}
-
-.Dropdown::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 5px;
-  height: 5px;
-  transform: translate(-50%, -50%) rotate(-45deg);
-  margin-top: -1px;
-  border-left: 1px solid var(--color-background);
-  border-bottom: 1px solid var(--color-background);
-  transition: border-color 300ms ease-out;
 }
 
 .Wrapper {
@@ -158,7 +153,7 @@
   position: relative;
   background: var(--color-background);
   transition: background 300ms ease-out;
-  height: 80px;
+  height: 64px;
   gap: 118px;
   z-index: 40;
 }
@@ -180,6 +175,7 @@
   padding-top: 1px;
   display: block;
   z-index: 1;
+  pointer-events: none;
   transition: 300ms ease-out
 }
 
@@ -200,6 +196,7 @@
   padding-top: 1px;
   display: block;
   z-index: 1;
+  pointer-events: none;
   transition: 300ms ease-out
 }
 
@@ -207,8 +204,4 @@
   .Wrapper::after {
     border-bottom: 0;
   }
-}
-
-:global(.isHeaderFixed) .Wrapper {
-  height: 64px;
 }

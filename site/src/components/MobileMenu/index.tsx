@@ -7,6 +7,86 @@ import { useLightToggle } from '@components/Header/useLightToggle'
 
 import styles from './styles.module.css'
 
+interface MenuItem {
+  href: string
+  title: string
+  children: {
+    href: string
+    title: string
+  }[]
+}
+
+const menuItems: MenuItem[] = [{
+  href: '/first-courses',
+  title: 'Первые блюда',
+  children: [{
+    href: '/entrees',
+    title: 'Первые блюда'
+  }]
+}, {
+  href: '/second-courses',
+  title: 'Вторые блюда',
+  children: [{
+    href: '/mjasnye-bljuda',
+    title: 'Мясные блюда'
+  }, {
+    href: '/fish-dishes',
+    title: 'Рыбные блюда'
+  }, {
+    href: '/ovoshhnye-bljuda',
+    title: 'Овощные блюда'
+  }, {
+    href: '/gribnye-blyuda',
+    title: 'Грибные блюда'
+  }, {
+    href: '/kartofelnye-bljuda',
+    title: 'Картофельные блюда'
+  }, {
+    href: '/main-dishes',
+    title: 'Вторые блюда'
+  }]
+}, {
+  href: '/vypechka',
+  title: 'Выпечка',
+  children: [{
+    href: '/pirogi',
+    title: 'Пироги'
+  }, {
+    href: '/cookies',
+    title: 'Печенье'
+  }, {
+    href: '/baking',
+    title: 'Выпечка'
+  }]
+}, {
+  href: '/salaty-i-zakuski',
+  title: 'Салаты и Закуски',
+  children: [{
+    href: '/salads',
+    title: 'Салаты и закуски'
+  }]
+}, {
+  href: '/sladkij-stol',
+  title: 'Сладкий стол',
+  children: [{
+    href: '/cakes',
+    title: 'Торты и пирожные'
+  }, {
+    href: '/drinks',
+    title: 'Напитки и десерты'
+  }, {
+    href: '/krem-i-glazur-dlya-tortov',
+    title: 'Крем и глазурь для тортов'
+  }]
+}, {
+  href: '/zagotovki',
+  title: 'Заготовки',
+  children: [{
+    href: '/conservation',
+    title: 'Консервация'
+  }]
+}]
+
 export const MobileMenu = () => {
   const [isShowMenu, setIsShowMenu] = useState(false)
   const { colorMode, setColorMode } = useContext(ThemeContext)
@@ -24,50 +104,18 @@ export const MobileMenu = () => {
     <>
       <div className={`${styles.Drawer} ${isShowMenu ? styles.DrawerIsVisible : ''}`}>
         <ul className={styles.List}>
-          <li>
-            <Link href="/about" >Обо мне</Link>
-          </li>
-          <li>
-            <Link href="/krem-i-glazur-dlya-tortov" >Кулинария</Link>
-            <ul className={styles.SecondList}>
-              <li>
-                <Link href="/krem-i-glazur-dlya-tortov" >Крем и глазурь для тортов</Link>
-              </li>
-              <li>
-                <Link href="/cakes" >Торты, пироги и пирожные</Link>
-              </li>
-              <li>
-                <Link href="/drinks" >Напитки и десерты</Link>
-              </li>
-              <li>
-                <Link href="/salads" >Салаты и закуски</Link>
-              </li>
-              <li>
-                <Link href="/conservation" >Консервация</Link>
-              </li>
-              <li>
-                <Link href="/baking" >Выпечка</Link>
-              </li>
-              <li>
-                <Link href="/cookies" >Печенье</Link>
-              </li>
-              <li>
-                <Link href="/main-dishes" >Вторые блюда</Link>
-              </li>
-              <li>
-                <Link href="/entrees" >Первые блюда</Link>
-              </li>
-              <li>
-                <Link href="/fish-dishes" >Рыбные блюда</Link>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <Link href="/albums" >Альбомы</Link>
-          </li>
-          <li>
-            <Link href="/sitemap" >Карта сайта</Link>
-          </li>
+          {menuItems.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href} >{item.title}</Link>
+              <ul className={styles.SecondList}>
+                {item.children.map((child) => (
+                  <li key={child.href}>
+                    <Link href={child.href} >{child.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
         </ul>
         <div className={styles.Buttons}>
           {colorMode && (

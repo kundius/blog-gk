@@ -1,8 +1,5 @@
 import React from 'react'
 
-import { Header } from '@components/Header'
-import { Footer } from '@components/Footer'
-import { Container } from '@components/Container'
 import { SideAuthor } from '@components/SideAuthor'
 import { SubscribeForm } from '@components/SubscribeForm'
 import { SidePopular } from '@components/SidePopular'
@@ -16,20 +13,14 @@ export interface MainLayout {
 
 export function MainLayout({ children }: MainLayout) {
   return (
-    <>
-      <Header />
-      <Container className="mt-20 mb-20">
-        <div className={styles.Main}>
-          <div className={styles.Content}>{children}</div>
-          <div className={`${styles.Side} flex flex-col gap-24`}>
-            <SideAuthor />
-            <SidePopular />
-            <SubscribeForm />
-            <SideLatest />
-          </div>
-        </div>
-      </Container>
-      <Footer />
-    </>
+    <div className={styles.Main}>
+      <div className={styles.Content}>{children}</div>
+      <div className={`${styles.Side} flex flex-col gap-24`}>
+        <SideAuthor />
+        <SidePopular />
+        <SubscribeForm />
+        <SideLatest />
+      </div>
+    </div>
   )
 }

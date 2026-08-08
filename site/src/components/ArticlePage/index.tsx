@@ -29,7 +29,7 @@ import { ToqueIcon } from '@components/Icon/toque'
 import { CommentsIcon } from '@components/Icon/comments'
 import { CLIENT_URL } from '@app/utils/config'
 import { fileUrl } from '@app/api/images'
-import { WideLayout } from '@components/WideLayout'
+import { Container } from '@components/Container'
 import { ArticleRelated } from '@components/ArticleRelated'
 import { Comments } from '@components/Comments'
 import { Ingredients } from '@components/Ingredients'
@@ -71,7 +71,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
   const isRecipe = !!result?.data?.ingredients
 
   return (
-    <WideLayout>
+    <Container className="mt-20 mb-20">
       {result?.data && (
         <div
           className="grid gap-24"
@@ -320,6 +320,6 @@ export function ArticlePage({ alias }: ArticlePageProps) {
           <Comments threadId={result.data.id} threadType="articles" />
         </div>
       )}
-    </WideLayout>
+    </Container>
   )
 }

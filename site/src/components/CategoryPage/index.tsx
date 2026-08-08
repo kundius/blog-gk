@@ -7,6 +7,7 @@ import { Pagination } from '@components/Pagination'
 import { ArticleCardMain } from '@components/ArticleCardMain'
 import { fileUrl } from '@app/api/images'
 import { MainLayout } from '@components/MainLayout'
+import { Container } from '@components/Container'
 
 import * as api from './api'
 
@@ -61,14 +62,15 @@ export function CategoryPage({ alias }: CategoryPageProps) {
   }
 
   return (
-    <MainLayout>
-      <div
-        className="grid gap-32"
-        ref={listRef}
-        style={{
-          scrollMarginTop: 80
-        }}
-      >
+    <Container className="mt-20 mb-20">
+      <MainLayout>
+        <div
+          className="grid gap-32"
+          ref={listRef}
+          style={{
+            scrollMarginTop: 80
+          }}
+        >
         {(articlesResult?.data?.length || 0) === 0 && (
           <div className="text-center text-xl">
             Записи в данном разделе отсутствуют
@@ -117,6 +119,7 @@ export function CategoryPage({ alias }: CategoryPageProps) {
           />
         )}
       </div>
-    </MainLayout>
+      </MainLayout>
+    </Container>
   )
 }

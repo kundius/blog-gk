@@ -1,95 +1,117 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { Popover } from '@components/Popover'
-
 import styles from './styles.module.css'
+
+interface MenuItem {
+  href: string
+  title: string
+  children: {
+    href: string
+    title: string
+  }[]
+}
+
+const leftItems: MenuItem[] = [{
+  href: '/first-courses',
+  title: 'Первые блюда',
+  children: [{
+    href: '/entrees',
+    title: 'Первые блюда'
+  }]
+}, {
+  href: '/second-courses',
+  title: 'Вторые блюда',
+  children: [{
+    href: '/mjasnye-bljuda',
+    title: 'Мясные блюда'
+  }, {
+    href: '/fish-dishes',
+    title: 'Рыбные блюда'
+  }, {
+    href: '/ovoshhnye-bljuda',
+    title: 'Овощные блюда'
+  }, {
+    href: '/gribnye-blyuda',
+    title: 'Грибные блюда'
+  }, {
+    href: '/kartofelnye-bljuda',
+    title: 'Картофельные блюда'
+  }, {
+    href: '/main-dishes',
+    title: 'Вторые блюда'
+  }]
+}, {
+  href: '/vypechka',
+  title: 'Выпечка',
+  children: [{
+    href: '/pirogi',
+    title: 'Пироги'
+  }, {
+    href: '/cookies',
+    title: 'Печенье'
+  }, {
+    href: '/baking',
+    title: 'Выпечка'
+  }]
+}]
+
+const rightItems: MenuItem[] = [{
+  href: '/salaty-i-zakuski',
+  title: 'Салаты и Закуски',
+  children: [{
+    href: '/salads',
+    title: 'Салаты и закуски'
+  }]
+}, {
+  href: '/sladkij-stol',
+  title: 'Сладкий стол',
+  children: [{
+    href: '/cakes',
+    title: 'Торты и пирожные'
+  }, {
+    href: '/drinks',
+    title: 'Напитки и десерты'
+  }, {
+    href: '/krem-i-glazur-dlya-tortov',
+    title: 'Крем и глазурь для тортов'
+  }]
+}, {
+  href: '/zagotovki',
+  title: 'Заготовки',
+  children: [{
+    href: '/conservation',
+    title: 'Консервация'
+  }]
+}]
 
 export const HeaderMenu = () => {
   return (
     <div className={styles.Wrapper}>
       <ul className={styles.List}>
-        <li>
-          <Link href="/about" >Обо мне</Link>
-        </li>
-        <Popover
-          content={
-            <ul className={styles.SecondList}>
-              <li>
-                <Link href="/krem-i-glazur-dlya-tortov" >Крем и глазурь для тортов</Link>
-              </li>
-              <li>
-                <Link href="/pirogi" >Пироги</Link>
-              </li>
-              <li>
-                <Link href="/cakes" >Торты и пирожные</Link>
-              </li>
-              <li>
-                <Link href="/kartofelnye-bljuda" >Картофельные блюда</Link>
-              </li>
-              <li>
-                <Link href="/ovoshhnye-bljuda" >Овощные блюда</Link>
-              </li>
-              <li>
-                <Link href="/mjasnye-bljuda" >Мясные блюда</Link>
-              </li>
-              <li>
-                <Link href="/gribnye-blyuda" >Грибные блюда</Link>
-              </li>
-              <li>
-                <Link href="/drinks" >Напитки и десерты</Link>
-              </li>
-              <li>
-                <Link href="/salads" >Салаты и закуски</Link>
-              </li>
-              <li>
-                <Link href="/conservation" >Консервация</Link>
-              </li>
-              <li>
-                <Link href="/baking" >Выпечка</Link>
-              </li>
-              <li>
-                <Link href="/cookies" >Печенье</Link>
-              </li>
-              <li>
-                <Link href="/main-dishes" >Вторые блюда</Link>
-              </li>
-              <li>
-                <Link href="/entrees" >Первые блюда</Link>
-              </li>
-              <li>
-                <Link href="/fish-dishes" >Рыбные блюда</Link>
-              </li>
-            </ul>
-          }
-          showClose={false}
-          wrapperStyle={{
-            maxWidth: 400
-          }}
-        >
-          {({ setReferenceElement, clickListeners, hoverListeners }) => (
-            <li>
-              <a {...hoverListeners}>Кулинария</a>
-              <button
-                className={styles.Dropdown}
-                ref={setReferenceElement}
-                {...clickListeners}
-              />
-            </li>
-          )}
-        </Popover>
+        {leftItems.map(renderMenuItem)}
       </ul>
       <Link href="/" className={styles.Logo}>
           <img src="/images/logo.png" alt="" />
         </Link>
       <ul className={styles.List}>
-        <li>
-          <Link href="/albums" >Альбомы</Link>
-        </li>
-        <li>
-          <Link href="/sitemap" >Карта сайта</Link>
-        </li>
+        {rightItems.map(renderMenuItem)}
       </ul>
     </div>
+  )
+}
+
+function renderMenuItem (item: MenuItem) {
+  return (
+    <li>
+      <Link href={item.href} ><span>{item.title}</span></Link>
+      <ul className={styles.SecondList}>
+        {item.children.map((child) => (
+          <li key={child.href}>
+            <Link href={child.href} >{child.title}</Link>
+          </li>
+        ))}
+      </ul>
+    </li>
   )
 }
