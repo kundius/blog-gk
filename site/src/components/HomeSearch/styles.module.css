@@ -128,7 +128,7 @@
   color: var(--main-color);
 }
 
-@media (max-width: 768px) {
+@media (--max-md) {
   .SearchInput {
     padding: 12px 104px 12px 44px;
   }
@@ -137,7 +137,21 @@
     left: 16px;
   }
 
+  .PopularQueries {
+    gap: 4px;
+    margin-top: 12px;
+  }
+
   .SearchButton {
     padding: 10px 18px;
+  }
+
+  .PopularLabel {
+    font-size: 12px;
+  }
+
+  .QueryChip {
+    padding: 4px 8px;
+    font-size: 12px;
   }
 }

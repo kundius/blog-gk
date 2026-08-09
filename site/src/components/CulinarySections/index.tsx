@@ -35,7 +35,7 @@ export function CulinarySections() {
   const sections = cooking?.children ?? []
 
   return (
-    <section className="relative w-full overflow-hidden pt-12 pb-14 md:pt-16 md:pb-20">
+    <section className="relative w-full overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 hidden select-none md:block"

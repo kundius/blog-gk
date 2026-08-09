@@ -83,6 +83,25 @@ export interface Album {
   photos?: ArticleFile[]
 }
 
+export interface CollectionArticle {
+  id: number
+  sort?: number | null
+  article?: ArticleListItem | null
+}
+
+export interface Collection {
+  id: string
+  name: string
+  alias: string
+  description?: string | null
+  seoTitle?: string | null
+  seoKeywords?: string | null
+  seoDescription?: string | null
+  thumbnail?: File | null
+  articles?: CollectionArticle[]
+  _count?: { articles?: number }
+}
+
 export interface CommentItem {
   id: string
   status: string

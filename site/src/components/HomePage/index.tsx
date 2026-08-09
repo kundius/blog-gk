@@ -3,12 +3,15 @@ import React, { useMemo } from 'react'
 import useSWR from 'swr'
 
 import { listArticles } from '@app/api/articles'
-import type { ArticleListItem } from '@app/api/types'
+import { listCollections } from '@app/api/collections'
+import { fileUrl } from '@app/api/images'
+import type { ArticleListItem, Collection } from '@app/api/types'
 import { Container } from '@components/Container'
 import { Hero } from '@components/Hero'
 import { HomeSearch } from '@components/HomeSearch'
 import { CulinarySections } from '@components/CulinarySections'
 import { RecipeCard } from '@components/RecipeCard'
+import { Card as CollectionCard } from '@components/CollectionsPage/Card'
 
 function seasonRange(): { from: string; to: string } {
   const now = new Date()
@@ -40,17 +43,64 @@ export function HomePage() {
   const [keyFresh, fetcherFresh] = listArticles({ limit: 4, sort: '-dateCreated' })
   const { data: fresh } = useSWR<{ data: ArticleListItem[] }>(keyFresh, fetcherFresh)
 
+  const [keyCollections, fetcherCollections] = listCollections({ featured: true })
+  const { data: collections } = useSWR<{ data: Collection[] }>(keyCollections, fetcherCollections)
+
   return (
     <div className="my-16">
       <Container>
         <Hero />
+        <div className="mx-auto w-full max-w-[640px] mt-16 mb-8 lg:mt-24 lg:mb-12">
+          <HomeSearch />
+        </div>
       </Container>
-      <div className="mx-auto w-full max-w-[640px] mt-24 mb-12">
-        <HomeSearch />
-      </div>
+
       <CulinarySections />
 
-      <section className="hero-surface relative w-full pt-12 pb-14 md:pt-16 md:pb-20">
+      <section className="relative w-full pt-12 pb-16 md:pt-20 md:pb-24">
+        <Container>
+          <div className="mb-6 text-center md:mb-10">
+            <h2 className="text-2xl md:text-4xl">Тематические подборки</h2>
+            <div
+              className="mx-auto mt-3 h-1 w-14 rounded-full"
+              style={{ backgroundColor: 'var(--main-color)' }}
+            />
+          </div>
+          {(collections === undefined || collections.data.length > 0) && (
+            <div className="grid grid-cols-2 gap-3 sm:gap-6">
+              {!collections
+                ? Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="animate-pulse overflow-hidden rounded-2xl border bg-muted">
+                      <div className="aspect-[5/6] bg-muted" />
+                      <div className="space-y-3 p-5">
+                        <div className="h-4 w-2/3 rounded-full bg-muted" />
+                      </div>
+                    </div>
+                  ))
+                : collections.data.map((collection) => (
+                    <CollectionCard
+                      key={collection.alias}
+                      name={collection.name}
+                      description={collection.description}
+                      count={collection._count?.articles}
+                      href={`/collections/${collection.alias}`}
+                      thumbnail={
+                        collection.thumbnail
+                          ? {
+                              name: collection.thumbnail?.title || undefined,
+                              blurHash: collection.thumbnail?.blurhash || undefined,
+                              url: fileUrl(collection.thumbnail?.filenameDisk)
+                            }
+                          : undefined
+                      }
+                    />
+                  ))}
+            </div>
+          )}
+        </Container>
+      </section>
+
+      <section className="hero-surface relative w-full pt-12 pb-16 md:pt-20 md:pb-24">
         <Container>
           <div className="mb-6 text-center md:mb-10">
             <h2 className="text-2xl md:text-4xl">Лучшее в этом сезоне</h2>
@@ -77,7 +127,7 @@ export function HomePage() {
         </Container>
       </section>
 
-      <section className="relative w-full pt-12 pb-14 md:pt-16 md:pb-20">
+      <section className="relative w-full pt-12 pb-16 md:pt-20 md:pb-24">
         <Container>
           <div className="mb-6 text-center md:mb-10">
             <h2 className="text-2xl md:text-4xl">Свежее на блоге</h2>

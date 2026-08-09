@@ -25,6 +25,7 @@ model File {
   albums         Album[]       @relation("AlbumThumbnail")
   albumGallery   AlbumFile[]
   categories     Category[]    @relation("CategoryThumbnail")
+  collections    Collection[]  @relation("CollectionThumbnail")
 
   @@map("files")
 }
@@ -78,6 +79,7 @@ model Article {
   files     ArticleFile[]
   categories ArticleCategory[]
   comments  Comment[]
+  collections CollectionArticle[]
 
   @@map("articles")
 }
@@ -131,6 +133,37 @@ model AlbumFile {
   file  File?  @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   @@map("albums_files")
+}
+
+model Collection {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String
+  alias          String   @unique
+  description    String?
+  thumbnailId    String?  @map("thumbnail") @db.Uuid
+  showOnHome     Boolean  @default(false) @map("show_on_home")
+  seoTitle       String?  @map("seo_title")
+  seoKeywords    String?  @map("seo_keywords")
+  seoDescription String?  @map("seo_description")
+  dateCreated    DateTime @default(now()) @map("date_created") @db.Timestamptz(6)
+  dateUpdated    DateTime? @map("date_updated") @db.Timestamptz(6)
+
+  thumbnail File?               @relation("CollectionThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
+  articles  CollectionArticle[]
+
+  @@map("collections")
+}
+
+model CollectionArticle {
+  id           Int     @id @default(autoincrement())
+  collectionId String? @map("collection") @db.Uuid
+  articleId    String? @map("article") @db.Uuid
+  sort         Int?
+
+  collection Collection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  article    Article?    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@map("collections_articles")
 }
 
 model Comment {

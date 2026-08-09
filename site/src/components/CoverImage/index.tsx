@@ -8,13 +8,20 @@ export type CoverImageProps = Omit<ImageProps, 'placeholder' | 'blurDataURL'> & 
   blurHash?: string | null
 }
 
-export function CoverImage({ blurHash, className, fill = true, ...props }: CoverImageProps) {
+export function CoverImage({
+  blurHash,
+  className,
+  fill = true,
+  objectFit = 'cover',
+  ...props
+}: CoverImageProps) {
   const blurDataURL = blurHashToDataUrl(blurHash)
 
   return (
     <Image
       {...props}
       fill={fill}
+      objectFit={objectFit}
       className={cn('object-cover', className)}
       placeholder={blurDataURL ? 'blur' : 'empty'}
       blurDataURL={blurDataURL}

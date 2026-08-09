@@ -55,6 +55,8 @@ const ADMIN_TITLES: Record<string, string> = {
   '/admin/subscribers': 'Подписчики',
   '/admin/albums': 'Альбомы',
   '/admin/albums/new': 'Новый альбом',
+  '/admin/collections': 'Подборки',
+  '/admin/collections/new': 'Новая подборка',
 }
 
 function adminPageTitle(pathname: string): string {
@@ -62,6 +64,8 @@ function adminPageTitle(pathname: string): string {
   if (title) return `${title} — админка`
   if (/^\/admin\/articles\/.+$/.test(pathname)) return 'Редактирование статьи — админка'
   if (/^\/admin\/albums\/.+$/.test(pathname)) return 'Редактирование альбома — админка'
+  if (/^\/admin\/collections\/.+$/.test(pathname))
+    return 'Редактирование подборки — админка'
   return 'Администрирование'
 }
 

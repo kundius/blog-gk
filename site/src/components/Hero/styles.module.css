@@ -9,10 +9,14 @@
   background-image:
     radial-gradient(circle, rgba(61, 53, 46, 0.05) 1px, transparent 1px),
     linear-gradient(135deg, #fdfbf7 0%, #f4f9f4 35%, #f9f4f2 70%, #f4f4f9 100%);
-  background-size: 16px 16px, 100% 100%;
-  background-position: 0 0, 0 0;
+  background-size:
+    16px 16px,
+    100% 100%;
+  background-position:
+    0 0,
+    0 0;
 
-    /*background: #fefbfa;
+  /*background: #fefbfa;
     border: 1px solid #f4ece8;*/
 
   padding: 70px 20px;
@@ -90,7 +94,9 @@
 .Links a svg {
   color: var(--hero-text);
   opacity: 0.7;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 .Links a:hover svg {
@@ -105,7 +111,9 @@
   background-image:
     radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
     linear-gradient(135deg, #292524 0%, #1c1917 35%, #292524 70%, #1c1917 100%);
-  background-size: 16px 16px, 100% 100%;
+  background-size:
+    16px 16px,
+    100% 100%;
 }
 
 :global(.dark) .Photo {
@@ -130,5 +138,15 @@
 
   .Links {
     justify-content: center;
+  }
+}
+
+@media (--max-md) {
+  .Photo {
+    width: 160px;
+    height: 160px;
+  }
+  .Content h1 {
+    font-size: 1.5rem;
   }
 }

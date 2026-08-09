@@ -8,6 +8,7 @@ import {
   MessageSquare,
   FolderTree,
   Images,
+  Library,
   FolderOpen,
   Users,
 } from 'lucide-react'
@@ -39,6 +40,13 @@ const STATS = [
     label: 'Альбомы',
     icon: Images,
     color: 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+  },
+  {
+    href: '/admin/collections',
+    key: '/collections?limit=1',
+    label: 'Подборки',
+    icon: Library,
+    color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
   },
   {
     href: '/admin/files',

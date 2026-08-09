@@ -64,15 +64,17 @@ export function RecipeCard({ article }: { article: ArticleListItem }) {
               {timeLabel}
             </span>
           )}
-          {commentsCount > 0 && (
+          <span className="ml-auto inline-flex items-center gap-2 sm:gap-4">
+            {commentsCount > 0 && (
+              <span className="inline-flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
+                <MessageCircle className="text-primary" size={14} strokeWidth={2} />
+                {commentsCount}
+              </span>
+            )}
             <span className="inline-flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
-              <MessageCircle className="text-primary" size={14} strokeWidth={2} />
-              {commentsCount}
+              <Eye className="text-primary" size={14} strokeWidth={2} />
+              {formatHits(hitsCount)}
             </span>
-          )}
-          <span className="ml-auto inline-flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
-            <Eye className="text-primary" size={14} strokeWidth={2} />
-            {formatHits(hitsCount)}
           </span>
         </div>
       </div>

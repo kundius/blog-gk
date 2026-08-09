@@ -103,6 +103,9 @@ export const Footer = () => {
                 title: 'Альбомы',
                 href: '/albums'
               }, {
+                title: 'Подборки',
+                href: '/collections'
+              }, {
                 title: 'Карта сайта',
                 href: '/sitemap'
               }, {

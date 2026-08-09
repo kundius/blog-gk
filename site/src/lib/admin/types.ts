@@ -70,6 +70,28 @@ export interface AlbumRecord {
   _count?: { photos: number }
 }
 
+export interface CollectionRecord {
+  id: string
+  name: string
+  alias: string
+  description?: string | null
+  thumbnailId?: string | null
+  showOnHome: boolean
+  seoTitle?: string | null
+  seoKeywords?: string | null
+  seoDescription?: string | null
+  dateCreated?: string | null
+  dateUpdated?: string | null
+  thumbnail?: FileRecord | null
+  articles?: Array<{
+    id: number
+    sort?: number | null
+    article?: ArticleRecord | null
+    articleId?: string | null
+  }>
+  _count?: { articles: number }
+}
+
 export interface CommentRecord {
   id: string
   status: string

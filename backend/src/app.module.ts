@@ -10,6 +10,7 @@ import { FilesModule } from './files/files.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ArticlesModule } from './articles/articles.module';
 import { AlbumsModule } from './albums/albums.module';
+import { CollectionsModule } from './collections/collections.module';
 import { CommentsModule } from './comments/comments.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
 
@@ -23,6 +24,7 @@ import { SubscribersModule } from './subscribers/subscribers.module';
     CategoriesModule,
     ArticlesModule,
     AlbumsModule,
+    CollectionsModule,
     CommentsModule,
     SubscribersModule,
   ],

@@ -26,12 +26,34 @@ const blogPostsRssXml = (articles: any[]) => {
   }
 }
 
-const getRssXml = (blogPosts: any[]) => {
-  const { sitemapItemsXml } = blogPostsRssXml(blogPosts)
+const collectionsRssXml = (collections: any[]) => {
+  let sitemapItemsXml = `
+      <url>
+        <loc>${CLIENT_URL}/collections</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+      </url>`
+  collections.forEach(collection => {
+    const lastmod = collection.dateUpdated || collection.dateCreated
+    sitemapItemsXml += `
+      <url>
+        <loc>${CLIENT_URL}/collections/${collection.alias}</loc>
+        <lastmod>${lastmod}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+      </url>`
+  })
+  return { sitemapItemsXml }
+}
+
+const getRssXml = (blogPosts: any[], collections: any[]) => {
+  const { sitemapItemsXml: postsXml } = blogPostsRssXml(blogPosts)
+  const { sitemapItemsXml: collectionsXml } = collectionsRssXml(collections)
 
   return `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
-    ${sitemapItemsXml}
+    ${collectionsXml}
+    ${postsXml}
   </urlset>`
 }
 
@@ -41,11 +63,17 @@ const fetchMyPosts = async () => {
   return articles.data || []
 }
 
+const fetchCollections = async () => {
+  const res = await fetch(`${API_URL}/api/collections?limit=1000&sort=name`)
+  const collections = await res.json()
+  return collections.data || []
+}
+
 export const dynamic = 'force-dynamic'
 
 export async function GET () {
-  const posts = await fetchMyPosts()
-  const xml = getRssXml(posts)
+  const [posts, collections] = await Promise.all([fetchMyPosts(), fetchCollections()])
+  const xml = getRssXml(posts, collections)
   return new Response(xml, {
     headers: {
       'Content-Type': 'text/xml'

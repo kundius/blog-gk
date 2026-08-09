@@ -54,6 +54,9 @@ export function SitemapPage() {
         <li>
           <Link href="/albums">Альбомы</Link>
         </li>
+        <li>
+          <Link href="/collections">Подборки</Link>
+        </li>
       </ul>
 
       <h2 className="text-3xl mb-4 mt-24">Статьи</h2>

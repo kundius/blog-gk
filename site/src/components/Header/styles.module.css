@@ -277,7 +277,7 @@
   }
 
   .menu li a {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     text-transform: uppercase;
     color: inherit;
@@ -286,6 +286,10 @@
     display: flex;
     align-items: center;
     white-space: nowrap;
+
+    @media (--max-2xl) {
+      font-size: 16px;
+    }
 
     @media (--max-xl) {
       font-size: 14px;
