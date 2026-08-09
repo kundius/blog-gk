@@ -7,7 +7,7 @@ import styles from './styles.module.css'
 
 export const Search = () => {
   const router = useRouter()
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLFormElement>(null)
   const fieldRef = useRef<HTMLInputElement>(null)
   const [opened, setOpened] = useState(false)
   const [search, setSearch] = useState('')
@@ -62,7 +62,7 @@ export const Search = () => {
   }, [])
 
   return (
-    <div
+    <form
       className={styles.Wrapper}
       ref={wrapperRef}
       onSubmit={handleSubmit}
@@ -86,6 +86,6 @@ export const Search = () => {
       >
         <FaSearch />
       </button>
-    </div>
+    </form>
   )
 }

@@ -1,8 +1,10 @@
 module.exports = {
   plugins: {
-    'postcss-custom-media': {
-      importFrom: 'src/components/ThemeContext/custom-media.css'
+    '@csstools/postcss-global-data': {
+      files: ['src/components/ThemeContext/custom-media.css']
     },
+    'postcss-nesting': {},
+    'postcss-custom-media': {},
     '@tailwindcss/postcss': {},
     autoprefixer: {}
   }

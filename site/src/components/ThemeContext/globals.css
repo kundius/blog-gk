@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -47,11 +47,14 @@
   --color-yellow-800: #92400e;
   --color-yellow-900: #78350f;
 
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Write your own custom base styles here */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -68,7 +71,9 @@ img {
 body {
   background: var(--color-background);
   color: var(--color-text);
-  transition: color 300ms ease-out, background 300ms ease-out;
+  transition:
+    color 300ms ease-out,
+    background 300ms ease-out;
   font-family: Gilroy, sans-serif;
   overflow-x: hidden;
 }
@@ -142,7 +147,10 @@ body {
 
 :root {
   --main-color: #d36d6d;
+  --header-top-height: 184px;
   --header-bar-height: 3.5rem;
+  --container-width: 1408px;
+  --container-padding: 64px;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -217,6 +225,36 @@ body {
   --admin-glow-amber: oklch(0.56 0.08 90 / 0.18);
 }
 
+@media (--max-2xl) {
+  :root {
+    --container-width: 1216px;
+    --container-padding: 32px;
+  }
+}
+
+@media (--max-xl) {
+  :root {
+    --container-width: 976px;
+    --container-padding: 24px;
+  }
+}
+
+@media (--max-lg) {
+  :root {
+    --header-top-height: 156px;
+    --container-width: 736px;
+    --container-padding: 16px;
+  }
+}
+
+@media (--max-md) {
+  :root {
+    --header-top-height: 128px;
+    --container-width: calc(100vw - 32px);
+    --container-padding: 16px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -234,8 +272,16 @@ body {
   background-attachment: fixed;
   background-image:
     radial-gradient(80% 55% at 10% 0%, var(--admin-glow-rose), transparent 60%),
-    radial-gradient(90% 70% at 95% 10%, var(--admin-glow-teal), transparent 55%),
-    radial-gradient(70% 60% at 90% 100%, var(--admin-glow-amber), transparent 60%);
+    radial-gradient(
+      90% 70% at 95% 10%,
+      var(--admin-glow-teal),
+      transparent 55%
+    ),
+    radial-gradient(
+      70% 60% at 90% 100%,
+      var(--admin-glow-amber),
+      transparent 60%
+    );
 }
 
 .hero-surface {
@@ -243,7 +289,9 @@ body {
   background-image:
     radial-gradient(circle, rgba(61, 53, 46, 0.05) 1px, transparent 1px),
     linear-gradient(135deg, #fdfbf7 0%, #f4f9f4 35%, #f9f4f2 70%, #f4f4f9 100%);
-  background-size: 16px 16px, 100% 100%;
+  background-size:
+    16px 16px,
+    100% 100%;
 }
 
 .dark .hero-surface {
@@ -251,5 +299,7 @@ body {
   background-image:
     radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
     linear-gradient(135deg, #292524 0%, #1c1917 35%, #292524 70%, #1c1917 100%);
-  background-size: 16px 16px, 100% 100%;
+  background-size:
+    16px 16px,
+    100% 100%;
 }

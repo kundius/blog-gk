@@ -1,15 +1,8 @@
 .Container {
-  width: 1280px;
-  max-width: 100%;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  width: var(--container-width);
+  max-width: calc(100% - calc(var(--container-padding) * 2));
+  padding: 0 var(--container-padding);
   margin-left: auto;
   margin-right: auto;
-}
-
-@media (--below-md) {
-  .Container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+  box-sizing: content-box;
 }

@@ -112,7 +112,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-@media (max-width: 768px) {
+@media (--max-lg) {
   .Hero {
     padding: 40px 20px;
   }
