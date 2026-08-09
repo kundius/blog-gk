@@ -22,7 +22,6 @@ import {
   VKIcon
 } from 'react-share'
 
-import { Content } from '@components/Content'
 import { ClocheIcon } from '@components/Icon/cloche'
 import { ToqueIcon } from '@components/Icon/toque'
 import { CommentsIcon } from '@components/Icon/comments'
@@ -34,6 +33,8 @@ import { ArticleRelated } from '@components/ArticleRelated'
 import { Comments } from '@components/Comments'
 import { Ingredients } from '@components/Ingredients'
 import { ArticleLikes } from '@components/ArticleLikes'
+import { ArticleContent } from '@components/ArticleContent'
+import { hasIngredientsMarker } from '@app/lib/tiptap/constants'
 
 import { Hits } from './Hits'
 import * as api from './api'
@@ -235,14 +236,16 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               />
             )}
 
-            {result.data.ingredients && (
-              <div className="mt-8 mb-16">
-                <Ingredients items={result.data.ingredients} />
-              </div>
-            )}
+            {result.data.ingredients &&
+              !hasIngredientsMarker(result.data.content) && (
+                <div className="mt-8 mb-16">
+                  <Ingredients items={result.data.ingredients} />
+                </div>
+              )}
 
-            <Content
-              dangerouslySetInnerHTML={{ __html: result.data.content }}
+            <ArticleContent
+              html={result.data.content || ''}
+              ingredients={result.data.ingredients}
               itemProp={isRecipe ? 'recipeInstructions' : 'articleBody'}
             />
           </div>

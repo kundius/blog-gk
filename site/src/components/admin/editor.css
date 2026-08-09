@@ -1,8 +1,14 @@
 .admin-editor__content {
+  max-width: 800px;
+  margin: 0 auto;
+  max-height: min(60vh, 640px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 12px 16px;
   font-size: 15px;
   line-height: 1.7;
   outline: none;
+  counter-reset: recipe-step;
 }
 
 .admin-editor__content > * + * {
@@ -162,4 +168,381 @@
   50% {
     opacity: 1;
   }
+}
+
+/* ---------- Recipe steps block ---------- */
+
+.admin-editor__content .recipe-steps {
+  margin: 16px 0;
+  padding: 16px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--muted) 30%, transparent);
+}
+
+.admin-editor__content .recipe-steps__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.admin-editor__content .recipe-steps__title {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: none;
+  border-bottom: 1px dashed transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 20px;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor__content .recipe-steps__title:hover {
+  border-bottom-color: var(--border);
+}
+
+.admin-editor__content .recipe-steps__title:focus {
+  background: var(--background);
+  border-bottom-color: var(--ring);
+}
+
+.admin-editor__content .recipe-steps__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.admin-editor__content .recipe-steps__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  opacity: 0.7;
+  transition: opacity 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor__content .recipe-steps:hover .recipe-steps__actions button {
+  opacity: 1;
+}
+
+.admin-editor__content .recipe-steps__actions button:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-editor__content .recipe-steps__actions button:last-child:hover {
+  color: var(--destructive);
+}
+
+/* ---------- Recipe step ---------- */
+
+.admin-editor__content .recipe-step {
+  margin: 4px 0;
+  counter-increment: recipe-step;
+}
+
+.admin-editor__content .recipe-step__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  transition: border-color 150ms ease-out;
+}
+
+.admin-editor__content .recipe-step:focus-within .recipe-step__grid,
+.admin-editor__content .recipe-step.ProseMirror-selectednode .recipe-step__grid {
+  border-color: var(--ring);
+}
+
+.admin-editor__content .recipe-step__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--muted);
+  color: var(--color-red-400, var(--destructive));
+  align-self: start;
+}
+
+.admin-editor__content .recipe-step__num::before {
+  content: counter(recipe-step);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.admin-editor__content .recipe-step__body {
+  min-width: 0;
+}
+
+.admin-editor__content .recipe-step__drag {
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 30px;
+  border-radius: 5px;
+  color: var(--muted-foreground);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor__content .recipe-step__drag:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-editor__content .recipe-step__drag:active {
+  cursor: grabbing;
+}
+
+.admin-editor__content .recipe-step:hover .recipe-step__drag,
+.admin-editor__content .recipe-step:focus-within .recipe-step__drag {
+  opacity: 1;
+}
+
+.admin-editor__content .recipe-step__body > .is-editor-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  height: 0;
+}
+
+.admin-editor__content .recipe-step__body img {
+  margin: 8px 0 0;
+  border-radius: 8px;
+}
+
+.admin-editor__content .recipe-step__delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor__content .recipe-step:hover .recipe-step__delete,
+.admin-editor__content .recipe-step:focus-within .recipe-step__delete {
+  opacity: 1;
+}
+
+.admin-editor__content .recipe-step__delete:hover {
+  background: var(--muted);
+  color: var(--destructive);
+}
+
+.admin-editor__content .recipe-step__add {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.admin-editor__content .recipe-step:hover .recipe-step__add,
+.admin-editor__content .recipe-step:focus-within .recipe-step__add {
+  opacity: 1;
+}
+
+.admin-editor__content .recipe-step__add button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.admin-editor__content .recipe-step__add button:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+/* ---------- Gallery ---------- */
+
+.admin-editor__content .gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+
+.admin-editor__content .gallery.ProseMirror-selectednode {
+  border-color: var(--ring);
+}
+
+.admin-editor__content .gallery__images {
+  display: contents;
+}
+
+.admin-editor__content .gallery img {
+  width: 120px;
+  margin: 0;
+  border-radius: 6px;
+}
+
+.admin-editor__content .gallery__controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-editor__content .gallery__controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admin-editor__content .gallery__controls button:hover {
+  color: var(--foreground);
+}
+
+/* ---------- Ingredients marker ---------- */
+
+.admin-editor__content .ingredients-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+  color: var(--muted-foreground);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.admin-editor__content .ingredients-marker * {
+  -webkit-user-drag: none;
+}
+
+.admin-editor__content .ingredients-marker.ProseMirror-selectednode {
+  border-color: var(--ring);
+  background: color-mix(in srgb, var(--ring) 10%, transparent);
+}
+
+.admin-editor__content .ingredients-marker__grip {
+  position: absolute;
+  left: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 30px;
+  border-radius: 5px;
+  color: var(--muted-foreground);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor__content .ingredients-marker__grip:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-editor__content .ingredients-marker__grip:active {
+  cursor: grabbing;
+}
+
+.admin-editor__content .ingredients-marker:hover .ingredients-marker__grip {
+  opacity: 1;
+}
+
+.admin-editor__content .ingredients-marker__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--muted);
+  color: var(--color-red-400, var(--destructive));
+}
+
+.admin-editor__content .ingredients-marker__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-editor__content .ingredients-marker__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.admin-editor__content .ingredients-marker__hint {
+  font-size: 12px;
+}
+
+.admin-editor__content .ingredients-marker__delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor__content .ingredients-marker:hover .ingredients-marker__delete {
+  opacity: 1;
+}
+
+.admin-editor__content .ingredients-marker__delete:hover {
+  background: var(--muted);
+  color: var(--destructive);
 }

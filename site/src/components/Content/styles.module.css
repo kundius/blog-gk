@@ -1,5 +1,6 @@
 .Content {
   font-size: 18px;
+  counter-reset: recipe-step;
 }
 
 .Content h2 {
@@ -38,4 +39,102 @@
   width: 100%;
   height: auto;
   /* border-radius: 0.5rem; */
+}
+
+/* ---------- Recipe step ---------- */
+
+.Content :global(.recipe-step) {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 28px;
+  margin: 40px 0;
+  counter-increment: recipe-step;
+}
+
+.Content :global(.recipe-step__num)::before {
+  content: counter(recipe-step);
+  display: block;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-red-400);
+  text-align: right;
+}
+
+.Content :global(.recipe-step__body) {
+  min-width: 0;
+}
+
+.Content :global(.recipe-step__body > p:first-child) {
+  margin-top: 4px;
+}
+
+.Content :global(.recipe-step__body img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 16px 0 0;
+  cursor: zoom-in;
+}
+
+@media (--below-md) {
+  .Content :global(.recipe-step) {
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .Content :global(.recipe-step__num)::before {
+    font-size: 40px;
+  }
+}
+
+/* ---------- Recipe steps block ---------- */
+
+.Content :global(.recipe-steps) {
+  margin: 40px 0;
+}
+
+.Content :global(.recipe-steps__title) {
+  margin: 0 0 24px;
+}
+
+.Content :global(.recipe-steps .recipe-step:first-child) {
+  margin-top: 0;
+}
+
+.Content :global(.recipe-steps .recipe-step:last-child) {
+  margin-bottom: 0;
+}
+
+/* ---------- Gallery ---------- */
+
+.Content :global(.gallery) {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 28px 0;
+}
+
+.Content :global(.gallery img) {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  cursor: zoom-in;
+}
+
+.Content :global(.gallery img:first-child:nth-last-child(1)) {
+  grid-column: 1 / -1;
+}
+
+.Content :global(.gallery img:first-child:nth-last-child(3)) {
+  grid-column: 1 / -1;
+}
+
+@media (--below-sm) {
+  .Content :global(.gallery) {
+    grid-template-columns: 1fr;
+  }
 }

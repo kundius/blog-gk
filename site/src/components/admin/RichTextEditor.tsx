@@ -26,6 +26,9 @@ import {
   Code,
   Link as LinkIcon,
   ImagePlus,
+  Images,
+  UtensilsCrossed,
+  ChefHat,
   Table as TableIcon,
   AlignLeft,
   AlignCenter,
@@ -50,6 +53,9 @@ import {
 } from '@components/ui/dialog'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import type { FileRecord } from '@app/lib/admin/types'
+import { NodeSelection } from 'prosemirror-state'
+import { RecipeSteps, RecipeStep, Gallery, IngredientsMarker } from '@app/lib/tiptap/nodes'
+import { insertStep } from '@app/lib/tiptap/insertStep'
 
 import '@app/components/admin/editor.css'
 
@@ -81,6 +87,34 @@ function ToolbarButton({
   )
 }
 
+function ToolbarTextButton({
+  onClick,
+  active,
+  disabled,
+  title,
+  children,
+}: {
+  onClick: () => void
+  active?: boolean
+  disabled?: boolean
+  title?: string
+  children: React.ReactNode
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      title={title}
+      onClick={onClick}
+      disabled={disabled}
+      className={cn('h-8 gap-1.5 px-2 text-xs', active && 'bg-muted text-foreground')}
+    >
+      {children}
+    </Button>
+  )
+}
+
 function Divider() {
   return <div className="mx-1 h-5 w-px bg-border" />
 }
@@ -99,6 +133,7 @@ export function RichTextEditor({
   minHeight = 320,
 }: RichTextEditorProps) {
   const [showImagePicker, setShowImagePicker] = useState(false)
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false)
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
 
@@ -114,6 +149,10 @@ export function RichTextEditor({
       TableRow,
       TableHeader,
       TableCell,
+      RecipeSteps,
+      RecipeStep,
+      Gallery,
+      IngredientsMarker,
     ],
     content: value || '',
     editorProps: {
@@ -152,13 +191,42 @@ export function RichTextEditor({
     }
   }
 
+  const insertGallery = (files: FileRecord[]) => {
+    const content = files
+      .filter((f) => f.filenameDisk)
+      .map((f) => ({
+        type: 'image',
+        attrs: { src: `/files/${f.filenameDisk}` },
+      }))
+    if (!content.length) return
+    editor.chain().focus().insertContent({ type: 'gallery', content }).run()
+  }
+
+  const insertIngredients = () => {
+    editor.chain().focus().insertContent({ type: 'ingredientsMarker' }).run()
+    const sel = editor.state.selection
+    if (sel instanceof NodeSelection) {
+      editor.commands.setTextSelection(sel.to)
+    }
+  }
+
+  let foundIngredientsMarker = false
+  editor.state.doc.descendants((node) => {
+    if (node.type.name === 'ingredientsMarker') {
+      foundIngredientsMarker = true
+      return false
+    }
+    return true
+  })
+
   const insertTable = () => {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
   }
 
   return (
-    <div className="mx-auto max-w-200 overflow-hidden rounded-md border bg-background">
-      <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/40 p-1">
+    <div className="overflow-hidden rounded-md border bg-background">
+      <div className="border-b bg-muted/40 p-1">
+        <div className="flex flex-wrap items-center gap-0.5">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().undo()}
@@ -323,6 +391,35 @@ export function RichTextEditor({
         >
           <RemoveFormatting className="size-4" />
         </ToolbarButton>
+        </div>
+
+        <div className="mt-1 flex flex-wrap items-center gap-1 border-t border-border pt-1.5">
+          <span className="px-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Блоки
+          </span>
+          <ToolbarTextButton
+            onClick={insertIngredients}
+            disabled={foundIngredientsMarker}
+            title="Вставить блок ингредиентов"
+          >
+            <UtensilsCrossed className="size-4" />
+            Ингредиенты
+          </ToolbarTextButton>
+          <ToolbarTextButton
+            onClick={() => insertStep(editor)}
+            title="Вставить пошаговую инструкцию"
+          >
+            <ChefHat className="size-4" />
+            Шаги
+          </ToolbarTextButton>
+          <ToolbarTextButton
+            onClick={() => setShowGalleryPicker(true)}
+            title="Вставить галерею"
+          >
+            <Images className="size-4" />
+            Галерея
+          </ToolbarTextButton>
+        </div>
       </div>
 
       <EditorContent editor={editor} />
@@ -361,6 +458,13 @@ export function RichTextEditor({
         onOpenChange={setShowImagePicker}
         multiple={false}
         onConfirm={insertImage}
+      />
+
+      <MediaPicker
+        open={showGalleryPicker}
+        onOpenChange={setShowGalleryPicker}
+        multiple
+        onConfirm={insertGallery}
       />
     </div>
   )
