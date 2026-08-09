@@ -48,30 +48,30 @@ export function RecipeCard({ article }: { article: ArticleListItem }) {
           <div className="h-full w-full bg-muted" />
         )}
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-3 sm:p-5">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold leading-snug">{name}</h3>
+          <h3 className="text-base font-semibold leading-snug sm:text-lg">{name}</h3>
           {excerpt && (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground line-clamp-2 sm:text-sm">
               {excerpt}
             </p>
           )}
         </div>
-        <div className="mt-auto flex flex-wrap items-center gap-4 border-t border-border pt-4 text-foreground/80">
+        <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-border pt-3 text-foreground/80 sm:gap-4 sm:pt-4">
           {timeLabel && (
-            <span className="inline-flex items-center gap-1.5 text-sm">
-              <Clock className="text-primary" size={16} strokeWidth={2} />
+            <span className="inline-flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
+              <Clock className="text-primary" size={14} strokeWidth={2} />
               {timeLabel}
             </span>
           )}
           {commentsCount > 0 && (
-            <span className="inline-flex items-center gap-1.5 text-sm">
-              <MessageCircle className="text-primary" size={16} strokeWidth={2} />
+            <span className="inline-flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
+              <MessageCircle className="text-primary" size={14} strokeWidth={2} />
               {commentsCount}
             </span>
           )}
-          <span className="ml-auto inline-flex items-center gap-1.5 text-sm">
-            <Eye className="text-primary" size={16} strokeWidth={2} />
+          <span className="ml-auto inline-flex items-center gap-1 text-xs sm:gap-1.5 sm:text-sm">
+            <Eye className="text-primary" size={14} strokeWidth={2} />
             {formatHits(hitsCount)}
           </span>
         </div>

@@ -178,10 +178,6 @@
   opacity: 1;
 }
 
-.arrow {
-  display: none;
-}
-
 .slogan {
   border-top: 4px dotted var(--slogan-border-top-color);
   text-align: center;
@@ -446,19 +442,23 @@
     color: inherit;
   }
 
-  .arrow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .menu li > a.hasChildren::after {
+    content: '';
     flex: 0 0 auto;
-    font-size: 12px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
   }
 
-  .arrow .dot {
+  .menuItemOpen > a.hasChildren::after {
+    border: none;
     width: 8px;
     height: 8px;
     border-radius: 50%;
     background: currentColor;
+    transform: none;
   }
 
   .menuSub {

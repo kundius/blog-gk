@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { FaChevronDown, FaRss } from 'react-icons/fa'
+import { FaRss } from 'react-icons/fa'
 
 import { Container } from '@components/Container'
 import { ThemeContext } from '@components/ThemeContext'
@@ -240,13 +240,12 @@ function MenuItem({
   const isOpen = expandedKey === item.href
   return (
     <li className={cn(styles.menuItem, { [styles.menuItemOpen]: isOpen })}>
-      <Link href={item.href} onClick={(e) => onItemClick(e, item)}>
+      <Link
+        href={item.href}
+        onClick={(e) => onItemClick(e, item)}
+        className={item.children.length > 0 ? styles.hasChildren : undefined}
+      >
         <span>{item.title}</span>
-        {item.children.length > 0 && (
-          <span className={styles.arrow}>
-            {isOpen ? <span className={styles.dot} /> : <FaChevronDown />}
-          </span>
-        )}
       </Link>
       <ul className={styles.menuSub}>
         {item.children.map((child) => (
