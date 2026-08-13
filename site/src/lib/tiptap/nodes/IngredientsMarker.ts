@@ -21,6 +21,7 @@ export const IngredientsMarker = Node.create({
 
   addNodeView() {
     return ReactNodeViewRenderer(IngredientsMarkerView, {
+      trackNodeViewPosition: true,
       stopEvent: ({ event }) => {
         const target = event.target
         if (target instanceof Element && target.closest('button')) return true

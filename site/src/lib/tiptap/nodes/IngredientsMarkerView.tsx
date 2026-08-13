@@ -2,35 +2,32 @@
 
 import React, { useEffect, useRef } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
-import { UtensilsCrossed, Trash2, GripVertical } from 'lucide-react'
+import { UtensilsCrossed } from 'lucide-react'
 
-export function IngredientsMarkerView({ deleteNode, editor, getPos }: NodeViewProps) {
+export function IngredientsMarkerView({ editor, getPos }: NodeViewProps) {
   const getPosRef = useRef(getPos)
   getPosRef.current = getPos
 
-  const gripRef = useRef<HTMLDivElement | null>(null)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const grip = gripRef.current
-    if (!grip) return
-    const onMouseDown = () => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return
       const pos = getPosRef.current()
       if (pos != null) editor.commands.setNodeSelection(pos)
     }
-    grip.addEventListener('mousedown', onMouseDown)
-    return () => grip.removeEventListener('mousedown', onMouseDown)
+    wrapper.addEventListener('mousedown', onMouseDown)
+    return () => wrapper.removeEventListener('mousedown', onMouseDown)
   }, [editor])
 
   return (
-    <NodeViewWrapper className="ingredients-marker" contentEditable={false}>
-      <div
-        ref={gripRef}
-        className="ingredients-marker__grip"
-        draggable
-        title="Перетащить блок"
-      >
-        <GripVertical className="size-4" />
-      </div>
+    <NodeViewWrapper
+      ref={wrapperRef}
+      className="ingredients-marker"
+      contentEditable={false}
+    >
       <div className="ingredients-marker__icon">
         <UtensilsCrossed className="size-5" />
       </div>
@@ -40,15 +37,6 @@ export function IngredientsMarkerView({ deleteNode, editor, getPos }: NodeViewPr
           Блок появится на этом месте в статье
         </div>
       </div>
-      <button
-        type="button"
-        className="ingredients-marker__delete"
-        title="Удалить"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => deleteNode()}
-      >
-        <Trash2 className="size-4" />
-      </button>
     </NodeViewWrapper>
   )
 }

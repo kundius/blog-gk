@@ -137,7 +137,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </aside>
 
           <div className="flex min-w-0 flex-1 flex-col p-2 md:p-3">
-            <div className="flex flex-1 flex-col overflow-hidden rounded-xl bg-background shadow-sm">
+            <div className="flex flex-1 flex-col rounded-xl bg-background shadow-sm">
               <main className="flex-1 p-4 md:p-6">{children}</main>
             </div>
           </div>

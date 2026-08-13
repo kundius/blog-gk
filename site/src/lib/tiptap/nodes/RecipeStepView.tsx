@@ -7,7 +7,9 @@ import {
   type NodeViewProps,
 } from '@tiptap/react'
 import { TextSelection } from '@tiptap/pm/state'
+import { Fragment, Slice } from '@tiptap/pm/model'
 import { GripVertical, Plus, Trash2 } from 'lucide-react'
+import { setRecipeStepDragStart } from '../recipeStepDropGuard'
 
 export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
   const getPosRef = useRef(getPos)
@@ -18,12 +20,45 @@ export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
   useEffect(() => {
     const grip = gripRef.current
     if (!grip) return
-    const onMouseDown = () => {
-      const pos = getPosRef.current()
-      if (pos != null) editor.commands.setNodeSelection(pos)
+
+    const onMouseDown = (e: MouseEvent) => {
+      e.stopPropagation()
     }
+
+    const onDragStart = (e: DragEvent) => {
+      e.stopPropagation()
+      const pos = getPosRef.current()
+      if (typeof pos !== 'number') {
+        e.preventDefault()
+        return
+      }
+      const { state } = editor.view
+      const stepNode = state.doc.resolve(pos).nodeAfter
+      if (!stepNode || stepNode.type.name !== 'recipeStep') {
+        e.preventDefault()
+        return
+      }
+      setRecipeStepDragStart(pos)
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', stepNode.textContent || ' ')
+      ;(editor.view as { dragging: unknown }).dragging = {
+        slice: new Slice(Fragment.from(stepNode), 0, 0),
+        move: true,
+      }
+    }
+
+    const onDragEnd = () => {
+      setRecipeStepDragStart(null)
+    }
+
     grip.addEventListener('mousedown', onMouseDown)
-    return () => grip.removeEventListener('mousedown', onMouseDown)
+    grip.addEventListener('dragstart', onDragStart)
+    grip.addEventListener('dragend', onDragEnd)
+    return () => {
+      grip.removeEventListener('mousedown', onMouseDown)
+      grip.removeEventListener('dragstart', onDragStart)
+      grip.removeEventListener('dragend', onDragEnd)
+    }
   }, [editor])
 
   const addStep = (where: 'above' | 'below') => {
@@ -80,7 +115,7 @@ export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
         onClick={() => addStep(where)}
       >
         <Plus className="size-3.5" />
-        Шаг
+        Добавить шаг
       </button>
     </div>
   )
@@ -89,31 +124,29 @@ export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
     <NodeViewWrapper as="div" className="recipe-step" data-recipe-step>
       {addButton('above')}
       <div className="recipe-step__grid">
-        <div
-          ref={gripRef}
-          className="recipe-step__drag"
-          contentEditable={false}
-          draggable
-          title="Перетащить шаг"
-        >
-          <GripVertical className="size-4" />
+        <div className="recipe-step__actions">
+          <div
+            ref={gripRef}
+            className="recipe-step__drag"
+            draggable
+            title="Перетащить шаг"
+          >
+            <GripVertical className="size-4" />
+          </div>
+          <button
+            type="button"
+            className="recipe-step__delete"
+            title="Удалить шаг"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={deleteStep}
+          >
+            <Trash2 className="size-4" />
+          </button>
         </div>
-        <span
-          className="recipe-step__num"
-          contentEditable={false}
-          aria-hidden="true"
-        />
+        <div className="recipe-step__rail" contentEditable={false}>
+          <span className="recipe-step__num" aria-hidden="true" />
+        </div>
         <NodeViewContent className="recipe-step__body" />
-        <button
-          type="button"
-          className="recipe-step__delete"
-          title="Удалить шаг"
-          contentEditable={false}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={deleteStep}
-        >
-          <Trash2 className="size-4" />
-        </button>
       </div>
       {addButton('below')}
     </NodeViewWrapper>

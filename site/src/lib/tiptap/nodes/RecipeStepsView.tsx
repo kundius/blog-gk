@@ -1,53 +1,58 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   NodeViewWrapper,
   NodeViewContent,
   type NodeViewProps,
 } from '@tiptap/react'
-import { LogOut, Trash2 } from 'lucide-react'
 
-export function RecipeStepsView({ node, deleteNode, editor, getPos }: NodeViewProps) {
-  const updateTitle = (value: string) => {
-    const pos = getPos()
-    if (typeof pos !== 'number') return
-    const tr = editor.state.tr.setNodeMarkup(pos, undefined, { title: value })
-    editor.view.dispatch(tr)
-  }
+export function RecipeStepsView({ node, editor, getPos }: NodeViewProps) {
+  const getPosRef = useRef(getPos)
+  getPosRef.current = getPos
 
-  const exitBlock = () => {
-    editor.commands.exitRecipeSteps()
-    editor.commands.focus()
-  }
+  const wrapperRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    const content = wrapper.querySelector('[data-node-view-content]')
+    const header = wrapper.querySelector('.recipe-steps__header')
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return
+      const target = e.target as HTMLElement
+      if (content && content.contains(target)) return
+      if (target.closest && target.closest('button')) return
+      const pos = getPosRef.current()
+      if (pos != null) {
+        editor.commands.setNodeSelection(pos)
+        editor.commands.focus()
+      }
+      if (header && header.contains(target)) {
+        e.stopPropagation()
+      } else {
+        e.preventDefault()
+      }
+    }
+    wrapper.addEventListener('mousedown', onMouseDown)
+    return () => wrapper.removeEventListener('mousedown', onMouseDown)
+  }, [editor])
 
   return (
-    <NodeViewWrapper as="section" className="recipe-steps" data-recipe-steps>
-      <div className="recipe-steps__header" contentEditable={false}>
-        <input
-          className="recipe-steps__title"
-          value={node.attrs.title || ''}
-          onChange={(e) => updateTitle(e.target.value)}
-          placeholder="Пошаговое приготовление"
-        />
-        <div className="recipe-steps__actions">
-          <button
-            type="button"
-            title="Выйти из пошаговой инструкции"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={exitBlock}
-          >
-            <LogOut className="size-4" />
-          </button>
-          <button
-            type="button"
-            title="Удалить блок"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => deleteNode()}
-          >
-            <Trash2 className="size-4" />
-          </button>
-        </div>
+    <NodeViewWrapper
+      ref={wrapperRef}
+      as="section"
+      className="recipe-steps"
+      data-recipe-steps
+    >
+      <div
+        className="recipe-steps__header"
+        contentEditable={false}
+        draggable
+        data-drag-handle
+        title="Перетащить блок"
+      >
+        <h2 className="recipe-steps__title">{node.attrs.title || 'Пошаговое приготовление'}</h2>
       </div>
       <NodeViewContent className="recipe-steps__content" />
     </NodeViewWrapper>

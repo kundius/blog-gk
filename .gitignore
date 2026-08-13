@@ -7,4 +7,5 @@ dist/
 *.log
 landing/public/widget/
 *.pgsql
+*.tar.gz
 migrate/*.sql

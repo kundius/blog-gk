@@ -7,9 +7,15 @@ export const Gallery = Node.create({
 
   group: 'block',
 
-  content: 'image*',
+  content: 'galleryImage*',
 
   defining: true,
+
+  draggable: true,
+
+  extendNodeSchema() {
+    return { disableDropCursor: true }
+  },
 
   parseHTML() {
     return [{ tag: 'figure.gallery' }]

@@ -45,7 +45,12 @@ export const RecipeStep = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div.recipe-step' }]
+    return [
+      {
+        tag: 'div.recipe-step',
+        contentElement: '.recipe-step__body',
+      },
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {

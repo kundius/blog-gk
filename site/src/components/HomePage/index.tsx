@@ -67,7 +67,7 @@ export function HomePage() {
             />
           </div>
           {(collections === undefined || collections.data.length > 0) && (
-            <div className="grid grid-cols-2 gap-3 sm:gap-6">
+            <div className="grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-2">
               {!collections
                 ? Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className="animate-pulse overflow-hidden rounded-2xl border bg-muted">

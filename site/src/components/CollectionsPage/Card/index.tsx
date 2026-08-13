@@ -35,14 +35,14 @@ export function Card ({
       href={href}
       className="group flex items-center gap-3 overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition-[translate,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] sm:gap-5"
     >
-      <div className="relative aspect-square w-20 shrink-0 overflow-hidden sm:w-36">
+      <div className="relative aspect-square w-24 shrink-0 overflow-hidden sm:w-36">
         {thumbnail ? (
           <div className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform group-hover:[transform:scale(1.03)]">
             <CoverImage
               src={thumbnail.url}
               alt={thumbnail.name || name}
               blurHash={thumbnail.blurHash}
-              sizes="(max-width: 768px) 80px, 144px"
+              sizes="(max-width: 768px) 96px, 144px"
               loading="lazy"
             />
           </div>
@@ -52,16 +52,16 @@ export function Card ({
           </div>
         )}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col py-4 pr-4 sm:py-5 sm:pr-6">
-        <h3 className="text-lg font-semibold leading-snug sm:text-2xl">{name}</h3>
+      <div className="flex min-w-0 flex-1 flex-col justify-center py-3 pr-4 sm:py-4 sm:pr-5">
+        <h3 className="truncate text-base font-semibold leading-snug sm:text-lg">{name}</h3>
         {description && (
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground line-clamp-2 sm:mt-2 sm:text-base">
+          <p className="mt-1 truncate text-xs leading-relaxed text-muted-foreground sm:mt-1.5 sm:text-sm">
             {description}
           </p>
         )}
         {count !== undefined && count > 0 && (
-          <div className="mt-2 sm:mt-3">
-            <span className="inline-flex items-center gap-1.5 text-sm text-foreground/80 sm:text-base">
+          <div className="mt-2 flex sm:mt-3">
+            <span className="inline-flex items-center gap-1.5 text-xs text-foreground/80 sm:text-sm">
               <BsBook className="text-primary" size={16} strokeWidth={1} />
               {count} {pluralRecipes(count)}
             </span>

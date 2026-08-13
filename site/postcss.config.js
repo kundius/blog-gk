@@ -1,11 +1,11 @@
 module.exports = {
-  plugins: {
-    '@csstools/postcss-global-data': {
+  plugins: [
+    require('@csstools/postcss-global-data')({
       files: ['src/components/ThemeContext/custom-media.css']
-    },
-    'postcss-nesting': {},
-    'postcss-custom-media': {},
-    '@tailwindcss/postcss': {},
-    autoprefixer: {}
-  }
+    }),
+    require('postcss-nesting')(),
+    require('./postcss-expand-custom-media.js')(),
+    require('@tailwindcss/postcss')(),
+    require('autoprefixer')()
+  ]
 }

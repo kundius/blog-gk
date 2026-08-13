@@ -1,17 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { EditorContent, useEditor, type Editor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
-import Placeholder from '@tiptap/extension-placeholder'
-import TextAlign from '@tiptap/extension-text-align'
-import { Table } from '@tiptap/extension-table'
-import { TableRow } from '@tiptap/extension-table-row'
-import { TableHeader } from '@tiptap/extension-table-header'
-import { TableCell } from '@tiptap/extension-table-cell'
 import {
   Bold,
   Italic,
@@ -53,9 +43,10 @@ import {
 } from '@components/ui/dialog'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import type { FileRecord } from '@app/lib/admin/types'
-import { NodeSelection } from 'prosemirror-state'
-import { RecipeSteps, RecipeStep, Gallery, IngredientsMarker } from '@app/lib/tiptap/nodes'
+import { NodeSelection } from '@tiptap/pm/state'
+import { buildEditorExtensions } from '@app/lib/tiptap/extensions'
 import { insertStep } from '@app/lib/tiptap/insertStep'
+import { recipeStepDropGuard } from '@app/lib/tiptap/recipeStepDropGuard'
 
 import '@app/components/admin/editor.css'
 
@@ -123,14 +114,12 @@ interface RichTextEditorProps {
   value: string
   onChange: (html: string) => void
   placeholder?: string
-  minHeight?: number
 }
 
 export function RichTextEditor({
   value,
   onChange,
   placeholder = 'Начните писать...',
-  minHeight = 320,
 }: RichTextEditorProps) {
   const [showImagePicker, setShowImagePicker] = useState(false)
   const [showGalleryPicker, setShowGalleryPicker] = useState(false)
@@ -138,33 +127,25 @@ export function RichTextEditor({
   const [linkUrl, setLinkUrl] = useState('')
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Link.configure({ openOnClick: false, autolink: true }),
-      Image,
-      Placeholder.configure({ placeholder }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableHeader,
-      TableCell,
-      RecipeSteps,
-      RecipeStep,
-      Gallery,
-      IngredientsMarker,
-    ],
+    extensions: buildEditorExtensions(placeholder),
     content: value || '',
     editorProps: {
       attributes: {
         class: 'admin-editor__content',
-        style: `min-height:${minHeight}px`,
       },
+      handleDrop: recipeStepDropGuard,
     },
+    immediatelyRender: false,
     onUpdate: ({ editor: e }) => {
       onChange(e.getHTML())
     },
   })
+
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value || '', { emitUpdate: false })
+    }
+  }, [editor, value])
 
   if (!editor) return null
 
@@ -195,7 +176,7 @@ export function RichTextEditor({
     const content = files
       .filter((f) => f.filenameDisk)
       .map((f) => ({
-        type: 'image',
+        type: 'galleryImage',
         attrs: { src: `/files/${f.filenameDisk}` },
       }))
     if (!content.length) return
@@ -203,7 +184,21 @@ export function RichTextEditor({
   }
 
   const insertIngredients = () => {
-    editor.chain().focus().insertContent({ type: 'ingredientsMarker' }).run()
+    if (foundIngredientsMarker) return
+    const { state } = editor
+    let stepDepth = -1
+    const $pos = state.doc.resolve(state.selection.from)
+    for (let d = $pos.depth; d > 0; d--) {
+      if ($pos.node(d).type.name === 'recipeSteps') {
+        stepDepth = d
+        break
+      }
+    }
+    if (stepDepth > 0) {
+      editor.chain().focus().insertContentAt($pos.after(stepDepth), { type: 'ingredientsMarker' }).run()
+    } else {
+      editor.chain().focus().insertContent({ type: 'ingredientsMarker' }).run()
+    }
     const sel = editor.state.selection
     if (sel instanceof NodeSelection) {
       editor.commands.setTextSelection(sel.to)
@@ -211,21 +206,31 @@ export function RichTextEditor({
   }
 
   let foundIngredientsMarker = false
+  let foundRecipeSteps = false
   editor.state.doc.descendants((node) => {
     if (node.type.name === 'ingredientsMarker') {
       foundIngredientsMarker = true
       return false
     }
+    if (node.type.name === 'recipeSteps') {
+      foundRecipeSteps = true
+      return false
+    }
     return true
   })
+
+  const handleInsertStep = () => {
+    if (foundRecipeSteps) return
+    insertStep(editor)
+  }
 
   const insertTable = () => {
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
   }
 
   return (
-    <div className="overflow-hidden rounded-md border bg-background">
-      <div className="border-b bg-muted/40 p-1">
+    <div className="admin-editor rounded-md border bg-background">
+        <div className="admin-editor__toolbar sticky top-0 z-10 rounded-t-md border-b bg-muted p-1">
         <div className="flex flex-wrap items-center gap-0.5">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -406,11 +411,12 @@ export function RichTextEditor({
             Ингредиенты
           </ToolbarTextButton>
           <ToolbarTextButton
-            onClick={() => insertStep(editor)}
-            title="Вставить пошаговую инструкцию"
+            onClick={handleInsertStep}
+            disabled={foundRecipeSteps}
+            title="Вставить блок пошагового приготовления"
           >
             <ChefHat className="size-4" />
-            Шаги
+            Пошаговое приготовление
           </ToolbarTextButton>
           <ToolbarTextButton
             onClick={() => setShowGalleryPicker(true)}
@@ -420,9 +426,9 @@ export function RichTextEditor({
             Галерея
           </ToolbarTextButton>
         </div>
-      </div>
+        </div>
 
-      <EditorContent editor={editor} />
+          <EditorContent editor={editor} />
 
       <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
         <DialogContent className="sm:max-w-md">

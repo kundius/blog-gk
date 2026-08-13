@@ -217,7 +217,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-visible">
         <CardHeader>
           <CardTitle className="text-base">Контент</CardTitle>
         </CardHeader>

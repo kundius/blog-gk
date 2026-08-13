@@ -5,7 +5,7 @@ import { Content } from '@components/Content'
 import { Ingredients } from '@components/Ingredients'
 import { Lightbox, type LightboxImage } from '@components/Lightbox'
 import {
-  INGREDIENTS_MARKER_HTML,
+  INGREDIENTS_MARKER_RE,
   hasIngredientsMarker,
 } from '@app/lib/tiptap/constants'
 
@@ -54,7 +54,7 @@ export function ArticleContent({ html, ingredients, itemProp }: ArticleContentPr
     })
   }, [])
 
-  const segments = html.split(INGREDIENTS_MARKER_HTML)
+  const segments = html.split(INGREDIENTS_MARKER_RE)
 
   return (
     <>
