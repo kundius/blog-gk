@@ -5,8 +5,7 @@ import { TextSelection } from '@tiptap/pm/state'
 import { BetweenVerticalEnd, BetweenVerticalStart } from 'lucide-react'
 import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
 
-const TOOLBAR_VISIBILITY =
-  'group-hover/step:visible group-hover/step:opacity-100'
+const TOOLBAR_VISIBILITY = 'recipe-step__toolbar'
 
 export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
   const addStep = (where: 'above' | 'below') => {
@@ -31,22 +30,19 @@ export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
       title={where === 'above' ? 'Добавить шаг выше' : 'Добавить шаг ниже'}
       onMouseDown={(e) => e.preventDefault()}
       onClick={() => addStep(where)}
-      className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+      className="block-toolbar__add"
     >
-      {where === 'above' ? <BetweenVerticalStart className="size-3.5" /> : <BetweenVerticalEnd className="size-3.5" />}
+      {where === 'above' ? <BetweenVerticalStart /> : <BetweenVerticalEnd />}
     </button>
   )
 
   return (
-    <NodeViewWrapper as="div" className="group/step relative mt-[10px] [counter-increment:recipe-step]">
-      <div className="grid grid-cols-[34px_1fr] gap-3 rounded-[10px] border border-dashed border-border bg-background p-[12px_14px] transition-colors focus-within:border-ring [.ProseMirror-selectednode:not(.node-recipeSteps)_&]:border-blue-600">
-        <div className="flex flex-col items-center gap-1.5 self-start" contentEditable={false}>
-          <span
-            aria-hidden="true"
-            className="flex size-[34px] items-center justify-center rounded-lg bg-muted text-red-400 before:text-base before:font-bold before:leading-none before:content-[counter(recipe-step)]"
-          />
+    <NodeViewWrapper as="div" className="recipe-step">
+      <div className="recipe-step__grid">
+        <div className="recipe-step__rail" contentEditable={false}>
+          <span aria-hidden="true" className="recipe-step__num" />
         </div>
-        <NodeViewContent className="min-w-0" />
+        <NodeViewContent className="recipe-step__body" />
       </div>
       <BlockToolbar onDelete={deleteNode} visibleClassName={TOOLBAR_VISIBILITY}>
         {addButton('above')}

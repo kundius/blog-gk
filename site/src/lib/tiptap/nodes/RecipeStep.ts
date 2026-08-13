@@ -7,7 +7,7 @@ export const RecipeStep = Node.create({
 
   group: 'recipeStep',
 
-  content: '(paragraph|heading|image|gallery|bulletList|orderedList|blockquote|codeBlock)+',
+  content: '(paragraph|heading|image|bulletList|orderedList|blockquote|codeBlock)+',
 
   defining: true,
 
@@ -34,6 +34,7 @@ export const RecipeStep = Node.create({
   addNodeView() {
     return ReactNodeViewRenderer(RecipeStepView, {
       contentDOMElementTag: 'div',
+      trackNodeViewPosition: true,
     })
   },
 })

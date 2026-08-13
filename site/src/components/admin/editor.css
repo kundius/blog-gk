@@ -1,8 +1,620 @@
 .admin-editor {
+  --white: #fff;
+  --black: #2e2b29;
+  --gray-1: rgba(61, 37, 20, 0.05);
+  --gray-2: rgba(61, 37, 20, 0.08);
+  --gray-3: rgba(61, 37, 20, 0.12);
+  --purple: #6a00f5;
+  --purple-light: rgba(88, 5, 255, 0.05);
+  --link-text-color: var(--primary);
+  --placeholder-color: var(--muted-foreground);
+  --selection-color: color-mix(in srgb, var(--purple) 20%, transparent);
+
   padding: 24px;
+  font-size: 16px;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji';
+  line-height: 1.5;
+  white-space: pre-wrap;
+  caret-color: var(--purple);
 }
 
-.admin-editor > p:last-child:has(> br.ProseMirror-trailingBreak:only-child) {
+.admin-editor:focus {
+  outline: none;
+}
+
+.admin-editor > * {
+  position: relative;
+}
+
+.admin-editor :first-child {
+  margin-top: 0;
+}
+
+/* Paragraph styles */
+.admin-editor p:not(td p):not(th p) {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.admin-editor p:not(:first-child):not(li p):not(td p):not(th p) {
+  margin-top: 20px;
+}
+
+/* Selection */
+.admin-editor:not(.readonly):not(.ProseMirror-hideselection) ::selection {
+  background-color: var(--selection-color);
+}
+
+.admin-editor .ProseMirror-hideselection {
+  caret-color: #0000;
+}
+
+.admin-editor .ProseMirror-selectednode:not(img):not(pre):not(.react-renderer) {
+  border-radius: 0.5rem;
+  background-color: var(--selection-color);
+}
+
+/* List styles */
+.admin-editor ul,
+.admin-editor ol {
+  padding: 0 1rem;
+  margin: 1.25rem 1rem 1.25rem 0.4rem;
+}
+
+.admin-editor ul li p,
+.admin-editor ol li p {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+/* Heading styles */
+.admin-editor h1,
+.admin-editor h2,
+.admin-editor h3,
+.admin-editor h4,
+.admin-editor h5,
+.admin-editor h6 {
+  font-weight: 700;
+  line-height: 1.1;
+  margin-top: 2.5rem;
+  text-wrap: pretty;
+}
+
+.admin-editor h1,
+.admin-editor h2 {
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-editor h1 {
+  font-size: 1.4rem;
+}
+
+.admin-editor h2 {
+  font-size: 1.2rem;
+}
+
+.admin-editor h3 {
+  font-size: 1.1rem;
+}
+
+.admin-editor h4,
+.admin-editor h5,
+.admin-editor h6 {
+  font-size: 1rem;
+}
+
+/* Code and preformatted text styles */
+.admin-editor code {
+  background-color: var(--purple-light);
+  border-radius: 0.4rem;
+  color: var(--black);
+  font-size: 0.85rem;
+  padding: 0.25em 0.3em;
+}
+
+.admin-editor pre {
+  background: var(--black);
+  border-radius: 0.5rem;
+  color: var(--white);
+  font-family: 'JetBrainsMono', monospace;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.admin-editor pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.8rem;
+  padding: 0;
+}
+
+.admin-editor blockquote {
+  border-left: 3px solid var(--gray-3);
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+}
+
+.admin-editor hr {
+  border: none;
+  border-top: 1px solid var(--gray-2);
+  margin: 2rem 0;
+}
+
+/* Table-specific styling */
+.admin-editor table {
+  border-collapse: collapse;
+  margin: 0;
+  overflow: hidden;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.admin-editor table td,
+.admin-editor table th {
+  border: 1px solid var(--gray-3);
+  box-sizing: border-box;
+  min-width: 1em;
+  padding: 6px 8px;
+  position: relative;
+  vertical-align: top;
+}
+
+.admin-editor table td > *,
+.admin-editor table th > * {
+  margin-bottom: 0;
+}
+
+.admin-editor table th {
+  background-color: var(--gray-1);
+  font-weight: bold;
+  text-align: left;
+}
+
+.admin-editor table .selectedCell:after {
+  background: var(--gray-2);
+  content: '';
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.admin-editor table .column-resize-handle {
+  background-color: var(--purple);
+  bottom: -2px;
+  pointer-events: none;
+  position: absolute;
+  right: -2px;
+  top: 0;
+  width: 4px;
+}
+
+.admin-editor .tableWrapper {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+.admin-editor.resize-cursor {
+  cursor: ew-resize;
+  cursor: col-resize;
+}
+
+/* Links */
+.admin-editor a {
+  color: var(--link-text-color);
+  text-decoration: underline;
+}
+
+.admin-editor a span {
+  text-decoration: underline;
+}
+
+.admin-editor s span {
+  text-decoration: line-through;
+}
+
+.admin-editor u span {
+  text-decoration: underline;
+}
+
+/* Drop cursor */
+.admin-editor .ProseMirror-dropcursor-block,
+.admin-editor .ProseMirror-dropcursor-inline,
+.admin-editor .prosemirror-dropcursor-block,
+.admin-editor .prosemirror-dropcursor-inline {
+  cursor: grabbing;
+  border-radius: 0.25rem;
+  width: 100%;
+  height: 0.188rem;
+  margin-left: -1px;
+  margin-right: -1px;
+  background: var(--purple) !important;
+}
+
+/* ================================================================
+   Custom widget: Block toolbar
+   ================================================================ */
+.admin-editor .block-toolbar {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.125rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--background);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  transform: translateY(-50%);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.admin-editor .block-toolbar__add,
+.admin-editor .block-toolbar__delete,
+.admin-editor .block-toolbar__drag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.375rem;
+  color: var(--muted-foreground);
+  transition: color 150ms ease-out, background-color 150ms ease-out;
+}
+
+.admin-editor .block-toolbar__drag {
+  cursor: grab;
+}
+
+.admin-editor .block-toolbar__drag:active {
+  cursor: grabbing;
+}
+
+.admin-editor .block-toolbar__add:hover,
+.admin-editor .block-toolbar__drag:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.admin-editor .block-toolbar__delete:hover {
+  background: var(--muted);
+  color: var(--destructive);
+}
+
+.admin-editor .block-toolbar svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* Toolbar visibility on parent hover */
+.admin-editor .recipe-steps:hover:not(:has(.node-recipeStep:hover))
+  .recipe-steps__toolbar,
+.admin-editor .recipe-step:hover .recipe-step__toolbar,
+.admin-editor .ingredients-marker:hover .ingredients-marker__toolbar {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* ================================================================
+   Custom widget: Recipe steps
+   ================================================================ */
+.admin-editor .recipe-steps {
+  position: relative;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+  counter-reset: recipe-step;
+}
+
+.admin-editor .ProseMirror-selectednode > .recipe-steps {
+  border-style: solid;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.admin-editor .recipe-steps__title {
+  margin: 0 0 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--foreground);
+}
+
+/* ================================================================
+   Custom widget: Recipe step
+   ================================================================ */
+.admin-editor .recipe-step {
+  position: relative;
+  margin-top: 10px;
+  counter-increment: recipe-step;
+}
+
+.admin-editor .recipe-step__grid {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 0.75rem;
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--background);
+  transition: border-color 150ms ease-out;
+}
+
+.admin-editor .recipe-step__grid:focus-within {
+  border-color: var(--ring);
+}
+
+.admin-editor .node-recipeStep.ProseMirror-selectednode > .recipe-step
+  .recipe-step__grid {
+  border-color: #2563eb;
+}
+
+.admin-editor .recipe-step__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  align-self: flex-start;
+}
+
+.admin-editor .recipe-step__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 0.5rem;
+  background: var(--muted);
+  color: var(--color-red-400, var(--destructive));
+}
+
+.admin-editor .recipe-step__num::before {
+  content: counter(recipe-step);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.admin-editor .recipe-step__body {
+  min-width: 0;
+}
+
+/* ================================================================
+   Custom widget: Gallery
+   ================================================================ */
+.admin-editor .gallery {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.admin-editor .gallery:active {
+  cursor: grabbing;
+}
+
+.admin-editor .ProseMirror-selectednode > .gallery {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.admin-editor .gallery__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-editor .gallery__images {
+  display: contents;
+}
+
+.admin-editor .gallery__images [data-node-view-content] {
+  display: contents;
+}
+
+.admin-editor .gallery-image__placeholder {
+  position: absolute;
+  width: 120px;
+  height: 80px;
+  border-radius: 6px;
+  border: 2px dashed var(--ring);
+  background: color-mix(in srgb, var(--ring) 15%, transparent);
+  transform: translate(-50%, 0);
+  pointer-events: none;
+  z-index: 5;
+  transition: left 120ms ease-out, top 120ms ease-out;
+}
+
+.admin-editor .gallery__add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 120px;
+  height: 80px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1.5px dashed var(--border);
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: grab;
+  transition: border-color 150ms ease-out, color 150ms ease-out;
+}
+
+.admin-editor .gallery__add:active {
+  cursor: grabbing;
+}
+
+.admin-editor .gallery__add:hover {
+  border-color: var(--ring);
+  color: var(--foreground);
+}
+
+.admin-editor .gallery__add svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ================================================================
+   Custom widget: Gallery image
+   ================================================================ */
+.admin-editor .gallery-image {
+  position: relative;
+  flex-shrink: 0;
+  cursor: grab;
+}
+
+.admin-editor .gallery-image:active {
+  cursor: grabbing;
+}
+
+.admin-editor .gallery-image[data-selected='true'] .gallery-image__img {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.admin-editor .gallery-image__img {
+  display: block;
+  width: 120px;
+  height: 80px;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  object-fit: cover;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.admin-editor .recipe-step__body .gallery-image__img {
+  margin: 0;
+}
+
+/* ================================================================
+   Custom widget: Ingredients marker
+   ================================================================ */
+.admin-editor .ingredients-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
+  color: var(--muted-foreground);
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.admin-editor .ingredients-marker:active {
+  cursor: grabbing;
+}
+
+.admin-editor .ProseMirror-selectednode > .ingredients-marker {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.admin-editor .ingredients-marker__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  background: var(--muted);
+  color: var(--color-red-400, var(--destructive));
+}
+
+.admin-editor .ingredients-marker__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.admin-editor .ingredients-marker__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 0.125rem;
+}
+
+.admin-editor .ingredients-marker__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--foreground);
+}
+
+.admin-editor .ingredients-marker__hint {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.dark .admin-editor {
+  caret-color: #c4b5fd;
+}
+
+.dark .admin-editor code {
+  background-color: rgb(106 0 245 / 0.18);
+  color: var(--foreground);
+}
+
+
+/* Placeholder */
+/*.admin-editor .is-empty[data-placeholder]:has(>.ProseMirror-trailingBreak:only-child)::before {
+  content: attr(data-placeholder);
+  pointer-events: none;
+  width: 100%;
+  height: 0;
+  text-align: inherit;
+  position: absolute;
+  left: 0;
+  right: 0;
+  color: var(--placeholder-color);
+}*/
+
+/*.admin-editor > p:last-child:has(> br.ProseMirror-trailingBreak:only-child) {
   position: relative;
 }
 
@@ -20,4 +632,4 @@
 
 .admin-editor > p:first-child:last-child:has(> br.ProseMirror-trailingBreak:only-child)::before {
   content: 'Начните здесь…';
-}
+}*/

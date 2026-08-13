@@ -1,0 +1,44 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "aitunnel": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AITUNNEL",
+      "options": {
+        "baseURL": "https://api.aitunnel.ru/v1"
+      },
+      "models": {
+        "qwen3.7-flash": {
+          "name": "Qwen3.7 Flash",
+          "limit": {
+            "context": 1000000,
+            "output": 65536
+          }
+        },
+        "mistral-nemo": {
+          "name": "Mistral Nemo",
+          "limit": {
+            "context": 131072,
+            "output": 16384
+          }
+        },
+        "gpt-5.6-luna": {
+          "name": "GPT 5.6 Luna",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          }
+        },
+        "deepseek-v4-flash-0731": {
+          "name": "DeepSeek V4 Flash 0731",
+          "limit": {
+            "context": 1048576,
+            "output": 384000
+          }
+        }
+      }
+    }
+  },
+  "model": "aitunnel/deepseek-v4-flash-0731",
+  "small_model": "aitunnel/gpt-5.6-luna"
+}

@@ -8,7 +8,7 @@ import { Table } from '@tiptap/extension-table'
 import { TableRow } from '@tiptap/extension-table-row'
 import { TableHeader } from '@tiptap/extension-table-header'
 import { TableCell } from '@tiptap/extension-table-cell'
-import { RecipeSteps, RecipeStep, Gallery, GalleryImage, IngredientsMarker } from './nodes'
+import { RecipeSteps, RecipeStep, IngredientsMarker } from './nodes'
 
 export function buildEditorExtensions(placeholder = 'Начните писать...') {
   return [
@@ -26,8 +26,6 @@ export function buildEditorExtensions(placeholder = 'Начните писать
     TableCell,
     RecipeSteps,
     RecipeStep,
-    Gallery,
-    GalleryImage,
     IngredientsMarker,
   ]
 }
