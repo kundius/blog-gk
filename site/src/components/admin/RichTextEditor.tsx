@@ -28,7 +28,7 @@ import {
   Redo2,
   Minus,
   RemoveFormatting,
-  Unlink,
+  Unlink
 } from 'lucide-react'
 import { cn } from '@app/lib/utils'
 import { Button } from '@components/ui/button'
@@ -39,14 +39,13 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from '@components/ui/dialog'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import type { FileRecord } from '@app/lib/admin/types'
 import { NodeSelection } from '@tiptap/pm/state'
 import { buildEditorExtensions } from '@app/lib/tiptap/extensions'
 import { insertStep } from '@app/lib/tiptap/insertStep'
-import { recipeStepDropGuard } from '@app/lib/tiptap/recipeStepDropGuard'
 
 import '@app/components/admin/editor.css'
 
@@ -55,7 +54,7 @@ function ToolbarButton({
   active,
   disabled,
   title,
-  children,
+  children
 }: {
   onClick: () => void
   active?: boolean
@@ -83,7 +82,7 @@ function ToolbarTextButton({
   active,
   disabled,
   title,
-  children,
+  children
 }: {
   onClick: () => void
   active?: boolean
@@ -99,7 +98,10 @@ function ToolbarTextButton({
       title={title}
       onClick={onClick}
       disabled={disabled}
-      className={cn('h-8 gap-1.5 px-2 text-xs', active && 'bg-muted text-foreground')}
+      className={cn(
+        'h-8 gap-1.5 px-2 text-xs',
+        active && 'bg-muted text-foreground'
+      )}
     >
       {children}
     </Button>
@@ -119,7 +121,7 @@ interface RichTextEditorProps {
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = 'Начните писать...',
+  placeholder = 'Начните писать...'
 }: RichTextEditorProps) {
   const [showImagePicker, setShowImagePicker] = useState(false)
   const [showGalleryPicker, setShowGalleryPicker] = useState(false)
@@ -131,14 +133,13 @@ export function RichTextEditor({
     content: value || '',
     editorProps: {
       attributes: {
-        class: 'admin-editor__content',
-      },
-      handleDrop: recipeStepDropGuard,
+        class: 'admin-editor'
+      }
     },
     immediatelyRender: false,
     onUpdate: ({ editor: e }) => {
       onChange(e.getHTML())
-    },
+    }
   })
 
   useEffect(() => {
@@ -168,7 +169,11 @@ export function RichTextEditor({
   const insertImage = (files: FileRecord[]) => {
     const file = files[0]
     if (file?.filenameDisk) {
-      editor.chain().focus().setImage({ src: `/files/${file.filenameDisk}` }).run()
+      editor
+        .chain()
+        .focus()
+        .setImage({ src: `/files/${file.filenameDisk}` })
+        .run()
     }
   }
 
@@ -177,7 +182,7 @@ export function RichTextEditor({
       .filter((f) => f.filenameDisk)
       .map((f) => ({
         type: 'galleryImage',
-        attrs: { src: `/files/${f.filenameDisk}` },
+        attrs: { src: `/files/${f.filenameDisk}` }
       }))
     if (!content.length) return
     editor.chain().focus().insertContent({ type: 'gallery', content }).run()
@@ -195,7 +200,11 @@ export function RichTextEditor({
       }
     }
     if (stepDepth > 0) {
-      editor.chain().focus().insertContentAt($pos.after(stepDepth), { type: 'ingredientsMarker' }).run()
+      editor
+        .chain()
+        .focus()
+        .insertContentAt($pos.after(stepDepth), { type: 'ingredientsMarker' })
+        .run()
     } else {
       editor.chain().focus().insertContent({ type: 'ingredientsMarker' }).run()
     }
@@ -225,177 +234,189 @@ export function RichTextEditor({
   }
 
   const insertTable = () => {
-    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+    editor
+      .chain()
+      .focus()
+      .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+      .run()
   }
 
   return (
-    <div className="admin-editor rounded-md border bg-background">
-        <div className="admin-editor__toolbar sticky top-0 z-10 rounded-t-md border-b bg-muted p-1">
+    <div className="rounded-md border bg-background">
+      <div className="sticky top-0 z-10 rounded-t-md border-b bg-muted p-1">
         <div className="flex flex-wrap items-center gap-0.5">
-        <ToolbarButton
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          title="Отменить"
-        >
-          <Undo2 className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          title="Вернуть"
-        >
-          <Redo2 className="size-4" />
-        </ToolbarButton>
-        <Divider />
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          active={editor.isActive('bold')}
-          title="Жирный"
-        >
-          <Bold className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          active={editor.isActive('italic')}
-          title="Курсив"
-        >
-          <Italic className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          active={editor.isActive('underline')}
-          title="Подчёркнутый"
-        >
-          <UnderlineIcon className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          active={editor.isActive('strike')}
-          title="Зачёркнутый"
-        >
-          <Strikethrough className="size-4" />
-        </ToolbarButton>
-        <Divider />
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          active={editor.isActive('heading', { level: 1 })}
-          title="Заголовок 1"
-        >
-          <Heading1 className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          active={editor.isActive('heading', { level: 2 })}
-          title="Заголовок 2"
-        >
-          <Heading2 className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          active={editor.isActive('heading', { level: 3 })}
-          title="Заголовок 3"
-        >
-          <Heading3 className="size-4" />
-        </ToolbarButton>
-        <Divider />
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          active={editor.isActive('bulletList')}
-          title="Маркированный список"
-        >
-          <List className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          active={editor.isActive('orderedList')}
-          title="Нумерованный список"
-        >
-          <ListOrdered className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          active={editor.isActive('blockquote')}
-          title="Цитата"
-        >
-          <Quote className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          active={editor.isActive('codeBlock')}
-          title="Блок кода"
-        >
-          <Code className="size-4" />
-        </ToolbarButton>
-        <Divider />
-        <ToolbarButton
-          onClick={openLinkDialog}
-          active={editor.isActive('link')}
-          title="Ссылка"
-        >
-          <LinkIcon className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().unsetLink().run()}
-          disabled={!editor.isActive('link')}
-          title="Убрать ссылку"
-        >
-          <Unlink className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => setShowImagePicker(true)}
-          title="Картинка"
-        >
-          <ImagePlus className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={insertTable}
-          active={editor.isActive('table')}
-          title="Таблица"
-        >
-          <TableIcon className="size-4" />
-        </ToolbarButton>
-        <Divider />
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          active={editor.isActive({ textAlign: 'left' })}
-          title="По левому краю"
-        >
-          <AlignLeft className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          active={editor.isActive({ textAlign: 'center' })}
-          title="По центру"
-        >
-          <AlignCenter className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          active={editor.isActive({ textAlign: 'right' })}
-          title="По правому краю"
-        >
-          <AlignRight className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
-          active={editor.isActive({ textAlign: 'justify' })}
-          title="По ширине"
-        >
-          <AlignJustify className="size-4" />
-        </ToolbarButton>
-        <Divider />
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          title="Горизонтальная линия"
-        >
-          <Minus className="size-4" />
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-          title="Очистить форматирование"
-        >
-          <RemoveFormatting className="size-4" />
-        </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editor.can().undo()}
+            title="Отменить"
+          >
+            <Undo2 className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editor.can().redo()}
+            title="Вернуть"
+          >
+            <Redo2 className="size-4" />
+          </ToolbarButton>
+          <Divider />
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            active={editor.isActive('bold')}
+            title="Жирный"
+          >
+            <Bold className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            active={editor.isActive('italic')}
+            title="Курсив"
+          >
+            <Italic className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            active={editor.isActive('underline')}
+            title="Подчёркнутый"
+          >
+            <UnderlineIcon className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            active={editor.isActive('strike')}
+            title="Зачёркнутый"
+          >
+            <Strikethrough className="size-4" />
+          </ToolbarButton>
+          <Divider />
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 1 }).run()
+            }
+            active={editor.isActive('heading', { level: 1 })}
+            title="Заголовок 1"
+          >
+            <Heading1 className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 2 }).run()
+            }
+            active={editor.isActive('heading', { level: 2 })}
+            title="Заголовок 2"
+          >
+            <Heading2 className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+            active={editor.isActive('heading', { level: 3 })}
+            title="Заголовок 3"
+          >
+            <Heading3 className="size-4" />
+          </ToolbarButton>
+          <Divider />
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            active={editor.isActive('bulletList')}
+            title="Маркированный список"
+          >
+            <List className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            active={editor.isActive('orderedList')}
+            title="Нумерованный список"
+          >
+            <ListOrdered className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            active={editor.isActive('blockquote')}
+            title="Цитата"
+          >
+            <Quote className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            active={editor.isActive('codeBlock')}
+            title="Блок кода"
+          >
+            <Code className="size-4" />
+          </ToolbarButton>
+          <Divider />
+          <ToolbarButton
+            onClick={openLinkDialog}
+            active={editor.isActive('link')}
+            title="Ссылка"
+          >
+            <LinkIcon className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().unsetLink().run()}
+            disabled={!editor.isActive('link')}
+            title="Убрать ссылку"
+          >
+            <Unlink className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => setShowImagePicker(true)}
+            title="Картинка"
+          >
+            <ImagePlus className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={insertTable}
+            active={editor.isActive('table')}
+            title="Таблица"
+          >
+            <TableIcon className="size-4" />
+          </ToolbarButton>
+          <Divider />
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('left').run()}
+            active={editor.isActive({ textAlign: 'left' })}
+            title="По левому краю"
+          >
+            <AlignLeft className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('center').run()}
+            active={editor.isActive({ textAlign: 'center' })}
+            title="По центру"
+          >
+            <AlignCenter className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('right').run()}
+            active={editor.isActive({ textAlign: 'right' })}
+            title="По правому краю"
+          >
+            <AlignRight className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+            active={editor.isActive({ textAlign: 'justify' })}
+            title="По ширине"
+          >
+            <AlignJustify className="size-4" />
+          </ToolbarButton>
+          <Divider />
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            title="Горизонтальная линия"
+          >
+            <Minus className="size-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() =>
+              editor.chain().focus().unsetAllMarks().clearNodes().run()
+            }
+            title="Очистить форматирование"
+          >
+            <RemoveFormatting className="size-4" />
+          </ToolbarButton>
         </div>
 
         <div className="mt-1 flex flex-wrap items-center gap-1 border-t border-border pt-1.5">
@@ -426,9 +447,9 @@ export function RichTextEditor({
             Галерея
           </ToolbarTextButton>
         </div>
-        </div>
+      </div>
 
-          <EditorContent editor={editor} />
+      <EditorContent editor={editor} />
 
       <Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
         <DialogContent className="sm:max-w-md">

@@ -1,42 +1,29 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/react'
 import { UtensilsCrossed } from 'lucide-react'
+import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
 
-export function IngredientsMarkerView({ editor, getPos }: NodeViewProps) {
-  const getPosRef = useRef(getPos)
-  getPosRef.current = getPos
-
-  const wrapperRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current
-    if (!wrapper) return
-    const onMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0) return
-      const pos = getPosRef.current()
-      if (pos != null) editor.commands.setNodeSelection(pos)
-    }
-    wrapper.addEventListener('mousedown', onMouseDown)
-    return () => wrapper.removeEventListener('mousedown', onMouseDown)
-  }, [editor])
-
+export function IngredientsMarkerView({ deleteNode }: NodeViewProps) {
   return (
     <NodeViewWrapper
-      ref={wrapperRef}
-      className="ingredients-marker"
+      className="group relative my-3 rounded-[10px] border border-border bg-muted/40 px-3.5 py-3 text-muted-foreground select-none [.ProseMirror-selectednode_>&]:border-blue-600 [.ProseMirror-selectednode_>&]:shadow-[0_0_0_2px_rgba(59,130,246,0.25)]"
       contentEditable={false}
     >
-      <div className="ingredients-marker__icon">
-        <UtensilsCrossed className="size-5" />
-      </div>
-      <div className="ingredients-marker__text">
-        <div className="ingredients-marker__title">Ингредиенты</div>
-        <div className="ingredients-marker__hint">
-          Блок появится на этом месте в статье
+      <div className="flex w-full items-center gap-3">
+        <div className="flex size-[34px] shrink-0 items-center justify-center rounded-lg bg-muted text-red-400">
+          <UtensilsCrossed className="size-5" />
+        </div>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <div className="text-sm font-semibold leading-[1.2] text-foreground">
+            Ингредиенты
+          </div>
+          <div className="text-xs leading-[1.2]">
+            Блок появится на этом месте в статье
+          </div>
         </div>
       </div>
+      <BlockToolbar onDelete={deleteNode} />
     </NodeViewWrapper>
   )
 }

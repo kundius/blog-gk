@@ -1,60 +1,30 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
 import {
   NodeViewWrapper,
   NodeViewContent,
-  type NodeViewProps,
+  type NodeViewProps
 } from '@tiptap/react'
+import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
 
-export function RecipeStepsView({ node, editor, getPos }: NodeViewProps) {
-  const getPosRef = useRef(getPos)
-  getPosRef.current = getPos
+const TOOLBAR_VISIBILITY =
+  '[.group:hover:not(:has(.node-recipeStep:hover))_&]:visible ' +
+  '[.group:hover:not(:has(.node-recipeStep:hover))_&]:opacity-100'
 
-  const wrapperRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current
-    if (!wrapper) return
-    const content = wrapper.querySelector('[data-node-view-content]')
-    const header = wrapper.querySelector('.recipe-steps__header')
-    const onMouseDown = (e: MouseEvent) => {
-      if (e.button !== 0) return
-      const target = e.target as HTMLElement
-      if (content && content.contains(target)) return
-      if (target.closest && target.closest('button')) return
-      const pos = getPosRef.current()
-      if (pos != null) {
-        editor.commands.setNodeSelection(pos)
-        editor.commands.focus()
-      }
-      if (header && header.contains(target)) {
-        e.stopPropagation()
-      } else {
-        e.preventDefault()
-      }
-    }
-    wrapper.addEventListener('mousedown', onMouseDown)
-    return () => wrapper.removeEventListener('mousedown', onMouseDown)
-  }, [editor])
-
+export function RecipeStepsView({ deleteNode }: NodeViewProps) {
   return (
     <NodeViewWrapper
-      ref={wrapperRef}
       as="section"
-      className="recipe-steps"
-      data-recipe-steps
+      className="group relative my-4 rounded-[10px] border border-dashed border-border bg-muted/40 p-4 [counter-reset:recipe-step] [.ProseMirror-selectednode_>&]:border-solid [.ProseMirror-selectednode_>&]:border-blue-600 [.ProseMirror-selectednode_>&]:shadow-[0_0_0_2px_rgba(59,130,246,0.25)]"
     >
-      <div
-        className="recipe-steps__header"
+      <h2
+        className="mb-4 select-none text-xl font-semibold leading-[1.3] text-foreground"
         contentEditable={false}
-        draggable
-        data-drag-handle
-        title="Перетащить блок"
       >
-        <h2 className="recipe-steps__title">{node.attrs.title || 'Пошаговое приготовление'}</h2>
-      </div>
-      <NodeViewContent className="recipe-steps__content" />
+        Пошаговое приготовление
+      </h2>
+      <NodeViewContent />
+      <BlockToolbar onDelete={deleteNode} visibleClassName={TOOLBAR_VISIBILITY} />
     </NodeViewWrapper>
   )
 }

@@ -11,34 +11,22 @@ export const RecipeSteps = Node.create({
 
   defining: true,
 
-  addAttributes() {
-    return {
-      title: {
-        default: 'Пошаговое приготовление',
-        renderHTML: () => ({}),
-      },
-    }
-  },
+  draggable: true,
 
   parseHTML() {
     return [
       {
         tag: 'section.recipe-steps',
         contentElement: '.recipe-steps__content',
-        getAttrs: (el) => {
-          if (typeof el === 'string') return {}
-          const heading = el.querySelector('.recipe-steps__title')
-          return { title: heading?.textContent?.trim() || null }
-        },
       },
     ]
   },
 
-  renderHTML({ node, HTMLAttributes }) {
+  renderHTML({ HTMLAttributes }) {
     return [
       'section',
       mergeAttributes(HTMLAttributes, { class: 'recipe-steps' }),
-      ['h2', { class: 'recipe-steps__title' }, node.attrs.title || ''],
+      ['h2', { class: 'recipe-steps__title' }, 'Пошаговое приготовление'],
       ['div', { class: 'recipe-steps__content' }, 0],
     ]
   },
@@ -47,11 +35,6 @@ export const RecipeSteps = Node.create({
     return ReactNodeViewRenderer(RecipeStepsView, {
       contentDOMElementTag: 'div',
       trackNodeViewPosition: true,
-      stopEvent: ({ event }) => {
-        const target = event.target
-        if (target instanceof Element && target.closest('button')) return true
-        return false
-      },
     })
   },
 })

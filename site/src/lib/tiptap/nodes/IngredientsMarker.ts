@@ -9,7 +9,7 @@ export const IngredientsMarker = Node.create({
 
   atom: true,
 
-  selectable: true,
+  draggable: true,
 
   parseHTML() {
     return [{ tag: 'div[data-ingredients]' }]
@@ -22,11 +22,6 @@ export const IngredientsMarker = Node.create({
   addNodeView() {
     return ReactNodeViewRenderer(IngredientsMarkerView, {
       trackNodeViewPosition: true,
-      stopEvent: ({ event }) => {
-        const target = event.target
-        if (target instanceof Element && target.closest('button')) return true
-        return false
-      },
     })
   },
 })

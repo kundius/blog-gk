@@ -1,68 +1,16 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
-import {
-  NodeViewWrapper,
-  NodeViewContent,
-  type NodeViewProps,
-} from '@tiptap/react'
+import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from '@tiptap/react'
 import { TextSelection } from '@tiptap/pm/state'
-import { Fragment, Slice } from '@tiptap/pm/model'
-import { GripVertical, Plus, Trash2 } from 'lucide-react'
-import { setRecipeStepDragStart } from '../recipeStepDropGuard'
+import { BetweenVerticalEnd, BetweenVerticalStart } from 'lucide-react'
+import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
+
+const TOOLBAR_VISIBILITY =
+  'group-hover/step:visible group-hover/step:opacity-100'
 
 export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
-  const getPosRef = useRef(getPos)
-  getPosRef.current = getPos
-
-  const gripRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    const grip = gripRef.current
-    if (!grip) return
-
-    const onMouseDown = (e: MouseEvent) => {
-      e.stopPropagation()
-    }
-
-    const onDragStart = (e: DragEvent) => {
-      e.stopPropagation()
-      const pos = getPosRef.current()
-      if (typeof pos !== 'number') {
-        e.preventDefault()
-        return
-      }
-      const { state } = editor.view
-      const stepNode = state.doc.resolve(pos).nodeAfter
-      if (!stepNode || stepNode.type.name !== 'recipeStep') {
-        e.preventDefault()
-        return
-      }
-      setRecipeStepDragStart(pos)
-      e.dataTransfer.effectAllowed = 'move'
-      e.dataTransfer.setData('text/plain', stepNode.textContent || ' ')
-      ;(editor.view as { dragging: unknown }).dragging = {
-        slice: new Slice(Fragment.from(stepNode), 0, 0),
-        move: true,
-      }
-    }
-
-    const onDragEnd = () => {
-      setRecipeStepDragStart(null)
-    }
-
-    grip.addEventListener('mousedown', onMouseDown)
-    grip.addEventListener('dragstart', onDragStart)
-    grip.addEventListener('dragend', onDragEnd)
-    return () => {
-      grip.removeEventListener('mousedown', onMouseDown)
-      grip.removeEventListener('dragstart', onDragStart)
-      grip.removeEventListener('dragend', onDragEnd)
-    }
-  }, [editor])
-
   const addStep = (where: 'above' | 'below') => {
-    const pos = getPosRef.current()
+    const pos = getPos()
     if (typeof pos !== 'number') return
     const { state, dispatch } = editor.view
     const $pos = state.doc.resolve(pos)
@@ -77,78 +25,33 @@ export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
     editor.commands.focus()
   }
 
-  const deleteStep = () => {
-    const pos = getPosRef.current()
-    if (typeof pos !== 'number') return
-    const { state, dispatch } = editor.view
-    const $pos = state.doc.resolve(pos)
-    let containerDepth = -1
-    for (let d = $pos.depth; d > 0; d--) {
-      if ($pos.node(d).type.name === 'recipeSteps') {
-        containerDepth = d
-        break
-      }
-    }
-    if (containerDepth > -1 && $pos.node(containerDepth).childCount <= 1) {
-      const container = $pos.node(containerDepth)
-      const start = $pos.before(containerDepth)
-      const end = start + container.nodeSize
-      const tr = state.tr
-      tr.delete(start, end)
-      tr.setSelection(TextSelection.near(tr.doc.resolve(start), 1))
-      dispatch(tr.scrollIntoView())
-      editor.commands.focus()
-      return
-    }
-    deleteNode()
-  }
-
   const addButton = (where: 'above' | 'below') => (
-    <div
-      className={`recipe-step__add recipe-step__add--${where}`}
-      contentEditable={false}
+    <button
+      type="button"
+      title={where === 'above' ? 'Добавить шаг выше' : 'Добавить шаг ниже'}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={() => addStep(where)}
+      className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
     >
-      <button
-        type="button"
-        title={where === 'above' ? 'Добавить шаг выше' : 'Добавить шаг ниже'}
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => addStep(where)}
-      >
-        <Plus className="size-3.5" />
-        Добавить шаг
-      </button>
-    </div>
+      {where === 'above' ? <BetweenVerticalStart className="size-3.5" /> : <BetweenVerticalEnd className="size-3.5" />}
+    </button>
   )
 
   return (
-    <NodeViewWrapper as="div" className="recipe-step" data-recipe-step>
-      {addButton('above')}
-      <div className="recipe-step__grid">
-        <div className="recipe-step__actions">
-          <div
-            ref={gripRef}
-            className="recipe-step__drag"
-            draggable
-            title="Перетащить шаг"
-          >
-            <GripVertical className="size-4" />
-          </div>
-          <button
-            type="button"
-            className="recipe-step__delete"
-            title="Удалить шаг"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={deleteStep}
-          >
-            <Trash2 className="size-4" />
-          </button>
+    <NodeViewWrapper as="div" className="group/step relative mt-[10px] [counter-increment:recipe-step]">
+      <div className="grid grid-cols-[34px_1fr] gap-3 rounded-[10px] border border-dashed border-border bg-background p-[12px_14px] transition-colors focus-within:border-ring [.ProseMirror-selectednode:not(.node-recipeSteps)_&]:border-blue-600">
+        <div className="flex flex-col items-center gap-1.5 self-start" contentEditable={false}>
+          <span
+            aria-hidden="true"
+            className="flex size-[34px] items-center justify-center rounded-lg bg-muted text-red-400 before:text-base before:font-bold before:leading-none before:content-[counter(recipe-step)]"
+          />
         </div>
-        <div className="recipe-step__rail" contentEditable={false}>
-          <span className="recipe-step__num" aria-hidden="true" />
-        </div>
-        <NodeViewContent className="recipe-step__body" />
+        <NodeViewContent className="min-w-0" />
       </div>
-      {addButton('below')}
+      <BlockToolbar onDelete={deleteNode} visibleClassName={TOOLBAR_VISIBILITY}>
+        {addButton('above')}
+        {addButton('below')}
+      </BlockToolbar>
     </NodeViewWrapper>
   )
 }
