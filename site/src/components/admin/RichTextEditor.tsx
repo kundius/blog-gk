@@ -15,10 +15,6 @@ import {
   Quote,
   Code,
   Link as LinkIcon,
-  ImagePlus,
-  Images,
-  UtensilsCrossed,
-  ChefHat,
   Table as TableIcon,
   AlignLeft,
   AlignCenter,
@@ -28,7 +24,11 @@ import {
   Redo2,
   Minus,
   RemoveFormatting,
-  Unlink
+  Unlink,
+  ImagePlus,
+  Images,
+  UtensilsCrossed,
+  ChefHat
 } from 'lucide-react'
 import { cn } from '@app/lib/utils'
 import { Button } from '@components/ui/button'
@@ -42,10 +42,8 @@ import {
   DialogTitle
 } from '@components/ui/dialog'
 import { MediaPicker } from '@components/admin/MediaPicker'
-import type { FileRecord } from '@app/lib/admin/types'
-import { NodeSelection } from '@tiptap/pm/state'
 import { buildEditorExtensions } from '@app/lib/tiptap/extensions'
-import { insertStep } from '@app/lib/tiptap/insertStep'
+import type { FileRecord } from '@app/lib/admin/types'
 
 import '@app/components/admin/editor.css'
 
@@ -123,10 +121,12 @@ export function RichTextEditor({
   onChange,
   placeholder = 'Начните писать...'
 }: RichTextEditorProps) {
-  const [showImagePicker, setShowImagePicker] = useState(false)
-  const [showGalleryPicker, setShowGalleryPicker] = useState(false)
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
+  const [picker, setPicker] = useState<null | {
+    multiple: boolean
+    run: (files: FileRecord[]) => void
+  }>(null)
 
   const editor = useEditor({
     extensions: buildEditorExtensions(placeholder),
@@ -164,73 +164,6 @@ export function RichTextEditor({
   const removeLink = () => {
     editor.chain().focus().extendMarkRange('link').unsetLink().run()
     setShowLinkDialog(false)
-  }
-
-  const insertImage = (files: FileRecord[]) => {
-    const file = files[0]
-    if (file?.filenameDisk) {
-      editor
-        .chain()
-        .focus()
-        .setImage({ src: `/files/${file.filenameDisk}` })
-        .run()
-    }
-  }
-
-  const insertGallery = (files: FileRecord[]) => {
-    const content = files
-      .filter((f) => f.filenameDisk)
-      .map((f) => ({
-        type: 'galleryImage',
-        attrs: { src: `/files/${f.filenameDisk}` }
-      }))
-    if (!content.length) return
-    editor.chain().focus().insertContent({ type: 'gallery', content }).run()
-  }
-
-  const insertIngredients = () => {
-    if (foundIngredientsMarker) return
-    const { state } = editor
-    let stepDepth = -1
-    const $pos = state.doc.resolve(state.selection.from)
-    for (let d = $pos.depth; d > 0; d--) {
-      if ($pos.node(d).type.name === 'recipeSteps') {
-        stepDepth = d
-        break
-      }
-    }
-    if (stepDepth > 0) {
-      editor
-        .chain()
-        .focus()
-        .insertContentAt($pos.after(stepDepth), { type: 'ingredientsMarker' })
-        .run()
-    } else {
-      editor.chain().focus().insertContent({ type: 'ingredientsMarker' }).run()
-    }
-    const sel = editor.state.selection
-    if (sel instanceof NodeSelection) {
-      editor.commands.setTextSelection(sel.to)
-    }
-  }
-
-  let foundIngredientsMarker = false
-  let foundRecipeSteps = false
-  editor.state.doc.descendants((node) => {
-    if (node.type.name === 'ingredientsMarker') {
-      foundIngredientsMarker = true
-      return false
-    }
-    if (node.type.name === 'recipeSteps') {
-      foundRecipeSteps = true
-      return false
-    }
-    return true
-  })
-
-  const handleInsertStep = () => {
-    if (foundRecipeSteps) return
-    insertStep(editor)
   }
 
   const insertTable = () => {
@@ -361,12 +294,6 @@ export function RichTextEditor({
             <Unlink className="size-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => setShowImagePicker(true)}
-            title="Картинка"
-          >
-            <ImagePlus className="size-4" />
-          </ToolbarButton>
-          <ToolbarButton
             onClick={insertTable}
             active={editor.isActive('table')}
             title="Таблица"
@@ -424,27 +351,50 @@ export function RichTextEditor({
             Блоки
           </span>
           <ToolbarTextButton
-            onClick={insertIngredients}
-            disabled={foundIngredientsMarker}
-            title="Вставить блок ингредиентов"
+            onClick={() =>
+              setPicker({
+                multiple: false,
+                run: (files) => {
+                  const src = files[0]?.filenameDisk
+                  if (!src) return
+                  editor.chain().focus().setImage({ src: `/files/${src}` }).run()
+                },
+              })
+            }
+            title="Картинка"
+          >
+            <ImagePlus className="size-4" />
+            Картинка
+          </ToolbarTextButton>
+          <ToolbarTextButton
+            onClick={() =>
+              setPicker({
+                multiple: true,
+                run: (files) => editor.chain().focus().insertGallery(files).run(),
+              })
+            }
+            title="Галерея"
+          >
+            <Images className="size-4" />
+            Галерея
+          </ToolbarTextButton>
+          <ToolbarTextButton
+            onClick={() =>
+              editor.chain().focus().insertIngredientsMarker().run()
+            }
+            disabled={!editor.can().insertIngredientsMarker()}
+            title="Ингредиенты"
           >
             <UtensilsCrossed className="size-4" />
             Ингредиенты
           </ToolbarTextButton>
           <ToolbarTextButton
-            onClick={handleInsertStep}
-            disabled={foundRecipeSteps}
-            title="Вставить блок пошагового приготовления"
+            onClick={() => editor.chain().focus().insertRecipeSteps().run()}
+            disabled={!editor.can().insertRecipeSteps()}
+            title="Пошаговое приготовление"
           >
             <ChefHat className="size-4" />
             Пошаговое приготовление
-          </ToolbarTextButton>
-          <ToolbarTextButton
-            onClick={() => setShowGalleryPicker(true)}
-            title="Вставить галерею"
-          >
-            <Images className="size-4" />
-            Галерея
           </ToolbarTextButton>
         </div>
       </div>
@@ -481,17 +431,13 @@ export function RichTextEditor({
       </Dialog>
 
       <MediaPicker
-        open={showImagePicker}
-        onOpenChange={setShowImagePicker}
-        multiple={false}
-        onConfirm={insertImage}
-      />
-
-      <MediaPicker
-        open={showGalleryPicker}
-        onOpenChange={setShowGalleryPicker}
-        multiple
-        onConfirm={insertGallery}
+        open={picker !== null}
+        onOpenChange={() => setPicker(null)}
+        multiple={picker?.multiple ?? false}
+        onConfirm={(files) => {
+          picker?.run(files)
+          setPicker(null)
+        }}
       />
     </div>
   )

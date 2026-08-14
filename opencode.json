@@ -37,8 +37,8 @@
           }
         }
       }
-    }
+    },
   },
-  "model": "aitunnel/deepseek-v4-flash-0731",
-  "small_model": "aitunnel/gpt-5.6-luna"
+  // "model": "odirouter/free-gpt-5.6-luna",
+  // "small_model": "odirouter/free-gpt-5.6-luna"
 }

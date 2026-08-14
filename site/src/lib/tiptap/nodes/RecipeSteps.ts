@@ -1,6 +1,18 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
+import { TextSelection } from '@tiptap/pm/state'
 import { RecipeStepsView } from './RecipeStepsView'
+import { findFirstNode } from './helpers'
+
+const findRecipeSteps = (doc: any) => findFirstNode(doc, 'recipeSteps')
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    insertRecipeSteps: {
+      insertRecipeSteps: () => ReturnType
+    }
+  }
+}
 
 export const RecipeSteps = Node.create({
   name: 'recipeSteps',
@@ -36,5 +48,28 @@ export const RecipeSteps = Node.create({
       contentDOMElementTag: 'div',
       trackNodeViewPosition: true,
     })
+  },
+
+  addCommands() {
+    return {
+      insertRecipeSteps:
+        () =>
+        ({ state, tr, dispatch }) => {
+          const schema = state.schema
+          if (findRecipeSteps(state.doc) !== null) return false
+
+          const newStep = schema.nodes.recipeStep.create(
+            null,
+            schema.nodes.paragraph.create(),
+          )
+          const block = schema.nodes.recipeSteps.create(null, newStep)
+          const { from } = state.selection
+          const insertAt = Math.min(from, tr.doc.content.size)
+          tr.insert(insertAt, block)
+          tr.setSelection(TextSelection.near(tr.doc.resolve(insertAt + 2), 1))
+          tr.scrollIntoView()
+          return dispatch?.(tr) ?? true
+        },
+    }
   },
 })

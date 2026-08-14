@@ -4,18 +4,22 @@ import React, { useCallback, useState } from 'react'
 import { Content } from '@components/Content'
 import { Ingredients } from '@components/Ingredients'
 import { Lightbox, type LightboxImage } from '@components/Lightbox'
-import {
-  INGREDIENTS_MARKER_RE,
-  hasIngredientsMarker,
-} from '@app/lib/tiptap/constants'
 
 interface ArticleContentProps {
   html: string
   ingredients?: Array<{ name: string; amount?: string; value?: string }> | null
   itemProp?: string
+  ingredientsMarkerRe: RegExp
+  hasIngredientsMarker: (html?: string | null) => boolean
 }
 
-export function ArticleContent({ html, ingredients, itemProp }: ArticleContentProps) {
+export function ArticleContent({
+  html,
+  ingredients,
+  itemProp,
+  ingredientsMarkerRe,
+  hasIngredientsMarker,
+}: ArticleContentProps) {
   const [lightbox, setLightbox] = useState<{
     images: LightboxImage[]
     index: number
@@ -54,7 +58,7 @@ export function ArticleContent({ html, ingredients, itemProp }: ArticleContentPr
     })
   }, [])
 
-  const segments = html.split(INGREDIENTS_MARKER_RE)
+  const segments = html.split(ingredientsMarkerRe)
 
   return (
     <>

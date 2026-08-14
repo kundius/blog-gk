@@ -1,3 +1,5 @@
 export { RecipeSteps } from './RecipeSteps'
 export { RecipeStep } from './RecipeStep'
 export { IngredientsMarker } from './IngredientsMarker'
+export { Gallery } from './Gallery'
+export { GalleryImage } from './GalleryImage'

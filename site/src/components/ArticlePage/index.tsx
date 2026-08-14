@@ -34,10 +34,15 @@ import { Comments } from '@components/Comments'
 import { Ingredients } from '@components/Ingredients'
 import { ArticleLikes } from '@components/ArticleLikes'
 import { ArticleContent } from '@components/ArticleContent'
-import { hasIngredientsMarker } from '@app/lib/tiptap/constants'
 
 import { Hits } from './Hits'
 import * as api from './api'
+
+const INGREDIENTS_MARKER_RE = /<div[^>]*data-ingredients[^>]*>\s*<\/div>/i
+
+function hasIngredientsMarker(html?: string | null): boolean {
+  return Boolean(html && INGREDIENTS_MARKER_RE.test(html))
+}
 
 interface ArticlePageProps {
   alias: string
@@ -247,6 +252,8 @@ export function ArticlePage({ alias }: ArticlePageProps) {
               html={result.data.content || ''}
               ingredients={result.data.ingredients}
               itemProp={isRecipe ? 'recipeInstructions' : 'articleBody'}
+              ingredientsMarkerRe={INGREDIENTS_MARKER_RE}
+              hasIngredientsMarker={hasIngredientsMarker}
             />
           </div>
 
