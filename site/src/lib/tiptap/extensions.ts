@@ -17,7 +17,6 @@ export function buildEditorExtensions() {
     }),
     Underline,
     Link.configure({ openOnClick: false, autolink: true }),
-    Image,
     Placeholder.configure({
       includeChildren: true,
       showOnlyCurrent: false,
@@ -38,5 +37,6 @@ export function buildEditorExtensions() {
     IngredientsMarker,
     Gallery,
     GalleryImage,
+    Image,
   ]
 }
