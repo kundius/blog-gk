@@ -9,8 +9,6 @@ import { TextSelection } from '@tiptap/pm/state'
 import { Plus } from 'lucide-react'
 import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
 
-const TOOLBAR_VISIBILITY = 'recipe-steps__toolbar'
-
 export function RecipeStepsView({ deleteNode, editor, getPos }: NodeViewProps) {
   const addStep = () => {
     const pos = getPos()
@@ -33,22 +31,24 @@ export function RecipeStepsView({ deleteNode, editor, getPos }: NodeViewProps) {
 
   return (
     <NodeViewWrapper as="section" className="recipe-steps">
-      <h2 className="recipe-steps__title" contentEditable={false}>
-        Пошаговое приготовление
-      </h2>
-      <NodeViewContent />
-      <button
-        type="button"
-        contentEditable={false}
-        title="Добавить шаг"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={addStep}
-        className="recipe-steps__add"
-      >
-        <Plus />
-        Добавить шаг
-      </button>
-      <BlockToolbar onDelete={deleteNode} visibleClassName={TOOLBAR_VISIBILITY} />
+      <header className="recipe-steps__header" contentEditable={false}>
+        <h2 className="recipe-steps__title">Пошаговое приготовление</h2>
+        <BlockToolbar onDelete={deleteNode}>
+          <button
+            type="button"
+            title="Добавить шаг"
+            className="block-toolbar__add"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={addStep}
+          >
+            <Plus />
+            <span>Добавить шаг</span>
+          </button>
+        </BlockToolbar>
+      </header>
+      <div className="recipe-steps__body">
+        <NodeViewContent />
+      </div>
     </NodeViewWrapper>
   )
 }

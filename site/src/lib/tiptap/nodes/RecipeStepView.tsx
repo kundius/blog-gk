@@ -5,8 +5,6 @@ import { TextSelection } from '@tiptap/pm/state'
 import { BetweenVerticalEnd, BetweenVerticalStart } from 'lucide-react'
 import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
 
-const TOOLBAR_VISIBILITY = 'recipe-step__toolbar'
-
 export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
   const addStep = (where: 'above' | 'below') => {
     const pos = getPos()
@@ -33,21 +31,20 @@ export function RecipeStepView({ deleteNode, editor, getPos }: NodeViewProps) {
       className="block-toolbar__add"
     >
       {where === 'above' ? <BetweenVerticalStart /> : <BetweenVerticalEnd />}
+      <span>{where === 'above' ? 'Добавить выше' : 'Добавить ниже'}</span>
     </button>
   )
 
   return (
     <NodeViewWrapper as="div" className="recipe-step">
-      <div className="recipe-step__grid">
-        <div className="recipe-step__rail" contentEditable={false}>
-          <span aria-hidden="true" className="recipe-step__num" />
-        </div>
-        <NodeViewContent className="recipe-step__body" />
-      </div>
-      <BlockToolbar onDelete={deleteNode} visibleClassName={TOOLBAR_VISIBILITY}>
-        {addButton('above')}
-        {addButton('below')}
-      </BlockToolbar>
+      <header className="recipe-step__header" contentEditable={false}>
+        <span aria-hidden="true" className="recipe-step__num" />
+        <BlockToolbar onDelete={deleteNode}>
+          {addButton('above')}
+          {addButton('below')}
+        </BlockToolbar>
+      </header>
+      <NodeViewContent className="recipe-step__body" />
     </NodeViewWrapper>
   )
 }

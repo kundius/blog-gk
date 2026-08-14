@@ -11,8 +11,6 @@ import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import type { FileRecord } from '@app/lib/admin/types'
 
-const TOOLBAR_VISIBILITY = 'gallery__toolbar'
-
 export function GalleryView({ editor, deleteNode, getPos }: NodeViewProps) {
   const [pickerOpen, setPickerOpen] = useState(false)
 
@@ -34,10 +32,13 @@ export function GalleryView({ editor, deleteNode, getPos }: NodeViewProps) {
 
   return (
     <NodeViewWrapper as="section" className="gallery">
-      <div className="gallery__images">
-        <NodeViewContent className="gallery__grid" />
+      <div className="gallery__title" contentEditable={false}>
+        Фотогалерея
       </div>
-      <BlockToolbar onDelete={deleteNode} visibleClassName={TOOLBAR_VISIBILITY}>
+      <div className="gallery__images">
+        <NodeViewContent className="gallery__list" />
+      </div>
+      <BlockToolbar onDelete={deleteNode}>
         <button
           type="button"
           title="Добавить фото"

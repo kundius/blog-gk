@@ -113,13 +113,11 @@ function Divider() {
 interface RichTextEditorProps {
   value: string
   onChange: (html: string) => void
-  placeholder?: string
 }
 
 export function RichTextEditor({
   value,
-  onChange,
-  placeholder = 'Начните писать...'
+  onChange
 }: RichTextEditorProps) {
   const [showLinkDialog, setShowLinkDialog] = useState(false)
   const [linkUrl, setLinkUrl] = useState('')
@@ -129,7 +127,7 @@ export function RichTextEditor({
   }>(null)
 
   const editor = useEditor({
-    extensions: buildEditorExtensions(placeholder),
+    extensions: buildEditorExtensions(),
     content: value || '',
     editorProps: {
       attributes: {

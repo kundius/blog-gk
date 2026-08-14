@@ -5,7 +5,7 @@ import { GalleryImageView } from './GalleryImageView'
 export const GalleryImage = Node.create({
   name: 'galleryImage',
 
-  group: 'block',
+  group: 'galleryImage',
 
   atom: true,
 
@@ -14,6 +14,7 @@ export const GalleryImage = Node.create({
   addAttributes() {
     return {
       src: { default: null },
+      alt: { default: '' },
     }
   },
 

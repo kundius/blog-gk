@@ -6,15 +6,11 @@ import { GripVertical, Trash2 } from 'lucide-react'
 interface BlockToolbarProps {
   onDelete: () => void
   children?: ReactNode
-  visibleClassName?: string
 }
 
-export function BlockToolbar({ onDelete, children, visibleClassName }: BlockToolbarProps) {
+export function BlockToolbar({ onDelete, children }: BlockToolbarProps) {
   return (
-    <div
-      contentEditable={false}
-      className={`block-toolbar ${visibleClassName ?? ''}`.trim()}
-    >
+    <div contentEditable={false} className="block-toolbar">
       {children}
       <div
         draggable

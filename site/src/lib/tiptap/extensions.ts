@@ -10,7 +10,7 @@ import { TableHeader } from '@tiptap/extension-table-header'
 import { TableCell } from '@tiptap/extension-table-cell'
 import { RecipeSteps, RecipeStep, IngredientsMarker, Gallery, GalleryImage } from './nodes'
 
-export function buildEditorExtensions(placeholder = 'Начните писать...') {
+export function buildEditorExtensions() {
   return [
     StarterKit.configure({
       dropcursor: { color: '#2563eb', width: 2 },
@@ -18,7 +18,14 @@ export function buildEditorExtensions(placeholder = 'Начните писать
     Underline,
     Link.configure({ openOnClick: false, autolink: true }),
     Image,
-    Placeholder.configure({ placeholder }),
+    Placeholder.configure({
+      placeholder: ({ editor, node }) => {
+        const first = editor.state.doc.firstChild
+        return first && first.eq(node)
+          ? 'Начните здесь…'
+          : 'Продолжите здесь…'
+      },
+    }),
     TextAlign.configure({ types: ['heading', 'paragraph'] }),
     Table.configure({ resizable: true }),
     TableRow,
