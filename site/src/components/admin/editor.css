@@ -46,18 +46,12 @@
 }
 
 /* Paragraph styles */
-.admin-editor p:not(td p):not(th p) {
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.6;
-}
-
 .admin-editor p:not(:first-child):not(li p):not(td p):not(th p) {
-  margin-top: 20px;
+  margin-top: 1.25rem;
 }
 
 .admin-editor img {
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
 }
 
 /* Selection */
@@ -102,20 +96,20 @@
 
 .admin-editor h1,
 .admin-editor h2 {
-  margin-top: 3.5rem;
-  margin-bottom: 1.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .admin-editor h1 {
-  font-size: 1.4rem;
+  font-size: 1.75rem;
 }
 
 .admin-editor h2 {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
 }
 
 .admin-editor h3 {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
 }
 
 .admin-editor h4,
@@ -138,7 +132,7 @@
   border-radius: 0.5rem;
   color: var(--white);
   font-family: 'JetBrainsMono', monospace;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   padding: 0.75rem 1rem;
 }
 
@@ -151,7 +145,7 @@
 
 .admin-editor blockquote {
   border-left: 3px solid var(--gray-3);
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   padding-left: 1rem;
 }
 
@@ -214,7 +208,7 @@
 }
 
 .admin-editor .tableWrapper {
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   overflow-x: auto;
 }
 
@@ -259,9 +253,6 @@
    Custom widget: Block toolbar
    ================================================================ */
 .admin-editor .block-toolbar {
-  position: absolute;
-  top: 0;
-  right: 1rem;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -270,7 +261,6 @@
   border: 1px solid var(--border);
   border-radius: 0.375rem;
   background: var(--background);
-  transform: translateY(-50%);
 }
 
 .admin-editor .block-toolbar__add,
@@ -331,7 +321,7 @@
    ================================================================ */
 .admin-editor .recipe-steps {
   position: relative;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   border: 2px solid oklch(90.1% 0.058 230.902);
   background: oklch(97.7% 0.013 236.62);
   counter-reset: recipe-step;
@@ -352,16 +342,11 @@
   user-select: none;
   -webkit-user-select: none;
   background: oklch(95.1% 0.026 236.824);
-  border-bottom: 1px solid oklch(90.1% 0.058 230.902);
+  border-bottom: 2px solid oklch(90.1% 0.058 230.902);
 }
 
 .admin-editor .recipe-steps__body {
   padding: 4px 16px 16px;
-}
-
-.admin-editor .recipe-steps__header .block-toolbar {
-  position: static;
-  transform: none;
 }
 
 .admin-editor .recipe-steps__title {
@@ -433,20 +418,15 @@
   justify-content: space-between;
   gap: 12px;
   background: var(--muted);
-  padding: 4px 12px;
+  padding: 4px 16px;
   user-select: none;
   -webkit-user-select: none;
-  border-bottom: 1px solid var(--border);
-}
-
-.admin-editor .recipe-step__header .block-toolbar {
-  position: static;
-  transform: none;
+  border-bottom: 2px solid var(--border);
 }
 
 .admin-editor .recipe-step__body {
   min-width: 0;
-  padding: 12px;
+  padding: 16px;
   transition: border-color 150ms ease-out;
 }
 
@@ -466,40 +446,47 @@
    ================================================================ */
 .admin-editor .gallery {
   position: relative;
-  margin: 1.5rem 0;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--muted) 40%, transparent);
+  margin: 1.25rem 0;
+  border: 2px solid rgb(199 210 254 / 1);
+  background: rgb(238 242 255 / 1);
 }
 
 .admin-editor .ProseMirror-selectednode > .gallery {
   border-style: solid;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgb(99 102 241 / 0.25);
+}
+
+.admin-editor .gallery__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  border-bottom: 2px solid rgb(199 210 254 / 1);
 }
 
 .admin-editor .gallery__title {
-  margin: 0 0 1rem;
-  user-select: none;
-  -webkit-user-select: none;
+  margin: 0;
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.25;
   color: var(--foreground);
 }
 
-.admin-editor .gallery__images {
-  position: relative;
+.admin-editor .gallery__body {
+  padding: 16px;
 }
 
-.admin-editor .gallery__list {
-  display: flex;
-  flex-direction: column;
+.admin-editor .gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
-.admin-editor .gallery__list > [data-node-view-wrapper] {
+.admin-editor .gallery__grid > [data-node-view-wrapper] {
   display: contents;
 }
 
@@ -509,53 +496,35 @@
 .admin-editor .gallery-image {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid rgb(199 210 254 / 1);
+  border-radius: 8px;
+  background: rgb(199 210 254 / 0.4);
+}
+
+.admin-editor .gallery-image__media {
+  position: relative;
+}
+
+.gallery-image__toolbar {
+  position: absolute;
+  right: 8px;
+  top: 8px;
 }
 
 .admin-editor .gallery-image[data-selected='true'] .gallery-image__img {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgb(99 102 241 / 0.25);
 }
 
 .admin-editor .gallery-image__img {
   display: block;
-  width: 100px;
-  height: 64px;
-  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   margin: 0;
-  border: 1px solid var(--border);
-  border-radius: 6px;
   object-fit: cover;
-  transition:
-    border-color 150ms ease-out,
-    box-shadow 150ms ease-out;
-}
-
-.admin-editor .gallery-image__alt {
-  flex: 1;
-  min-width: 0;
-  height: 64px;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--background);
-  color: var(--foreground);
-  font-size: 0.875rem;
-  font-family: inherit;
-  line-height: 1.4;
-  resize: none;
-  outline: none;
-  transition: border-color 150ms ease-out;
-}
-
-.admin-editor .gallery-image__alt:focus {
-  border-color: var(--ring);
-}
-
-.admin-editor .gallery-image__alt::placeholder {
-  color: var(--muted-foreground);
+  border-radius: 8px;
 }
 
 /* ================================================================
@@ -566,7 +535,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 1.5rem 0;
+  margin: 1.25rem 0;
   padding: 16px;
   border: 2px solid oklch(92.4% 0.12 95.746);
   background: oklch(98.7% 0.022 95.277);
@@ -586,11 +555,6 @@
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-}
-
-.admin-editor .ingredients-marker__header .block-toolbar {
-  position: static;
-  transform: none;
 }
 
 .admin-editor .ingredients-marker__lead {
@@ -648,9 +612,13 @@
 
 /* Placeholder */
 .admin-editor
+  .is-empty[data-placeholder] {
+    position: relative;
+  }
+.admin-editor
   .is-empty[data-placeholder]:has(
     > .ProseMirror-trailingBreak:only-child
-  )::before {
+  ):last-child::before {
   content: attr(data-placeholder);
   pointer-events: none;
   width: 100%;

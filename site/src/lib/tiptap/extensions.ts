@@ -19,6 +19,8 @@ export function buildEditorExtensions() {
     Link.configure({ openOnClick: false, autolink: true }),
     Image,
     Placeholder.configure({
+      includeChildren: true,
+      showOnlyCurrent: false,
       placeholder: ({ editor, node }) => {
         const first = editor.state.doc.firstChild
         return first && first.eq(node)

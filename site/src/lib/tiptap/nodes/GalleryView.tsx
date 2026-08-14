@@ -32,23 +32,24 @@ export function GalleryView({ editor, deleteNode, getPos }: NodeViewProps) {
 
   return (
     <NodeViewWrapper as="section" className="gallery">
-      <div className="gallery__title" contentEditable={false}>
-        Фотогалерея
+      <header className="gallery__header" contentEditable={false}>
+        <h2 className="gallery__title">Фотогалерея</h2>
+        <BlockToolbar onDelete={deleteNode}>
+          <button
+            type="button"
+            title="Добавить фото"
+            className="block-toolbar__add"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => setPickerOpen(true)}
+          >
+            <ImagePlus />
+            <span>Добавить фото</span>
+          </button>
+        </BlockToolbar>
+      </header>
+      <div className="gallery__body">
+        <NodeViewContent className="gallery__grid" />
       </div>
-      <div className="gallery__images">
-        <NodeViewContent className="gallery__list" />
-      </div>
-      <BlockToolbar onDelete={deleteNode}>
-        <button
-          type="button"
-          title="Добавить фото"
-          className="block-toolbar__add"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => setPickerOpen(true)}
-        >
-          <ImagePlus />
-        </button>
-      </BlockToolbar>
       <MediaPicker
         open={pickerOpen}
         onOpenChange={setPickerOpen}
