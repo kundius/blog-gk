@@ -18,4 +18,10 @@ ALTER TABLE "articles_categories" ADD CONSTRAINT "articles_categories_article_fk
 -- AddForeignKey
 ALTER TABLE "articles_categories" ADD CONSTRAINT "articles_categories_category_fkey" FOREIGN KEY ("category") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- CreateIndex
+CREATE INDEX "articles_categories_article_idx" ON "articles_categories"("article");
+
+-- CreateIndex
+CREATE INDEX "articles_categories_category_idx" ON "articles_categories"("category");
+
 
