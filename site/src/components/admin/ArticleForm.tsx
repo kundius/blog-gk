@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, ImagePlus, X, GripVertical } from 'lucide-react'
+import { Loader2, Save, ImagePlus, X, GripVertical, RotateCcw } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
 import type {
   ArticleRecord,
@@ -132,12 +132,13 @@ export function ArticleForm({ article }: ArticleFormProps) {
       }
       if (isEdit && article) {
         await api.patch(`/articles/${article.id}`, payload)
+        toast.success('Статья сохранена')
       } else {
-        await api.post('/articles', payload)
+        const created = await api.post<ArticleRecord>('/articles', payload)
+        toast.success('Статья создана')
+        router.push(`/admin/articles/${created.id}`)
+        router.refresh()
       }
-      toast.success(isEdit ? 'Статья сохранена' : 'Статья создана')
-      router.push('/admin/articles')
-      router.refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Ошибка сохранения')
     } finally {
@@ -219,7 +220,20 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
       <Card className="overflow-visible">
         <CardHeader>
-          <CardTitle className="text-base">Контент</CardTitle>
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="text-base">Контент</CardTitle>
+            {isEdit && article?.oldContent ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setContent(article.oldContent ?? '')}
+              >
+                <RotateCcw className="size-4" />
+                Вернуть старую версию
+              </Button>
+            ) : null}
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">

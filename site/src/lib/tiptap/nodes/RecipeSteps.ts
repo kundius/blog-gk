@@ -2,9 +2,7 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { TextSelection } from '@tiptap/pm/state'
 import { RecipeStepsView } from './RecipeStepsView'
-import { findFirstNode } from './helpers'
-
-const findRecipeSteps = (doc: any) => findFirstNode(doc, 'recipeSteps')
+import { RECIPE_STEPS_TITLE } from './helpers'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -25,6 +23,17 @@ export const RecipeSteps = Node.create({
 
   draggable: true,
 
+  addAttributes() {
+    return {
+      title: {
+        default: RECIPE_STEPS_TITLE,
+        parseHTML: (el) =>
+          el.querySelector('.recipe-steps__title')?.textContent?.trim() || RECIPE_STEPS_TITLE,
+        renderHTML: () => ({}),
+      },
+    }
+  },
+
   parseHTML() {
     return [
       {
@@ -34,11 +43,11 @@ export const RecipeSteps = Node.create({
     ]
   },
 
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({ node, HTMLAttributes }) {
     return [
       'section',
       mergeAttributes(HTMLAttributes, { class: 'recipe-steps' }),
-      ['h2', { class: 'recipe-steps__title' }, 'Пошаговое приготовление'],
+      ['h2', { class: 'recipe-steps__title' }, node.attrs.title || RECIPE_STEPS_TITLE],
       ['div', { class: 'recipe-steps__content' }, 0],
     ]
   },
@@ -56,7 +65,6 @@ export const RecipeSteps = Node.create({
         () =>
         ({ state, tr, dispatch }) => {
           const schema = state.schema
-          if (findRecipeSteps(state.doc) !== null) return false
 
           const newStep = schema.nodes.recipeStep.create(
             null,

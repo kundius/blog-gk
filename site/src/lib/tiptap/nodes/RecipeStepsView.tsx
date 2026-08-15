@@ -1,5 +1,7 @@
 'use client'
 
+import { useRef } from 'react'
+import type { FormEvent } from 'react'
 import {
   NodeViewWrapper,
   NodeViewContent,
@@ -8,8 +10,28 @@ import {
 import { TextSelection } from '@tiptap/pm/state'
 import { Plus } from 'lucide-react'
 import { BlockToolbar } from '@app/lib/tiptap/components/BlockToolbar'
+import { RECIPE_STEPS_TITLE } from './helpers'
 
-export function RecipeStepsView({ deleteNode, editor, getPos }: NodeViewProps) {
+export function RecipeStepsView({
+  node,
+  updateAttributes,
+  deleteNode,
+  editor,
+  getPos
+}: NodeViewProps) {
+  const initializedRef = useRef(false)
+
+  const setInitialTitle = (el: HTMLHeadingElement | null) => {
+    if (el && !initializedRef.current) {
+      initializedRef.current = true
+      el.textContent = node.attrs.title || RECIPE_STEPS_TITLE
+    }
+  }
+
+  const onTitleInput = (e: FormEvent<HTMLHeadingElement>) => {
+    updateAttributes({ title: e.currentTarget.textContent?.trim() || '' })
+  }
+
   const addStep = () => {
     const pos = getPos()
     if (typeof pos !== 'number') return
@@ -32,7 +54,13 @@ export function RecipeStepsView({ deleteNode, editor, getPos }: NodeViewProps) {
   return (
     <NodeViewWrapper as="section" className="recipe-steps">
       <header className="recipe-steps__header" contentEditable={false}>
-        <h2 className="recipe-steps__title">Пошаговое приготовление</h2>
+        <h2
+          ref={setInitialTitle}
+          className="recipe-steps__title"
+          contentEditable
+          suppressContentEditableWarning
+          onInput={onTitleInput}
+        />
         <BlockToolbar onDelete={deleteNode}>
           <button
             type="button"

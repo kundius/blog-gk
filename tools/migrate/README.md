@@ -16,10 +16,10 @@
 
 ```bash
 # сгенерировать import.sql + files_manifest.csv из дампа
-python3 migrate/import.py --dump bloggk_03_08_2026.pgsql
+python3 tools/migrate/import.py --dump bloggk_03_08_2026.pgsql
 
 # применить (TRUNCATE + COPY) — заменяет все данные в blog_gk_db
-docker exec -i blog-gk-postgres-1 psql -U blog_gk_user -d blog_gk_db -f - < migrate/import.sql
+docker exec -i blog-gk-postgres-1 psql -U blog_gk_user -d blog_gk_db -f - < tools/migrate/import.sql
 ```
 
 ## Инкрементальный импорт (новый контент со старого сайта)
@@ -30,30 +30,30 @@ docker exec -i blog-gk-postgres-1 psql -U blog_gk_user -d blog_gk_db -f - < migr
 
 ```bash
 # сгенерировать import_inc.sql + files_manifest_inc.csv из нового дампа
-python3 migrate/import.py --incremental --dump <новый_дамп>.pgsql
+python3 tools/migrate/import.py --incremental --dump <новый_дамп>.pgsql
 
 # применить (без TRUNCATE)
-docker exec -i blog-gk-postgres-1 psql -U blog_gk_user -d blog_gk_db -f - < migrate/import_inc.sql
+docker exec -i blog-gk-postgres-1 psql -U blog_gk_user -d blog_gk_db -f - < tools/migrate/import_inc.sql
 ```
 
 ## Синк файлов в S3
 
 Догружаемый: сверяет ключи через `ListObjectsV2` и заливает только
 отсутствующие (`filename_disk`). Запускать отдельным контейнером (из `docker
-exec` процесс умирает). Лог и прогресс — в `migrate/runtime/`.
+exec` процесс умирает). Лог и прогресс — в `tools/migrate/runtime/`.
 
 ```bash
 # полный импорт: дефолтный манифест /migrate/files_manifest.csv
 docker run -d --name blog-gk-sync \
-  -v $(pwd)/migrate:/migrate:ro \
-  -v $(pwd)/migrate/runtime:/runtime \
+  -v $(pwd)/tools/migrate:/migrate:ro \
+  -v $(pwd)/tools/migrate/runtime:/runtime \
   --env-file backend/.env \
   blog-gk-backend node /migrate/sync_files.mjs
 
 # инкремент: указать свежий манифест
 docker run -d --name blog-gk-sync \
-  -v $(pwd)/migrate:/migrate:ro \
-  -v $(pwd)/migrate/runtime:/runtime \
+  -v $(pwd)/tools/migrate:/migrate:ro \
+  -v $(pwd)/tools/migrate/runtime:/runtime \
   --env-file backend/.env \
   -e SYNC_MANIFEST=/migrate/files_manifest_inc.csv \
   blog-gk-backend node /migrate/sync_files.mjs
@@ -62,8 +62,8 @@ docker run -d --name blog-gk-sync \
 Проверка прогресса:
 
 ```bash
-cat migrate/runtime/sync_progress.txt   # todo / ok / failed / remaining
-cat migrate/runtime/sync.log
+cat tools/migrate/runtime/sync_progress.txt   # todo / ok / failed / remaining
+cat tools/migrate/runtime/sync.log
 ```
 
 При падении просто перезапустить ту же команду — залитое пропустится.

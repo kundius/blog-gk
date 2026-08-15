@@ -34,6 +34,7 @@ export interface ArticleRecord {
   alias?: string | null
   name: string
   content?: string | null
+  oldContent?: string | null
   excerpt?: string | null
   categoryId: string
   thumbnailId?: string | null

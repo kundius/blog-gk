@@ -355,6 +355,16 @@
   font-weight: 600;
   line-height: 1.25;
   color: var(--foreground);
+  border-radius: 4px;
+  padding: 0 2px;
+  outline: none;
+  cursor: text;
+  transition: background-color 0.15s ease;
+}
+
+.admin-editor .recipe-steps__title:hover,
+.admin-editor .recipe-steps__title:focus {
+  background: oklch(91.5% 0.02 236.824);
 }
 
 /* ================================================================

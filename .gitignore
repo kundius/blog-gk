@@ -4,8 +4,11 @@ dist/
 .env
 *.tsbuildinfo
 .DS_Store
+__pycache__/
+tools/convert_recipes/transformed.json
 *.log
 landing/public/widget/
 *.pgsql
 *.tar.gz
-migrate/*.sql
+tools/migrate/*.sql
+*.sql

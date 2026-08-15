@@ -1,5 +1,7 @@
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 
+export const RECIPE_STEPS_TITLE = 'Пошаговое приготовление'
+
 /** Найти позицию первого узла с указанным именем в документе */
 export function findFirstNode(doc: ProseMirrorNode, name: string): number | null {
   let found: number | null = null

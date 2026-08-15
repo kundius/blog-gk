@@ -94,11 +94,11 @@ def main():
     DUMP = Path(args.dump)
     INCREMENTAL = args.incremental
     OUT = Path(args.out) if args.out else Path(
-        '/home/kundius/blog-gk/migrate/import_inc.sql' if INCREMENTAL
-        else '/home/kundius/blog-gk/migrate/import.sql')
+        '/home/kundius/blog-gk/tools/migrate/import_inc.sql' if INCREMENTAL
+        else '/home/kundius/blog-gk/tools/migrate/import.sql')
     MANIFEST = Path(args.manifest) if args.manifest else Path(
-        '/home/kundius/blog-gk/migrate/files_manifest_inc.csv' if INCREMENTAL
-        else '/home/kundius/blog-gk/migrate/files_manifest.csv')
+        '/home/kundius/blog-gk/tools/migrate/files_manifest_inc.csv' if INCREMENTAL
+        else '/home/kundius/blog-gk/tools/migrate/files_manifest.csv')
 
     blocks = parse_dump(DUMP)
     print('parsed tables:', sorted(blocks))
