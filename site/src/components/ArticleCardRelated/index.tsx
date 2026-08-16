@@ -16,7 +16,7 @@ export interface ArticleCardRelatedProps {
     url: string
   }
   thumbnail?: {
-    url: string
+    url: string | undefined
     name?: string
     blurHash?: string
   }
@@ -36,7 +36,7 @@ export function ArticleCardRelated ({
           {thumbnail && (
             <figure className={`${styles.Thumbnail} relative aspect-[5/6] overflow-hidden`}>
               <CoverImage
-                src={thumbnail.url}
+                src={thumbnail.url ?? ''}
                 alt={thumbnail.name || ''}
                 blurHash={thumbnail.blurHash}
                 sizes="(max-width: 768px) 50vw, 33vw"

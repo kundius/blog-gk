@@ -34,10 +34,10 @@ export function RecipeCard({ article }: { article: ArticleListItem }) {
       className="group flex flex-col overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-[0_8px_24px_rgba(0,0,0,0.04)] transition-[translate,box-shadow] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)]"
     >
       <div className="relative aspect-video overflow-hidden">
-        {thumbnail?.filenameDisk ? (
+        {thumbnail ? (
           <div className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform group-hover:[transform:scale(1.03)]">
             <CoverImage
-              src={fileUrl(thumbnail.filenameDisk)}
+              src={fileUrl(thumbnail) ?? ''}
               alt={thumbnail.title || name}
               blurHash={thumbnail.blurhash}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

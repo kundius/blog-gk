@@ -41,6 +41,10 @@ export interface ArticleRecord {
   ingredients?: Array<{ name: string; amount?: string; value?: string }> | null
   portionCount?: string | null
   cookingTime?: string | null
+  calories?: string | null
+  protein?: string | null
+  fat?: string | null
+  carbs?: string | null
   commentsCount: number
   hitsCount: number
   likesCount: number

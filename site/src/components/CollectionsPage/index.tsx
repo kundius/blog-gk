@@ -41,7 +41,7 @@ export function CollectionsPage() {
                 ? {
                     name: collection.thumbnail?.title || undefined,
                     blurHash: collection.thumbnail?.blurhash || undefined,
-                    url: fileUrl(collection.thumbnail?.filenameDisk)
+                    url: fileUrl(collection.thumbnail)
                   }
                 : undefined
             }

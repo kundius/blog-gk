@@ -1,0 +1,83 @@
+.card {
+  background-color: #ffffff;
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(#ffffff, #ffffff),
+    linear-gradient(135deg, rgba(211, 109, 109, 0.25) 0%, rgba(124, 148, 113, 0.2) 100%);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 20px;
+  padding: 28px 32px 24px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #3e3d3a;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ebe7de;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: #7c9471;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0 8px;
+}
+
+.headerName {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #3e3d3a;
+}
+
+.name {
+  font-size: 15px;
+  line-height: 1.2;
+  color: #3e3d3a;
+}
+
+.amount {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgb(211, 109, 109);
+  background-color: #fdf3f3;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}

@@ -19,7 +19,7 @@ export interface CardProps {
   thumbnail?: {
     name?: string
     blurHash?: string
-    url: string
+    url: string | undefined
   }
 }
 
@@ -39,7 +39,7 @@ export const Card = ({
         <Link href={href}>
           <div className={`${styles.Thumbnail} relative`}>
             <CoverImage
-              src={thumbnail.url}
+              src={thumbnail.url ?? ''}
               alt={thumbnail.name || ''}
               blurHash={thumbnail.blurHash}
               sizes="240px"

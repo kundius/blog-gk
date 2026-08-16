@@ -15,4 +15,9 @@
   margin-left: 12px;
 }
 
-.Wrapper {}
+.Wrapper {
+}
+
+.Wall {
+  background: #fcfaf6;
+}

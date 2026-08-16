@@ -9,7 +9,7 @@ export interface CardProps {
   description?: string | null
   count?: number
   thumbnail?: {
-    url: string
+    url: string | undefined
     name?: string
     blurHash?: string
   }
@@ -39,7 +39,7 @@ export function Card ({
         {thumbnail ? (
           <div className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform group-hover:[transform:scale(1.03)]">
             <CoverImage
-              src={thumbnail.url}
+              src={thumbnail.url ?? ''}
               alt={thumbnail.name || name}
               blurHash={thumbnail.blurHash}
               sizes="(max-width: 768px) 96px, 144px"

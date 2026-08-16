@@ -49,6 +49,10 @@ export interface ArticleListItem {
   excerpt?: string | null
   portionCount?: string | null
   cookingTime?: string | null
+  calories?: string | null
+  protein?: string | null
+  fat?: string | null
+  carbs?: string | null
   commentsCount: number
   hitsCount: number
   likesCount: number
@@ -65,7 +69,7 @@ export interface ArticleFile {
 }
 
 export interface ArticleDetail extends ArticleListItem {
-  ingredients?: { name: string; amount: string }[] | null
+  ingredients?: { name: string; amount?: string | null; value?: string | null }[] | null
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null

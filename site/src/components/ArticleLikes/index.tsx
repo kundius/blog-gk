@@ -9,9 +9,10 @@ import { HeartIcon } from '@components/Icon/heart'
 export interface ArticleLikesProps {
   id: string
   initialLikes?: number
+  className?: string
 }
 
-export function ArticleLikes({ id, initialLikes = 0 }: ArticleLikesProps) {
+export function ArticleLikes({ id, initialLikes = 0, className }: ArticleLikesProps) {
   const [loading, setLoading] = React.useState(false)
   const [count, setCount] = React.useState(initialLikes)
   const [active, setActive] = React.useState(false)
@@ -59,7 +60,7 @@ export function ArticleLikes({ id, initialLikes = 0 }: ArticleLikesProps) {
 
   return (
     <button
-      className="flex items-center gap-8 p-0 border-0 bg-transparent"
+      className={className || 'flex items-center gap-8 p-0 border-0 bg-transparent'}
       onClick={handler}
       disabled={loading}
     >

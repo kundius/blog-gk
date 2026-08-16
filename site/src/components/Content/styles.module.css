@@ -1,41 +1,65 @@
-.Content {
+.content {
   font-size: 18px;
-  counter-reset: recipe-step;
+  line-height: 1.5;
 }
 
-.Content h2 {
+.content h2 {
   font-size: 32px;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.25;
   margin-top: 48px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+}
+
+.content h2:first-child {
+  margin-top: 0;
+}
+
+.content h2:last-child {
+  margin-bottom: 0;
 }
 
 @media (--below-md) {
-  .Content h2 {
+  .content h2 {
     font-size: 28px;
   }
 }
 
-.Content h3 {
+.content h3 {
   font-size: 28px;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.25;
   margin-top: 48px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+}
+
+.content h3:first-child {
+  margin-top: 0;
+}
+
+.content h3:last-child {
+  margin-bottom: 0;
 }
 
 @media (--below-md) {
-  .Content h3 {
+  .content h3 {
     font-size: 24px;
   }
 }
 
-.Content p {
-  margin: 24px 0;
+.content p {
+  margin: 32px 0;
 }
 
-.Content img[width="400"] {
+.content p:first-child {
+  margin-top: 0;
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+.content img[width='400'] {
   width: 100%;
   height: auto;
   /* border-radius: 0.5rem; */
@@ -43,81 +67,101 @@
 
 /* ---------- Recipe step ---------- */
 
-.Content :global(.recipe-step) {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 28px;
-  margin: 40px 0;
+.content :global(.recipe-step) {
+  position: relative;
+  display: block;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px 32px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin: 32px 0;
   counter-increment: recipe-step;
 }
 
-.Content :global(.recipe-step__num)::before {
+.content :global(.recipe-step:first-child) {
+  margin-top: 0;
+}
+
+.content :global(.recipe-step:last-child) {
+  margin-bottom: 0;
+}
+
+.content :global(.recipe-step)::before {
   content: counter(recipe-step);
-  display: block;
-  font-size: 56px;
+  position: absolute;
+  top: -4px;
+  right: 8px;
+  font-size: 100px;
   font-weight: 700;
+  color: #7c9471;
+  opacity: 0.05;
+  pointer-events: none;
   line-height: 1;
-  color: var(--color-red-400);
-  text-align: right;
+  z-index: 0;
 }
 
-.Content :global(.recipe-step__body) {
-  min-width: 0;
-}
-
-.Content :global(.recipe-step__body > p:first-child) {
-  margin-top: 4px;
-}
-
-.Content :global(.recipe-step__body img) {
+.content :global(.recipe-step__num) {
+  margin-bottom: 24px;
   display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 12px;
-  margin: 16px 0 0;
-  cursor: zoom-in;
+  position: relative;
+  margin-top: -8px;
 }
 
-@media (--below-md) {
-  .Content :global(.recipe-step) {
-    grid-template-columns: 44px 1fr;
-    gap: 16px;
-    margin: 28px 0;
-  }
+.content :global(.recipe-step__num)::before {
+  content: counter(recipe-step);
+  text-align: left;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  background: #d36d6d;
+  color: #fff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .Content :global(.recipe-step__num)::before {
-    font-size: 40px;
-  }
+.content :global(.recipe-step__body) {
+  position: relative;
+  min-width: 0;
 }
 
 /* ---------- Recipe steps block ---------- */
 
-.Content :global(.recipe-steps) {
-  margin: 40px 0;
+.content :global(.recipe-steps) {
+  margin: 48px 0;
+  counter-reset: recipe-step;
 }
 
-.Content :global(.recipe-steps__title) {
-  margin: 0 0 24px;
-}
-
-.Content :global(.recipe-steps .recipe-step:first-child) {
+.content :global(.recipe-steps:first-child) {
   margin-top: 0;
 }
 
-.Content :global(.recipe-steps .recipe-step:last-child) {
+.content :global(.recipe-steps:last-child) {
   margin-bottom: 0;
 }
 
 /* ---------- Gallery ---------- */
 
-.Content :global(.gallery) {
+.content :global(.gallery) {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  margin: 28px 0;
+  gap: 16px;
+  margin: 32px 0;
 }
 
-.Content :global(.gallery img) {
+.content :global(.gallery:first-child) {
+  margin-top: 0;
+}
+
+.content :global(.gallery:last-child) {
+  margin-bottom: 0;
+}
+
+.content :global(.gallery img) {
   display: block;
   width: 100%;
   height: auto;
@@ -125,16 +169,8 @@
   cursor: zoom-in;
 }
 
-.Content :global(.gallery img:first-child:nth-last-child(1)) {
-  grid-column: 1 / -1;
-}
-
-.Content :global(.gallery img:first-child:nth-last-child(3)) {
-  grid-column: 1 / -1;
-}
-
-@media (--below-sm) {
-  .Content :global(.gallery) {
-    grid-template-columns: 1fr;
+@media (--below-md) {
+  .content :global(.gallery) {
+    gap: 12px;
   }
 }

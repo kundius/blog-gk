@@ -80,9 +80,9 @@ export function CulinarySections() {
                 >
                   <div className="absolute inset-0">
                     <div className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform group-hover:[transform:scale(1.06)]">
-                      {section.thumbnail?.filenameDisk ? (
+                      {section.thumbnail ? (
                         <CoverImage
-                          src={fileUrl(section.thumbnail.filenameDisk)}
+                          src={fileUrl(section.thumbnail) ?? ''}
                           alt={section.thumbnail.title || section.name}
                           blurHash={section.thumbnail.blurhash}
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

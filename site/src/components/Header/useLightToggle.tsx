@@ -32,7 +32,7 @@ export const useLightToggle = ({
 }: UseLightToggleProps) => {
   const dots = useTrail(items.length, {
     config: {
-      mass: theme === 'light' ? 10 : 0,
+      mass: theme === 'light' ? 10 : 1,
       tension: theme === 'light' ? 2000 : 1000,
       friction: 200
     },

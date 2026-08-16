@@ -58,12 +58,12 @@ export function CommentsItem ({
         <div className={styles.Headline}>
           <div className={styles.Name}>{authorName}</div>
           <div className={styles.Date}>
-            <MdAccessTime /> {DateTime.fromISO(createdAt).setLocale('ru').toRelative()}
+            <MdAccessTime /> {DateTime.fromISO(createdAt, { zone: 'utc' }).setLocale('ru').toRelative()}
           </div>
           {isChanged && (
             <span
               className="italic text-gray-400 text-base ml-4"
-              title={`изменен ${DateTime.fromISO(updatedAt).setLocale('ru').toRelative()}`}
+              title={`изменен ${DateTime.fromISO(updatedAt, { zone: 'utc' }).setLocale('ru').toRelative()}`}
             >
               <AiOutlineEdit />
             </span>

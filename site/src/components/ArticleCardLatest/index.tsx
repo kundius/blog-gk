@@ -22,7 +22,7 @@ export interface ArticleCardLatestProps {
     url: string
   }
   thumbnail?: {
-    url: string
+    url: string | undefined
     name?: string
     blurHash?: string
   }
@@ -43,7 +43,7 @@ export function ArticleCardLatest ({
       {thumbnail && (
         <div className="relative aspect-[4/3] overflow-hidden">
           <CoverImage
-            src={thumbnail.url}
+            src={thumbnail.url ?? ''}
             alt={thumbnail.name || ''}
             blurHash={thumbnail.blurHash}
             sizes="100vw"

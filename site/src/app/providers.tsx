@@ -3,13 +3,14 @@
 import React from 'react'
 
 import { ThemeProvider } from '@components/ThemeContext'
-import { FontLoader } from './font-loader'
+import { LightboxProvider } from '@components/Lightbox'
 
 export function Providers ({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      <FontLoader />
-      {children}
+      <LightboxProvider>
+        {children}
+      </LightboxProvider>
     </ThemeProvider>
   )
 }

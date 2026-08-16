@@ -9,6 +9,7 @@ import { CommentsItemSkeleton } from '@components/CommentsItem/skeleton'
 
 import * as styles from './styles.module.css'
 import * as api from './api'
+import { cn } from '@app/lib/utils'
 
 export interface CommentsProps {
   threadId: string
@@ -63,11 +64,20 @@ export function Comments({ threadId, threadType }: CommentsProps) {
 
   return (
     <div className={styles.Wrapper} id="comments">
-      <div className="mb-8 md:mb-12 text-gray-400 text-3xl md:text-5xl">
-        Комментарии
+      <div className="relative z-10 mb-6 text-center md:mb-10">
+        <h3 className="text-2xl md:text-4xl">Комментарии</h3>
+        <div
+          className="mx-auto mt-3 h-1 w-14 rounded-full"
+          style={{ backgroundColor: 'var(--main-color)' }}
+        />
       </div>
 
-      <div className="-mr-4 md:mr-0 -ml-4 md:ml-0 p-4 md:p-16 transition duration-300 ease-out bg-gray-100 dark:bg-gray-800 md:rounded-3xl">
+      <div
+        className={cn(
+          styles.Wall,
+          'p-4 md:p-16 transition duration-300 dark:bg-gray-800 md:rounded-3xl'
+        )}
+      >
         <div className="max-w-2xl ml-auto mr-auto">
           <CommentsForm
             formId="createForm"
@@ -178,7 +188,9 @@ export function Comments({ threadId, threadType }: CommentsProps) {
     setAuthorEmail('')
     setAuthorName('')
     setCreateReply(undefined)
-    setCreatedNotice('Комментарий отправлен и появится после проверки модератором')
+    setCreatedNotice(
+      'Комментарий отправлен и появится после проверки модератором'
+    )
     await fetchMore()
   }
 

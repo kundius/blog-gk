@@ -68,6 +68,10 @@ model Article {
   ingredients   Json?
   portionCount  String?  @map("portion_count")
   cookingTime   String?  @map("cooking_time")
+  calories      String?
+  protein       String?
+  fat           String?
+  carbs         String?
   commentsCount Int      @default(0) @map("comments_count")
   hitsCount     Int      @default(0) @map("hits_count")
   likesCount    Int      @default(0) @map("likes_count")

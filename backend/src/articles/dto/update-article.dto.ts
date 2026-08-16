@@ -50,6 +50,22 @@ export class UpdateArticleDto {
   cookingTime?: string;
 
   @IsOptional()
+  @IsString()
+  calories?: string;
+
+  @IsOptional()
+  @IsString()
+  protein?: string;
+
+  @IsOptional()
+  @IsString()
+  fat?: string;
+
+  @IsOptional()
+  @IsString()
+  carbs?: string;
+
+  @IsOptional()
   @IsArray()
   @ArrayUnique()
   @IsUUID('4', { each: true })

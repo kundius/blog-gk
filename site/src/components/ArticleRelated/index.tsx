@@ -29,7 +29,7 @@ export function ArticleRelated({ id }: ArticleRelatedProps) {
       key={item.alias}
       name={item.name}
       excerpt={item.excerpt || undefined}
-      createdAt={DateTime.fromISO(item.dateCreated)
+      createdAt={DateTime.fromISO(item.dateCreated, { zone: 'utc' })
         .setLocale('ru')
         .toFormat('DDD')}
       thumbnail={
@@ -37,7 +37,7 @@ export function ArticleRelated({ id }: ArticleRelatedProps) {
           ? {
               name: item.thumbnail?.title || undefined,
               blurHash: item.thumbnail?.blurhash || undefined,
-              url: fileUrl(item.thumbnail?.filenameDisk)
+              url: fileUrl(item.thumbnail)
             }
           : undefined
       }

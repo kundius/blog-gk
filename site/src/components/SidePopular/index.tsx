@@ -23,7 +23,7 @@ export function SidePopular () {
       {result.data.map(item => (
         <Card
           key={item.alias}
-          createdAt={DateTime.fromISO(item.dateCreated).setLocale('ru').toFormat('DDD')}
+          createdAt={DateTime.fromISO(item.dateCreated, { zone: 'utc' }).setLocale('ru').toFormat('DDD')}
           href={`/${item.category.alias}/${item.alias}`}
           name={item.name}
           category={{
@@ -35,7 +35,7 @@ export function SidePopular () {
               ? {
                   name: item.thumbnail?.title || undefined,
                   blurHash: item.thumbnail?.blurhash || undefined,
-                  url: fileUrl(item.thumbnail?.filenameDisk)
+                  url: fileUrl(item.thumbnail)
                 }
               : undefined
           }

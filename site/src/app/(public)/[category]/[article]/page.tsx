@@ -48,8 +48,8 @@ export async function generateMetadata ({ params }: { params: Promise<ArticlePag
       description: data.seoDescription || undefined,
       url: pageUrl,
       type: 'article',
-      images: data.thumbnail?.filenameDisk
-        ? [{ url: fileUrl(data.thumbnail.filenameDisk) }]
+      images: data.thumbnail
+        ? [{ url: fileUrl(data.thumbnail) ?? '' }]
         : undefined
     }
   }

@@ -1,0 +1,46 @@
+.wrapper {
+  background-color: #fcfaf6;
+  border-radius: 20px;
+  padding: 28px 32px;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.card {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #eeeae4;
+  border-radius: 20px;
+  padding: 24px;
+  text-decoration: none;
+  color: #3e3d3a;
+  transition: 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+.label {
+  color: rgb(211, 109, 109);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 18px;
+  margin-top: 6px;
+  color: #3e3d3a;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    flex-direction: column;
+  }
+}

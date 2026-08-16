@@ -37,7 +37,7 @@ export const Card = ({
   return (
     <div className={styles.Wrapper}>
       <div className={styles.Date}>
-        {DateTime.fromISO(result.data.dateCreated).setLocale('ru').toFormat('DDD')}
+        {DateTime.fromISO(result.data.dateCreated, { zone: 'utc' }).setLocale('ru').toFormat('DDD')}
       </div>
       <div className={styles.Title}>
         <Link href={`/${result.data.category.alias}/${result.data.alias}`}>{result.data.name}</Link>

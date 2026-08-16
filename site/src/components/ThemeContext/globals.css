@@ -74,7 +74,7 @@ body {
   transition:
     color 300ms ease-out,
     background 300ms ease-out;
-  font-family: Gilroy, sans-serif;
+  font-family: var(--font-sans), sans-serif;
   overflow-x: hidden;
 }
 

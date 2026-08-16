@@ -27,15 +27,15 @@
 }
 
 .Input {
-  background: #fdfeff;
-  border: 1px solid #e8e9eb;
-  border-radius: 3px;
-  padding: 0 15px;
-  height: 2rem;
   color: #000;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 14px;
+      box-sizing: border-box;
+      background: #fdfeff;
+      border: 1px solid #e8e9eb;
+      border-radius: 4px;
+      width: 100%;
+      height: 44px;
+      padding: 0 16px;
+      font-size: 16px;
 }
 
 @media (--below-md) {
@@ -48,10 +48,10 @@
   width: 100%;
   display: block;
   border: 1px solid #e8e9eb;
-  border-radius: 3px;
+  border-radius: 4px;
   background: #fdfeff;
   position: relative;
-  padding: 15px;
+  padding: 16px;
   cursor: text;
   color: #000;
 }
@@ -97,7 +97,7 @@
 }
 
 .Textarea {
-  font-size: 14px;
+  font-size: 16px;
   padding: 0;
   line-height: 1.25;
   flex-grow: 1;

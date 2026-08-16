@@ -41,7 +41,7 @@ export function AlbumsPage() {
                 ? {
                     name: album.thumbnail?.title || undefined,
                     blurHash: album.thumbnail?.blurhash || undefined,
-                    url: fileUrl(album.thumbnail?.filenameDisk)
+                    url: fileUrl(album.thumbnail)
                   }
                 : undefined
             }

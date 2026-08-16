@@ -9,7 +9,7 @@ export interface CardProps {
   name: string
   href: string
   thumbnail?: {
-    url: string
+    url: string | undefined
     name?: string
     blurHash?: string
   }
@@ -25,7 +25,7 @@ export function Card ({
       {thumbnail && (
         <figure className={`${styles.Thumbnail} aspect-[5/6] overflow-hidden`}>
           <CoverImage
-            src={thumbnail.url}
+            src={thumbnail.url ?? ''}
             alt={thumbnail.name || ''}
             blurHash={thumbnail.blurHash}
             sizes="(max-width: 768px) 50vw, 33vw"

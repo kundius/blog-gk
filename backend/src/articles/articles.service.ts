@@ -116,6 +116,10 @@ export class ArticlesService {
         ingredients: dto.ingredients as Prisma.InputJsonValue | undefined,
         portionCount: dto.portionCount,
         cookingTime: dto.cookingTime,
+        calories: dto.calories,
+        protein: dto.protein,
+        fat: dto.fat,
+        carbs: dto.carbs,
         seoTitle: dto.seoTitle,
         seoKeywords: dto.seoKeywords,
         seoDescription: dto.seoDescription,
@@ -184,6 +188,10 @@ export class ArticlesService {
           ingredients: dto.ingredients as Prisma.InputJsonValue | undefined,
           portionCount: dto.portionCount,
           cookingTime: dto.cookingTime,
+          calories: dto.calories,
+          protein: dto.protein,
+          fat: dto.fat,
+          carbs: dto.carbs,
           seoTitle: dto.seoTitle,
           seoKeywords: dto.seoKeywords,
           seoDescription: dto.seoDescription,
@@ -258,20 +266,32 @@ export class ArticlesService {
     }
 
     const isNext = direction === 'next';
-    return this.prisma.article.findFirst({
+    const neighbors = await this.prisma.article.findMany({
       where: {
         categoryId: article.categoryId,
         status: 'published',
         id: { not: id },
-        ...(isNext
-          ? { dateCreated: { gt: article.dateCreated ?? new Date(0) } }
-          : { dateCreated: { lt: article.dateCreated ?? new Date(0) } }),
       },
       orderBy: { dateCreated: isNext ? 'asc' : 'desc' },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        alias: true,
+        dateCreated: true,
         category: { select: { name: true, alias: true } },
       },
     });
+
+    if (neighbors.length === 0) {
+      return null;
+    }
+
+    const current = article.dateCreated ?? new Date(0);
+    const found = neighbors.find((n) =>
+      isNext ? (n.dateCreated ?? new Date(0)) > current : (n.dateCreated ?? new Date(0)) < current
+    );
+
+    return found ?? (isNext ? neighbors[0] : neighbors[neighbors.length - 1]);
   }
 
   private normalizeCategoryIds(categories: string[] | undefined, primary?: string): string[] {

@@ -61,6 +61,10 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const [content, setContent] = useState(article?.content ?? '')
   const [portionCount, setPortionCount] = useState(article?.portionCount ?? '')
   const [cookingTime, setCookingTime] = useState(article?.cookingTime ?? '')
+  const [calories, setCalories] = useState(article?.calories ?? '')
+  const [protein, setProtein] = useState(article?.protein ?? '')
+  const [fat, setFat] = useState(article?.fat ?? '')
+  const [carbs, setCarbs] = useState(article?.carbs ?? '')
   const [ingredients, setIngredients] = useState<IngredientItem[]>(
     article?.ingredients?.map((i) => ({
       name: i.name,
@@ -125,6 +129,10 @@ export function ArticleForm({ article }: ArticleFormProps) {
         content,
         portionCount,
         cookingTime,
+        calories,
+        protein,
+        fat,
+        carbs,
         ingredients,
         thumbnailId: thumbnail?.id,
         files: gallery.map((f) => f.id),
@@ -239,6 +247,52 @@ export function ArticleForm({ article }: ArticleFormProps) {
           <div className="space-y-2">
             <Label>Текст статьи</Label>
             <RichTextEditor value={content} onChange={setContent} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">КБЖУ</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-2">
+              <Label htmlFor="calories">Ккал</Label>
+              <Input
+                id="calories"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+                inputMode="numeric"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="protein">Белки, г</Label>
+              <Input
+                id="protein"
+                value={protein}
+                onChange={(e) => setProtein(e.target.value)}
+                inputMode="numeric"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="fat">Жиры, г</Label>
+              <Input
+                id="fat"
+                value={fat}
+                onChange={(e) => setFat(e.target.value)}
+                inputMode="numeric"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="carbs">Углеводы, г</Label>
+              <Input
+                id="carbs"
+                value={carbs}
+                onChange={(e) => setCarbs(e.target.value)}
+                inputMode="numeric"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -2,17 +2,15 @@ import React from 'react'
 import { API_URL } from '@app/utils/config'
 import { postJson } from '@app/api/http'
 
-import { EyeIcon } from '@components/Icon/eye'
+import { formatHits } from './format'
+import * as styles from './styles.module.css'
 
 export interface HitsProps {
   id: string
   initialHits: number
 }
 
-export function Hits ({
-  id,
-  initialHits
-}: HitsProps) {
+export function Hits ({ id, initialHits }: HitsProps) {
   const [hits, setHits] = React.useState(initialHits)
 
   React.useEffect(() => {
@@ -27,18 +25,13 @@ export function Hits ({
       })
   }, [id])
 
-  if (typeof hits === 'undefined') {
-    return null
-  }
-
   return (
-    <div className="flex items-center gap-2">
-      <div className="transition duration-300 ease-out text-lg text-gray-600 dark:text-gray-200">
-        <EyeIcon />
-      </div>
-      <div className="text-xs uppercase">
-        {hits}
-      </div>
+    <div className={styles.item}>
+      <svg className={styles.metaIcon} viewBox="0 0 24 24">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+      <span>{formatHits(hits)}</span>
     </div>
   )
 }

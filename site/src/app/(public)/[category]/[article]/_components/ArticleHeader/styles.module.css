@@ -1,0 +1,231 @@
+.patternBg {
+  background-color: #fdfbf7;
+  background-image:
+    radial-gradient(circle, #3d352e0d 1px, #0000 1px),
+    linear-gradient(135deg, #fdfbf7 0%, #f4f9f4 35%, #f9f4f2 70%, #f4f4f9 100%);
+  background-position:
+    0 0,
+    0 0;
+  background-size:
+    16px 16px,
+    100% 100%;
+}
+
+.header {
+  border-radius: 24px;
+  padding: 40px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 48px;
+}
+
+.content {
+  flex: 1;
+  max-width: 750px;
+}
+
+/* ---- ХЛЕБНЫЕ КРОШКИ ---- */
+.breadcrumbs {
+  font-size: 14px;
+  color: #9e9e9e;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs a {
+  color: #9e9e9e;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.breadcrumbs a:hover {
+  color: rgb(211, 109, 109);
+}
+
+.sep {
+  color: #c4c4c4;
+}
+
+.current {
+  color: #9e9e9e;
+  cursor: default;
+}
+
+/* ---- ЗАГОЛОВОК ---- */
+.title {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 32px;
+  letter-spacing: -0.5px;
+  color: #3e3d3a;
+}
+
+/* ---- МЕТА ---- */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  font-size: 15px;
+  align-items: center;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3e3d3a;
+}
+
+.metaIcon {
+  width: 18px;
+  height: 18px;
+  stroke: rgb(211, 109, 109);
+  stroke-width: 1.5;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.dateSeparator {
+  color: #c4c4c4;
+}
+
+.date {
+  color: #9e9e9e;
+  font-size: 14px;
+}
+
+/* ---- ЛАЙК ---- */
+.metaLike {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(211, 109, 109);
+  font-weight: 500;
+  border: 1px solid rgb(211, 109, 109);
+  border-radius: 50px;
+  padding: 4px 16px 4px 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.metaLike:hover {
+  background-color: #fdf3f3;
+}
+
+.metaLike svg {
+  width: 18px;
+  height: 18px;
+  stroke: rgb(211, 109, 109);
+  stroke-width: 2;
+}
+
+.metaLike span {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* ---- КАРТИНКА ---- */
+.imageWrapper {
+  position: relative;
+  flex: 0 0 240px;
+  height: 240px;
+  display: flex;
+  justify-content: flex-end;
+  transform: rotate(-6deg);
+  top: 6px;
+  right: 12px;
+}
+
+.imageWrapper::before {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: -16px;
+  width: 240px;
+  height: 240px;
+  background-color: rgb(211, 109, 109);
+  border-radius: 20px;
+  z-index: 0;
+  opacity: 0.12;
+  transform: rotate(-6deg);
+}
+
+.image {
+  width: 240px;
+  height: 240px;
+  position: relative;
+  z-index: 1;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(211, 109, 109, 0.15);
+}
+
+.image img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  transform: rotate(6deg) scale(1.1);
+}
+
+/* ---- АДАПТИВНОСТЬ ---- */
+@media (max-width: 1100px) {
+  .imageWrapper {
+    flex: 0 0 180px;
+    height: 180px;
+  }
+  .imageWrapper::before {
+    width: 180px;
+    height: 180px;
+    right: -12px;
+    top: -12px;
+  }
+  .image {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column-reverse;
+    padding: 24px;
+    gap: 24px;
+    align-items: stretch;
+  }
+  .content {
+    max-width: 100%;
+  }
+  .imageWrapper {
+    align-self: center;
+    flex: 0 0 auto;
+    height: auto;
+  }
+  .imageWrapper::before {
+    width: 140px;
+    height: 140px;
+    right: -8px;
+    top: -8px;
+    display: none;
+  }
+  .image {
+    width: 140px;
+    height: 140px;
+  }
+  .title {
+    font-size: 34px;
+  }
+  .meta {
+    font-size: 13px;
+    gap: 8px 12px;
+  }
+  .metaLike {
+    padding: 2px 12px;
+    font-size: 13px;
+  }
+}

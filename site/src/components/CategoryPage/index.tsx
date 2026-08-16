@@ -88,7 +88,7 @@ export function CategoryPage({ alias }: CategoryPageProps) {
               hitsCount={article.hitsCount || 0}
               likesCount={article.likesCount || 0}
               excerpt={article.excerpt || undefined}
-              createdAt={DateTime.fromISO(article.dateCreated)
+              createdAt={DateTime.fromISO(article.dateCreated, { zone: 'utc' })
                 .setLocale('ru')
                 .toFormat('DDD')
                 .replace(' г.', '')}
@@ -97,7 +97,7 @@ export function CategoryPage({ alias }: CategoryPageProps) {
                   ? {
                       name: article.thumbnail?.title || undefined,
                       blurHash: article.thumbnail?.blurhash || undefined,
-                      url: fileUrl(article.thumbnail?.filenameDisk)
+                      url: fileUrl(article.thumbnail)
                     }
                   : undefined
               }
