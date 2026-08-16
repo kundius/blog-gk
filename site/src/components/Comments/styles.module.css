@@ -15,9 +15,21 @@
   margin-left: 12px;
 }
 
+:global(.dark) .Title {
+  border-bottom-color: #44403c;
+}
+
+:global(.dark) .Title span {
+  color: #e7e5e4;
+}
+
 .Wrapper {
 }
 
 .Wall {
   background: #fcfaf6;
+}
+
+:global(.dark) .Wall {
+  background: #292524;
 }

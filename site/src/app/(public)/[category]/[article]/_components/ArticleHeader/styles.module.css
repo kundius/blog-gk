@@ -11,6 +11,19 @@
     100% 100%;
 }
 
+:global(.dark) .patternBg {
+  background-color: #292524;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(135deg, #292524 0%, #1c1917 35%, #292524 70%, #1c1917 100%);
+  background-position:
+    0 0,
+    0 0;
+  background-size:
+    16px 16px,
+    100% 100%;
+}
+
 .header {
   border-radius: 24px;
   padding: 40px 48px;
@@ -54,6 +67,24 @@
   cursor: default;
 }
 
+:global(.dark) .breadcrumbs {
+  color: #a8a29e;
+}
+
+:global(.dark) .breadcrumbs a {
+  color: #a8a29e;
+}
+
+:global(.dark) .sep,
+:global(.dark) .current,
+:global(.dark) .dateSeparator {
+  color: #57534e;
+}
+
+:global(.dark) .date {
+  color: #a8a29e;
+}
+
 /* ---- ЗАГОЛОВОК ---- */
 .title {
   font-size: 48px;
@@ -62,6 +93,10 @@
   margin-bottom: 32px;
   letter-spacing: -0.5px;
   color: #3e3d3a;
+}
+
+:global(.dark) .title {
+  color: #e7e5e4;
 }
 
 /* ---- МЕТА ---- */
@@ -78,6 +113,10 @@
   align-items: center;
   gap: 8px;
   color: #3e3d3a;
+}
+
+:global(.dark) .item {
+  color: #e7e5e4;
 }
 
 .metaIcon {
@@ -114,6 +153,10 @@
 
 .metaLike:hover {
   background-color: #fdf3f3;
+}
+
+:global(.dark) .metaLike:hover {
+  background-color: #44403c;
 }
 
 .metaLike svg {
@@ -164,6 +207,12 @@
   border: 2px solid #ffffff;
   background: #fff;
   box-shadow: 0 8px 24px rgba(211, 109, 109, 0.15);
+}
+
+:global(.dark) .image {
+  border-color: #44403c;
+  background: #292524;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .image img {

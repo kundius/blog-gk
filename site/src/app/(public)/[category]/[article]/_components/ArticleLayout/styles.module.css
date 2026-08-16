@@ -36,10 +36,18 @@
   background-color: #ffffff;
 }
 
+:global(.dark) .ad {
+  background-color: #292524;
+}
+
 .adText {
   font-size: 14px;
   color: #9e9e9e;
   letter-spacing: 0.5px;
+}
+
+:global(.dark) .adText {
+  color: #a8a29e;
 }
 
 .bottom {

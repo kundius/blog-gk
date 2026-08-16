@@ -4,6 +4,10 @@
   padding: 28px 32px;
 }
 
+:global(.dark) .wrapper {
+  background-color: #1c1917;
+}
+
 .nav {
   display: flex;
   gap: 20px;
@@ -19,6 +23,12 @@
   text-decoration: none;
   color: #3e3d3a;
   transition: 0.2s;
+}
+
+:global(.dark) .card {
+  background-color: #292524;
+  border-color: #44403c;
+  color: #e7e5e4;
 }
 
 .card:hover {
@@ -37,6 +47,10 @@
   font-size: 18px;
   margin-top: 6px;
   color: #3e3d3a;
+}
+
+:global(.dark) .title {
+  color: #e7e5e4;
 }
 
 @media (max-width: 768px) {

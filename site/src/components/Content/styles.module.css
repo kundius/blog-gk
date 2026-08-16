@@ -79,6 +79,11 @@
   counter-increment: recipe-step;
 }
 
+:global(.dark) .content :global(.recipe-step) {
+  background: #292524;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
 .content :global(.recipe-step:first-child) {
   margin-top: 0;
 }
