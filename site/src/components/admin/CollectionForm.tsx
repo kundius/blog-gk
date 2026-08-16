@@ -11,7 +11,7 @@ import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
 import { Label } from '@components/ui/label'
 import { Switch } from '@components/ui/switch'
-import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { FieldGroup } from '@components/admin/FieldGroup'
 import { AliasInput } from '@components/admin/AliasInput'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import { ArticlePicker } from '@components/admin/ArticlePicker'
@@ -99,11 +99,7 @@ export function CollectionForm({ collection, mutate }: CollectionFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Основное</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <FieldGroup title="Основное" contentClassName="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="collection-name">Название *</Label>
             <Input
@@ -144,14 +140,9 @@ export function CollectionForm({ collection, mutate }: CollectionFormProps) {
               Показывать на главной
             </Label>
           </div>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Статьи</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
+      <FieldGroup title="Статьи" contentClassName="space-y-2">
           {articles.map((article, index) => (
             <div
               key={article.id}
@@ -222,17 +213,11 @@ export function CollectionForm({ collection, mutate }: CollectionFormProps) {
           <p className={cn('text-xs text-muted-foreground', articles.length > 0 && 'pt-1')}>
             Порядок статей задаётся стрелками и сохраняется в подборке.
           </p>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">SEO</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SeoFields values={seo} onChange={setSeo} />
-        </CardContent>
-      </Card>
+      <FieldGroup title="SEO">
+        <SeoFields values={seo} onChange={setSeo} />
+      </FieldGroup>
 
       <div className="flex justify-end gap-2">
         <Button

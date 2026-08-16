@@ -106,7 +106,7 @@ export function ArticlePage ({ alias }: ArticlePageProps) {
         <ArticleLayoutBottom>
           <ArticleNav prev={prev} next={next} />
 
-          <ArticleRelated id={data.id} />
+          <ArticleRelated id={data.id} title={isRecipe ? 'Похожие рецепты' : 'Похожие статьи'} />
 
           <Comments threadId={data.id} threadType="articles" />
         </ArticleLayoutBottom>

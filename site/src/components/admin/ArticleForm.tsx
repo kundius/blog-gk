@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { FieldGroup } from '@components/admin/FieldGroup'
 import { AliasInput } from '@components/admin/AliasInput'
 import { CategoryMultiSelect } from '@components/admin/CategoryMultiSelect'
 import { IngredientsEditor, type IngredientItem } from '@components/admin/IngredientsEditor'
@@ -180,11 +180,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Основное</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <FieldGroup title="Основное" contentClassName="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Название *</Label>
             <Input
@@ -247,39 +243,32 @@ export function ArticleForm({ article }: ArticleFormProps) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card className="overflow-visible">
-        <CardHeader>
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-base">Контент</CardTitle>
-            {isEdit && article?.oldContent ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setContent(article.oldContent ?? '')}
-              >
-                <RotateCcw className="size-4" />
-                Вернуть старую версию
-              </Button>
-            ) : null}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <FieldGroup
+        title="Контент"
+        titleAction={
+          isEdit && article?.oldContent ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setContent(article.oldContent ?? '')}
+            >
+              <RotateCcw className="size-4" />
+              Вернуть старую версию
+            </Button>
+          ) : null
+        }
+        contentClassName="space-y-4"
+      >
           <div className="space-y-2">
             <Label>Текст статьи</Label>
             <RichTextEditor value={content} onChange={setContent} />
           </div>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">КБЖУ</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <FieldGroup title="КБЖУ">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
               <Label htmlFor="calories">Ккал</Label>
@@ -318,23 +307,13 @@ export function ArticleForm({ article }: ArticleFormProps) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Ингредиенты</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <IngredientsEditor items={ingredients} onChange={setIngredients} />
-        </CardContent>
-      </Card>
+      <FieldGroup title="Ингредиенты">
+        <IngredientsEditor items={ingredients} onChange={setIngredients} />
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Медиа</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <FieldGroup title="Медиа" contentClassName="space-y-4">
           <div className="space-y-2">
             <Label>Миниатюра</Label>
             <ThumbnailField
@@ -382,14 +361,9 @@ export function ArticleForm({ article }: ArticleFormProps) {
               </button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Похожие статьи</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
+      <FieldGroup title="Похожие статьи" contentClassName="space-y-2">
           {related.map((articleItem, index) => (
             <div
               key={articleItem.id}
@@ -461,17 +435,11 @@ export function ArticleForm({ article }: ArticleFormProps) {
           <p className="text-xs text-muted-foreground">
             До 4 статей. Если не выбраны — на сайте покажутся случайные статьи из раздела.
           </p>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">SEO</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SeoFields values={seo} onChange={setSeo} />
-        </CardContent>
-      </Card>
+      <FieldGroup title="SEO">
+        <SeoFields values={seo} onChange={setSeo} />
+      </FieldGroup>
 
       <div className="flex justify-end gap-2">
         <Button

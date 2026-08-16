@@ -8,9 +8,10 @@ import * as api from './api'
 
 interface ArticleRelatedProps {
   id: string
+  title: string
 }
 
-export function ArticleRelated({ id }: ArticleRelatedProps) {
+export function ArticleRelated({ id, title }: ArticleRelatedProps) {
   const [relatedKey, relatedFetcher] = api.getRelated({
     id,
     limit: 4,
@@ -24,9 +25,9 @@ export function ArticleRelated({ id }: ArticleRelatedProps) {
   if (!relatedResult?.data || relatedResult.data.length === 0) return null
 
   return (
-    <section className="w-full pt-4 pb-16 md:pb-20">
+    <section className="w-full py-12">
       <div className="mb-6 text-center md:mb-10">
-        <h2 className="text-2xl md:text-4xl">Похожие статьи</h2>
+        <h2 className="text-2xl md:text-4xl">{title}</h2>
         <div
           className="mx-auto mt-3 h-1 w-14 rounded-full"
           style={{ backgroundColor: 'var(--main-color)' }}

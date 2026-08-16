@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
 import { Label } from '@components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { FieldGroup } from '@components/admin/FieldGroup'
 import { AliasInput } from '@components/admin/AliasInput'
 import { MediaPicker } from '@components/admin/MediaPicker'
 import { ThumbnailField } from '@components/admin/ThumbnailField'
@@ -89,11 +89,7 @@ export function AlbumForm({ album, mutate }: AlbumFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Основное</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <FieldGroup title="Основное" contentClassName="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="album-name">Название *</Label>
             <Input
@@ -115,15 +111,10 @@ export function AlbumForm({ album, mutate }: AlbumFormProps) {
               onPick={() => setPicker('thumbnail')}
             />
           </div>
-        </CardContent>
-      </Card>
+      </FieldGroup>
 
       {isEdit && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Фотографии</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <FieldGroup title="Фотографии">
             <div className="flex flex-wrap gap-2">
               {photos.map((file) => (
                 <div
@@ -159,18 +150,12 @@ export function AlbumForm({ album, mutate }: AlbumFormProps) {
                 <ImagePlus className="size-5" />
               </button>
             </div>
-          </CardContent>
-        </Card>
+        </FieldGroup>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">SEO</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SeoFields values={seo} onChange={setSeo} />
-        </CardContent>
-      </Card>
+      <FieldGroup title="SEO">
+        <SeoFields values={seo} onChange={setSeo} />
+      </FieldGroup>
 
       <div className="flex justify-end gap-2">
         <Button

@@ -16,7 +16,8 @@ import { api } from '@app/lib/admin/client'
 import type { ArticleRecord, CommentRecord } from '@app/lib/admin/types'
 import { cn } from '@app/lib/utils'
 import { PageHeader, LoadingState, ErrorState } from '@components/admin/common'
-import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { Card, CardContent } from '@components/ui/card'
+import { FieldGroup } from '@components/admin/FieldGroup'
 import { ArticleStatusBadge } from '@components/admin/ArticleStatusBadge'
 
 const STATS = [
@@ -123,11 +124,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Последние статьи</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <FieldGroup title="Последние статьи">
             {articlesError && <ErrorState message={articlesError.message} />}
             {!recentArticles && !articlesError && <LoadingState rows={4} />}
             {recentArticles && (
@@ -150,14 +147,9 @@ export default function AdminDashboardPage() {
                 )}
               </ul>
             )}
-          </CardContent>
-        </Card>
+        </FieldGroup>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Ожидают модерации</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <FieldGroup title="Ожидают модерации">
             {commentsError && <ErrorState message={commentsError.message} />}
             {!pendingComments && !commentsError && <LoadingState rows={4} />}
             {pendingComments && (
@@ -182,8 +174,7 @@ export default function AdminDashboardPage() {
                 )}
               </ul>
             )}
-          </CardContent>
-        </Card>
+        </FieldGroup>
       </div>
     </div>
   )
