@@ -9,6 +9,7 @@ import { ArticleShare } from '@app/app/(public)/[category]/[article]/_components
 import { ArticleNav } from '@app/app/(public)/[category]/[article]/_components/ArticleNav'
 import { ArticleContent } from '@components/ArticleContent'
 import { Comments } from '@components/Comments'
+import { ArticleRelated } from '@components/ArticleRelated'
 import { ArticleLayoutMain } from '@app/app/(public)/[category]/[article]/_components/ArticleLayout/Main'
 import { ArticleLayoutRight } from '@app/app/(public)/[category]/[article]/_components/ArticleLayout/Right'
 import { ArticleLayoutAd } from '@app/app/(public)/[category]/[article]/_components/ArticleLayout/Ad'
@@ -104,6 +105,8 @@ export function ArticlePage ({ alias }: ArticlePageProps) {
 
         <ArticleLayoutBottom>
           <ArticleNav prev={prev} next={next} />
+
+          <ArticleRelated id={data.id} />
 
           <Comments threadId={data.id} threadType="articles" />
         </ArticleLayoutBottom>

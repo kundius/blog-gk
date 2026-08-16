@@ -85,8 +85,22 @@ model Article {
   categories ArticleCategory[]
   comments  Comment[]
   collections CollectionArticle[]
+  related   ArticleRelated[] @relation("ArticleRelatedSource")
+  relatedTo ArticleRelated[] @relation("ArticleRelatedTarget")
 
   @@map("articles")
+}
+
+model ArticleRelated {
+  id               Int     @id @default(autoincrement())
+  articleId        String? @map("article") @db.Uuid
+  relatedArticleId String? @map("related_article") @db.Uuid
+  sort             Int?
+
+  article        Article? @relation("ArticleRelatedSource", fields: [articleId], references: [id], onDelete: Cascade)
+  relatedArticle Article? @relation("ArticleRelatedTarget", fields: [relatedArticleId], references: [id], onDelete: Cascade)
+
+  @@map("articles_related")
 }
 
 model ArticleCategory {

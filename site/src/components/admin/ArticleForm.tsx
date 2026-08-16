@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, ImagePlus, X, GripVertical, RotateCcw } from 'lucide-react'
+import { Loader2, Save, ImagePlus, X, GripVertical, RotateCcw, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
 import type {
   ArticleRecord,
@@ -26,6 +26,7 @@ import { AliasInput } from '@components/admin/AliasInput'
 import { CategoryMultiSelect } from '@components/admin/CategoryMultiSelect'
 import { IngredientsEditor, type IngredientItem } from '@components/admin/IngredientsEditor'
 import { MediaPicker } from '@components/admin/MediaPicker'
+import { ArticlePicker } from '@components/admin/ArticlePicker'
 import { RichTextEditor } from '@components/admin/RichTextEditor'
 import { SeoFields, type SeoValues } from '@components/admin/SeoFields'
 import { ThumbnailField } from '@components/admin/ThumbnailField'
@@ -75,6 +76,11 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const [gallery, setGallery] = useState<FileRecord[]>(
     article?.files?.map((f) => f.file).filter((f): f is FileRecord => Boolean(f)) ?? [],
   )
+  const [related, setRelated] = useState<ArticleRecord[]>(
+    article?.related
+      ?.map((row) => row.relatedArticle)
+      .filter((a): a is ArticleRecord => Boolean(a)) ?? [],
+  )
   const [seo, setSeo] = useState<SeoValues>({
     seoTitle: article?.seoTitle ?? '',
     seoKeywords: article?.seoKeywords ?? '',
@@ -84,7 +90,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const [categories, setCategories] = useState<CategoryRecord[]>([])
   const [saving, setSaving] = useState(false)
 
-  const [picker, setPicker] = useState<'thumbnail' | 'gallery' | null>(null)
+  const [picker, setPicker] = useState<'thumbnail' | 'gallery' | 'related' | null>(null)
 
   const loadOptions = async () => {
     const treeRes = await api.list<CategoryRecord>('/categories/tree?limit=200')
@@ -115,6 +121,23 @@ export function ArticleForm({ article }: ArticleFormProps) {
     }
   }
 
+  const addRelated = (chosen: ArticleRecord[]) => {
+    const existing = new Set(related.map((a) => a.id))
+    const fresh = chosen.filter((a) => !existing.has(a.id))
+    setRelated((prev) => [...prev, ...fresh].slice(0, 4))
+  }
+
+  const moveRelated = (index: number, delta: number) => {
+    const target = index + delta
+    if (target < 0 || target >= related.length) return
+    const next = [...related]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    setRelated(next)
+  }
+
+  const removeRelated = (index: number) =>
+    setRelated(related.filter((_, i) => i !== index))
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -136,6 +159,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
         ingredients,
         thumbnailId: thumbnail?.id,
         files: gallery.map((f) => f.id),
+        relatedIds: related.map((a) => a.id),
         ...seo,
       }
       if (isEdit && article) {
@@ -363,6 +387,85 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
       <Card>
         <CardHeader>
+          <CardTitle className="text-base">Похожие статьи</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {related.map((articleItem, index) => (
+            <div
+              key={articleItem.id}
+              className="flex items-center gap-2 rounded-md border px-2 py-1.5"
+            >
+              <div className="relative size-9 shrink-0 overflow-hidden rounded bg-muted">
+                {articleItem.thumbnail ? (
+                  <CoverImage
+                    src={fileStreamUrl(articleItem.thumbnail.id)}
+                    alt={articleItem.name}
+                    blurHash={articleItem.thumbnail.blurhash}
+                    sizes="36px"
+                    loading="lazy"
+                  />
+                ) : null}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm">{articleItem.name}</div>
+                <div className="truncate text-xs text-muted-foreground">
+                  {articleItem.category?.name ?? 'Без категории'}
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-0.5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => moveRelated(index, -1)}
+                  disabled={index === 0}
+                >
+                  <ArrowUp className="size-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => moveRelated(index, 1)}
+                  disabled={index === related.length - 1}
+                >
+                  <ArrowDown className="size-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => removeRelated(index)}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          {related.length === 0 && (
+            <p className="py-4 text-center text-sm text-muted-foreground">
+              Похожих статей пока нет
+            </p>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPicker('related')}
+            disabled={related.length >= 4}
+          >
+            <Plus className="size-4" />
+            Добавить похожие статьи{related.length >= 4 ? '' : ` (${related.length}/4)`}
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            До 4 статей. Если не выбраны — на сайте покажутся случайные статьи из раздела.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle className="text-base">SEO</CardTitle>
         </CardHeader>
         <CardContent>
@@ -391,10 +494,17 @@ export function ArticleForm({ article }: ArticleFormProps) {
       </div>
 
       <MediaPicker
-        open={picker !== null}
+        open={picker !== null && picker !== 'related'}
         onOpenChange={(open) => !open && setPicker(null)}
         multiple={picker === 'gallery'}
         onConfirm={handlePickerConfirm}
+      />
+      <ArticlePicker
+        open={picker === 'related'}
+        onOpenChange={(open) => !open && setPicker(null)}
+        excludedIds={[article?.id ?? '', ...related.map((a) => a.id)].filter(Boolean)}
+        max={4}
+        onConfirm={addRelated}
       />
     </form>
   )

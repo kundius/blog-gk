@@ -60,6 +60,12 @@ export interface ArticleRecord {
   }>
   thumbnail?: FileRecord | null
   files?: Array<{ id: number; file?: FileRecord | null; fileId?: string | null }>
+  related?: Array<{
+    id: number
+    sort?: number | null
+    relatedArticle?: ArticleRecord | null
+    relatedArticleId?: string | null
+  }>
 }
 
 export interface AlbumRecord {

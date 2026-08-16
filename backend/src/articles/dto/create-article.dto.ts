@@ -1,4 +1,4 @@
-import { ArrayUnique, IsArray, IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { ArrayMaxSize, ArrayUnique, IsArray, IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { IsJsonValue } from '../../common/validators/is-json-value';
 
 export class CreateArticleDto {
@@ -67,6 +67,13 @@ export class CreateArticleDto {
   @IsArray()
   @IsUUID('4', { each: true })
   files?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @ArrayMaxSize(4)
+  @IsUUID('4', { each: true })
+  relatedIds?: string[];
 
   @IsOptional()
   @IsString()

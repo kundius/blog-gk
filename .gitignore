@@ -11,4 +11,6 @@ landing/public/widget/
 *.pgsql
 *.tar.gz
 tools/migrate/*.sql
-*.sql
+/*.sql
+tools/convert_recipes/backups/*.sql
+tools/kbju/backups/*.sql

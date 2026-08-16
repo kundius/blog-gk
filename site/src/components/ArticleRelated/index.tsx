@@ -1,9 +1,8 @@
-import React, { useContext } from 'react'
+'use client'
+import React from 'react'
 import useSWR from 'swr'
-import { DateTime } from 'luxon'
 
-import { fileUrl } from '@app/api/images'
-import { ArticleCardRelated } from '@components/ArticleCardRelated'
+import { RecipeCard } from '@components/RecipeCard'
 
 import * as api from './api'
 
@@ -14,47 +13,30 @@ interface ArticleRelatedProps {
 export function ArticleRelated({ id }: ArticleRelatedProps) {
   const [relatedKey, relatedFetcher] = api.getRelated({
     id,
-    limit: 3
+    limit: 4,
   })
 
   const { data: relatedResult } = useSWR<api.GetRelatedData>(
     relatedKey,
-    relatedFetcher
+    relatedFetcher,
   )
 
   if (!relatedResult?.data || relatedResult.data.length === 0) return null
 
-  const items = relatedResult.data.map((item) => (
-    <ArticleCardRelated
-      key={item.alias}
-      name={item.name}
-      excerpt={item.excerpt || undefined}
-      createdAt={DateTime.fromISO(item.dateCreated, { zone: 'utc' })
-        .setLocale('ru')
-        .toFormat('DDD')}
-      thumbnail={
-        item.thumbnail
-          ? {
-              name: item.thumbnail?.title || undefined,
-              blurHash: item.thumbnail?.blurhash || undefined,
-              url: fileUrl(item.thumbnail)
-            }
-          : undefined
-      }
-      url={`/${item.category.alias}/${item.alias}`}
-      category={{
-        name: item.category.name,
-        url: `/${item.category.alias}`
-      }}
-    />
-  ))
-
   return (
-    <section>
-      <div className="mb-8 md:mb-12 text-gray-400 text-3xl md:text-5xl">
-        Смотрите также
+    <section className="w-full pt-4 pb-16 md:pb-20">
+      <div className="mb-6 text-center md:mb-10">
+        <h2 className="text-2xl md:text-4xl">Похожие статьи</h2>
+        <div
+          className="mx-auto mt-3 h-1 w-14 rounded-full"
+          style={{ backgroundColor: 'var(--main-color)' }}
+        />
       </div>
-      <div className="grid md:grid-cols-3 gap-4 lg:gap-8">{items}</div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+        {relatedResult.data.map((article) => (
+          <RecipeCard key={article.id} article={article} />
+        ))}
+      </div>
     </section>
   )
 }

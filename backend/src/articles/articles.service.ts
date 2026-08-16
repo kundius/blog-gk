@@ -18,6 +18,12 @@ const ARTICLE_DETAIL_INCLUDE = {
   thumbnail: true,
   files: { include: { file: true }, orderBy: { sort: 'asc' } },
   categories: { include: { category: true }, orderBy: { sort: 'asc' } },
+  related: {
+    include: {
+      relatedArticle: { include: ARTICLE_LIST_INCLUDE },
+    },
+    orderBy: { sort: 'asc' },
+  },
 } satisfies Prisma.ArticleInclude;
 
 const EXTRA_INCLUDES: Record<string, Prisma.ArticleInclude> = {
@@ -102,6 +108,7 @@ export class ArticlesService {
       categories: categoryIds,
       thumbnailId: dto.thumbnailId,
       files: dto.files,
+      relatedIds: dto.relatedIds,
     });
 
     return this.prisma.article.create({
@@ -127,6 +134,12 @@ export class ArticlesService {
         files: { create: (dto.files ?? []).map((fileId, i) => ({ fileId, sort: i })) },
         categories: {
           create: categoryIds.map((categoryId, i) => ({ categoryId, sort: i })),
+        },
+        related: {
+          create: (dto.relatedIds ?? []).map((relatedArticleId, i) => ({
+            relatedArticleId,
+            sort: i,
+          })),
         },
       },
       include: ARTICLE_DETAIL_INCLUDE,
@@ -154,6 +167,8 @@ export class ArticlesService {
       categories: categoryIds,
       thumbnailId: dto.thumbnailId,
       files: dto.files,
+      relatedIds: dto.relatedIds,
+      selfId: id,
     });
 
     return this.prisma.$transaction(async (tx) => {
@@ -171,6 +186,19 @@ export class ArticlesService {
         if (categoryIds.length) {
           await tx.articleCategory.createMany({
             data: categoryIds.map((categoryId, i) => ({ articleId: id, categoryId, sort: i })),
+          });
+        }
+      }
+
+      if (dto.relatedIds !== undefined) {
+        await tx.articleRelated.deleteMany({ where: { articleId: id } });
+        if (dto.relatedIds.length) {
+          await tx.articleRelated.createMany({
+            data: dto.relatedIds.map((relatedArticleId, i) => ({
+              articleId: id,
+              relatedArticleId,
+              sort: i,
+            })),
           });
         }
       }
@@ -236,16 +264,48 @@ export class ArticlesService {
 
   async related(id: string, limit?: number) {
     const article = await this.ensureExists(id);
-    return this.prisma.article.findMany({
-      where: {
-        categoryId: article.categoryId,
-        status: 'published',
-        id: { not: id },
+    const take = limit ?? 4;
+
+    const rows = await this.prisma.articleRelated.findMany({
+      where: { articleId: id },
+      include: {
+        relatedArticle: { include: ARTICLE_LIST_INCLUDE },
       },
-      include: ARTICLE_LIST_INCLUDE,
-      orderBy: { dateCreated: 'desc' },
-      take: limit ?? 5,
+      orderBy: { sort: 'asc' },
     });
+
+    const chosen = rows
+      .map((row) => row.relatedArticle)
+      .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      .filter((item) => item.status === 'published')
+      .slice(0, take);
+
+    if (chosen.length > 0) {
+      return chosen;
+    }
+
+    const randomIds = await this.prisma.$queryRaw<Array<{ id: string }>>`
+      SELECT id
+      FROM articles
+      WHERE category = ${article.categoryId} AND status = 'published' AND id <> ${id}
+      ORDER BY RANDOM()
+      LIMIT ${take}
+    `;
+
+    const ids = randomIds.map((row) => row.id);
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const items = await this.prisma.article.findMany({
+      where: { id: { in: ids } },
+      include: ARTICLE_LIST_INCLUDE,
+    });
+
+    const order = new Map(ids.map((item, index) => [item, index]));
+    return items
+      .sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0))
+      .slice(0, take);
   }
 
   async prev(id: string) {
@@ -368,6 +428,8 @@ export class ArticlesService {
     categories?: string[];
     thumbnailId?: string;
     files?: string[];
+    relatedIds?: string[];
+    selfId?: string;
   }) {
     const categoryIds = Array.from(
       new Set([...(dto.categories ?? []), ...(dto.categoryId ? [dto.categoryId] : [])]),
@@ -395,6 +457,24 @@ export class ArticlesService {
       const count = await this.prisma.file.count({ where: { id: { in: dto.files } } });
       if (count !== dto.files.length) {
         throw new BadRequestException('Some files do not exist');
+      }
+    }
+
+    if (dto.relatedIds) {
+      if (dto.relatedIds.length > 4) {
+        throw new BadRequestException('Related articles must not exceed 4');
+      }
+      const relatedIds = Array.from(new Set(dto.relatedIds));
+      if (dto.selfId && relatedIds.includes(dto.selfId)) {
+        throw new BadRequestException('Article cannot reference itself as related');
+      }
+      if (relatedIds.length > 0) {
+        const count = await this.prisma.article.count({
+          where: { id: { in: relatedIds } },
+        });
+        if (count !== relatedIds.length) {
+          throw new BadRequestException('Some related articles do not exist');
+        }
       }
     }
   }

@@ -73,7 +73,7 @@ export default async function ArticleRoute ({ params }: { params: Promise<Articl
     redirect(`/${data.category.alias}/${data.alias}`)
   }
 
-  const [relatedKey, relatedFetcher] = relatedArticles(data.id, 2)
+  const [relatedKey, relatedFetcher] = relatedArticles(data.id, 4)
   preloadData[relatedKey] = await relatedFetcher(relatedKey)
 
   return (

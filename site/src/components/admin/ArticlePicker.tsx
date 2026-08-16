@@ -21,6 +21,7 @@ interface ArticlePickerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   excludedIds?: string[]
+  max?: number
   onConfirm: (articles: ArticleRecord[]) => void
 }
 
@@ -28,6 +29,7 @@ export function ArticlePicker({
   open,
   onOpenChange,
   excludedIds = [],
+  max,
   onConfirm,
 }: ArticlePickerProps) {
   const [articles, setArticles] = useState<ArticleRecord[]>([])
@@ -66,6 +68,7 @@ export function ArticlePicker({
     setSelected((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
+      else if (max && next.size >= max) return prev
       else next.add(id)
       return next
     })
@@ -83,7 +86,7 @@ export function ArticlePicker({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Выбор статей</DialogTitle>
+          <DialogTitle>Выбор статей{max ? ` (до ${max})` : ''}</DialogTitle>
         </DialogHeader>
 
         <SearchInput
@@ -99,45 +102,50 @@ export function ArticlePicker({
               <Skeleton key={i} className="h-12 w-full rounded-none border-b" />
             ))}
           {!loading &&
-            visible.map((article) => (
-              <button
-                key={article.id}
-                type="button"
-                onClick={() => toggle(article.id)}
-                className={cn(
-                  'flex w-full items-center gap-3 border-b px-3 py-2 text-left transition-colors last:border-b-0 hover:bg-muted/60',
-                  selected.has(article.id) && 'bg-muted',
-                )}
-              >
-                <div className="relative size-9 shrink-0 overflow-hidden rounded bg-muted">
-                  {article.thumbnail ? (
-                    <CoverImage
-                      src={fileStreamUrl(article.thumbnail.id)}
-                      alt={article.name}
-                      blurHash={article.thumbnail.blurhash}
-                      sizes="36px"
-                      loading="lazy"
-                    />
-                  ) : null}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-medium">{article.name}</div>
-                  <div className="truncate text-xs text-muted-foreground">
-                    {article.category?.name ?? 'Без категории'}
-                  </div>
-                </div>
-                <span
+            visible.map((article) => {
+              const atMax = Boolean(max && !selected.has(article.id) && selected.size >= max)
+              return (
+                <button
+                  key={article.id}
+                  type="button"
+                  onClick={() => toggle(article.id)}
+                  disabled={atMax}
                   className={cn(
-                    'flex size-5 shrink-0 items-center justify-center rounded-full border',
-                    selected.has(article.id)
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-input',
+                    'flex w-full items-center gap-3 border-b px-3 py-2 text-left transition-colors last:border-b-0 hover:bg-muted/60',
+                    selected.has(article.id) && 'bg-muted',
+                    atMax && 'cursor-not-allowed opacity-50 hover:bg-transparent',
                   )}
                 >
-                  {selected.has(article.id) && <Check className="size-3" />}
-                </span>
-              </button>
-            ))}
+                  <div className="relative size-9 shrink-0 overflow-hidden rounded bg-muted">
+                    {article.thumbnail ? (
+                      <CoverImage
+                        src={fileStreamUrl(article.thumbnail.id)}
+                        alt={article.name}
+                        blurHash={article.thumbnail.blurhash}
+                        sizes="36px"
+                        loading="lazy"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">{article.name}</div>
+                    <div className="truncate text-xs text-muted-foreground">
+                      {article.category?.name ?? 'Без категории'}
+                    </div>
+                  </div>
+                  <span
+                    className={cn(
+                      'flex size-5 shrink-0 items-center justify-center rounded-full border',
+                      selected.has(article.id)
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-input',
+                    )}
+                  >
+                    {selected.has(article.id) && <Check className="size-3" />}
+                  </span>
+                </button>
+              )
+            })}
           {!loading && visible.length === 0 && (
             <p className="py-8 text-center text-sm text-muted-foreground">
               Статьи не найдены
