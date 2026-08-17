@@ -1,8 +1,8 @@
 .Container {
   width: var(--container-width);
-  max-width: calc(100% - calc(var(--container-padding) * 2));
+  max-width: 100%;
   padding: 0 var(--container-padding);
   margin-left: auto;
   margin-right: auto;
-  box-sizing: content-box;
+  box-sizing: border-box;
 }

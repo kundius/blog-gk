@@ -28,8 +28,20 @@
 
 .Wall {
   background: #fcfaf6;
+  padding: 56px 64px;
 }
 
 :global(.dark) .Wall {
   background: #292524;
+}
+
+@media (--max-md) {
+  .Wall {
+    margin-left: calc(var(--container-padding) * -1);
+    margin-right: calc(var(--container-padding) * -1);
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
 }

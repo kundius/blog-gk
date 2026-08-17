@@ -25,7 +25,7 @@ export function ArticleRelated({ id, title }: ArticleRelatedProps) {
   if (!relatedResult?.data || relatedResult.data.length === 0) return null
 
   return (
-    <section className="w-full py-12">
+    <section className="w-full py-6 md:py-12">
       <div className="mb-6 text-center md:mb-10">
         <h2 className="text-2xl md:text-4xl">{title}</h2>
         <div

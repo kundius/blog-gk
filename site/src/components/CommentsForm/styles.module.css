@@ -13,7 +13,7 @@
   justify-content: center;
   background-color: #e1bfbf;
   color: rgba(245, 245, 245, 1);
-  transition: .3s ease-out;
+  transition: 0.3s ease-out;
 }
 
 .Avatar img {
@@ -28,14 +28,14 @@
 
 .Input {
   color: #000;
-      box-sizing: border-box;
-      background: #fdfeff;
-      border: 1px solid #e8e9eb;
-      border-radius: 4px;
-      width: 100%;
-      height: 44px;
-      padding: 0 16px;
-      font-size: 16px;
+  box-sizing: border-box;
+  background: #fdfeff;
+  border: 1px solid #e8e9eb;
+  border-radius: 4px;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  font-size: 16px;
 }
 
 :global(.dark) .Input {
@@ -44,9 +44,10 @@
   border-color: #57534e;
 }
 
-@media (--below-md) {
+@media (--max-md) {
   .Input {
     padding: 0 8px;
+    font-size: 14px;
   }
 }
 
@@ -118,7 +119,7 @@
   border-right-color: #292524;
 }
 
-@media (--below-md) {
+@media (--max-md) {
   .Field {
     padding: 8px;
   }
@@ -138,13 +139,19 @@
   outline: none;
 }
 
+@media (--max-md) {
+  .Textarea {
+    font-size: 14px;
+  }
+}
+
 .Action {
   display: flex;
   align-items: center;
   justify-content: center;
   color: #c66;
   font-size: 20px;
-  opacity: .6;
+  opacity: 0.6;
   align-self: flex-end;
   margin-top: -10px;
   margin-bottom: -10px;
@@ -152,7 +159,7 @@
   height: 40px;
   color: #c66;
   font-size: 20px;
-  opacity: .6;
+  opacity: 0.6;
 }
 
 .Action:hover {

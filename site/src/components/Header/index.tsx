@@ -1,6 +1,8 @@
+'use client'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { FaRss } from 'react-icons/fa'
+import useSWR from 'swr'
 
 import { Container } from '@components/Container'
 import { ThemeContext } from '@components/ThemeContext'
@@ -10,6 +12,8 @@ import { Search } from './Search'
 import styles from './styles.module.css'
 import { cn } from '@app/lib/utils'
 import Image from 'next/image'
+import { categoriesTree } from '@app/api/categories'
+import type { CategoryWithChildren } from '@app/api/types'
 
 interface MenuItem {
   href: string
@@ -20,107 +24,14 @@ interface MenuItem {
   }[]
 }
 
-const leftItems: MenuItem[] = [
-  {
-    href: '/first-courses',
-    title: 'Первые блюда',
-    children: [
-      {
-        href: '/entrees',
-        title: 'Первые блюда'
-      }
-    ]
-  },
-  {
-    href: '/second-courses',
-    title: 'Вторые блюда',
-    children: [
-      {
-        href: '/mjasnye-bljuda',
-        title: 'Мясные блюда'
-      },
-      {
-        href: '/fish-dishes',
-        title: 'Рыбные блюда'
-      },
-      {
-        href: '/ovoshhnye-bljuda',
-        title: 'Овощные блюда'
-      },
-      {
-        href: '/gribnye-blyuda',
-        title: 'Грибные блюда'
-      },
-      {
-        href: '/kartofelnye-bljuda',
-        title: 'Картофельные блюда'
-      },
-      {
-        href: '/main-dishes',
-        title: 'Вторые блюда'
-      }
-    ]
-  },
-  {
-    href: '/vypechka',
-    title: 'Выпечка',
-    children: [
-      {
-        href: '/pirogi',
-        title: 'Пироги'
-      },
-      {
-        href: '/cookies',
-        title: 'Печенье'
-      },
-      {
-        href: '/baking',
-        title: 'Выпечка'
-      }
-    ]
-  }
-]
-
-const rightItems: MenuItem[] = [
-  {
-    href: '/salaty-i-zakuski',
-    title: 'Салаты и Закуски',
-    children: [
-      {
-        href: '/salads',
-        title: 'Салаты и закуски'
-      }
-    ]
-  },
-  {
-    href: '/sladkij-stol',
-    title: 'Сладкий стол',
-    children: [
-      {
-        href: '/cakes',
-        title: 'Торты и пирожные'
-      },
-      {
-        href: '/drinks',
-        title: 'Напитки и десерты'
-      },
-      {
-        href: '/krem-i-glazur-dlya-tortov',
-        title: 'Крем и глазурь для тортов'
-      }
-    ]
-  },
-  {
-    href: '/zagotovki',
-    title: 'Заготовки',
-    children: [
-      {
-        href: '/conservation',
-        title: 'Консервация'
-      }
-    ]
-  }
-]
+const toMenuItem = (category: CategoryWithChildren): MenuItem => ({
+  href: `/${category.alias}`,
+  title: category.name,
+  children: (category.children ?? []).map((child) => ({
+    href: `/${child.alias}`,
+    title: child.name
+  }))
+})
 
 export const Header = () => {
   const { colorMode, setColorMode } = useContext(ThemeContext)
@@ -129,6 +40,13 @@ export const Header = () => {
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const barRef = useRef<HTMLDivElement>(null)
   const barAnchorRef = useRef<HTMLDivElement>(null)
+
+  const [key, fetcher] = categoriesTree()
+  const { data } = useSWR<{ data: CategoryWithChildren[] }>(key, fetcher)
+  const cooking = data?.data?.find((c) => c.alias === 'cooking')
+  const items = (cooking?.children ?? []).map(toMenuItem)
+  const leftItems = items.slice(0, 3)
+  const rightItems = items.slice(3)
 
   useEffect(() => {
     const anchor = barAnchorRef.current

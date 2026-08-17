@@ -8,6 +8,12 @@
   background-clip: padding-box, border-box;
   border-radius: 20px;
   padding: 28px 32px 24px;
+  position: sticky;
+  top: calc(64px + 24px);
+}
+
+.isStatic {
+  position: static;
 }
 
 :global(.dark) .card {
@@ -96,9 +102,16 @@
   background-color: #fdf3f3;
   padding: 2px 8px;
   border-radius: 6px;
-  white-space: nowrap;
+  /*white-space: nowrap;*/
+  text-align: center;
 }
 
 :global(.dark) .amount {
   background-color: #44403c;
+}
+
+@media (--max-md) {
+  .card {
+    padding: 20px 24px;
+  }
 }

@@ -53,7 +53,15 @@
   color: #e7e5e4;
 }
 
-@media (max-width: 768px) {
+@media (--max-md) {
+  .wrapper {
+    padding: 20px 24px;
+    margin-left: calc(var(--container-padding) * -1);
+    margin-right: calc(var(--container-padding) * -1);
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+    border-radius: 0;
+  }
   .nav {
     flex-direction: column;
   }

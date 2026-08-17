@@ -24,7 +24,7 @@ interface ArticlePageProps {
   alias: string
 }
 
-export function ArticlePage ({ alias }: ArticlePageProps) {
+export function ArticlePage({ alias }: ArticlePageProps) {
   const [key, fetcher] = api.getArticle({ alias })
   const { data: result } = useSWR<api.GetArticleData>(key, fetcher)
 
@@ -52,39 +52,39 @@ export function ArticlePage ({ alias }: ArticlePageProps) {
   const isRecipe = !!data.ingredients
   const pageUrl = `${CLIENT_URL}/${data.category.alias}/${data.alias}`
 
-  const prev =
-    previousResult?.data
-      ? {
-          href: `/${previousResult.data.category.alias}/${previousResult.data.alias}`,
-          name: previousResult.data.name
-        }
-      : null
-  const next =
-    nextResult?.data
-      ? {
-          href: `/${nextResult.data.category.alias}/${nextResult.data.alias}`,
-          name: nextResult.data.name
-        }
-      : null
+  const prev = previousResult?.data
+    ? {
+        href: `/${previousResult.data.category.alias}/${previousResult.data.alias}`,
+        name: previousResult.data.name
+      }
+    : null
+  const next = nextResult?.data
+    ? {
+        href: `/${nextResult.data.category.alias}/${nextResult.data.alias}`,
+        name: nextResult.data.name
+      }
+    : null
 
   return (
     <Container className="mt-16 mb-16">
       <div
         className="flex flex-col gap-12"
         itemScope
-        itemType={isRecipe ? 'http://schema.org/Recipe' : 'http://schema.org/Article'}
+        itemType={
+          isRecipe ? 'http://schema.org/Recipe' : 'http://schema.org/Article'
+        }
       >
         <ArticleHeader data={data} />
 
         <ArticleLayoutMain>
           <ArticleLayoutLeft>
-              <ArticleIngredients items={data.ingredients || []} />
-              <ArticleNutrition
-                calories={data.calories}
-                protein={data.protein}
-                fat={data.fat}
-                carbs={data.carbs}
-              />
+            <ArticleNutrition
+              calories={data.calories}
+              protein={data.protein}
+              fat={data.fat}
+              carbs={data.carbs}
+            />
+            <ArticleIngredients items={data.ingredients || []} />
           </ArticleLayoutLeft>
 
           <ArticleLayoutRight>
@@ -106,7 +106,10 @@ export function ArticlePage ({ alias }: ArticlePageProps) {
         <ArticleLayoutBottom>
           <ArticleNav prev={prev} next={next} />
 
-          <ArticleRelated id={data.id} title={isRecipe ? 'Похожие рецепты' : 'Похожие статьи'} />
+          <ArticleRelated
+            id={data.id}
+            title={isRecipe ? 'Похожие рецепты' : 'Похожие статьи'}
+          />
 
           <Comments threadId={data.id} threadType="articles" />
         </ArticleLayoutBottom>

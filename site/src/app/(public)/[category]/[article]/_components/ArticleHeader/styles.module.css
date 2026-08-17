@@ -223,7 +223,17 @@
 }
 
 /* ---- АДАПТИВНОСТЬ ---- */
-@media (max-width: 1100px) {
+@media (--max-lg) {
+  .header {
+    padding: 28px 32px;
+    gap: 32px;
+  }
+  .title {
+    font-size: 40px;
+  }
+  .meta {
+    margin-right: calc((180px + 32px) * -1);
+  }
   .imageWrapper {
     flex: 0 0 180px;
     height: 180px;
@@ -235,46 +245,32 @@
     top: -12px;
   }
   .image {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
   }
 }
 
-@media (max-width: 768px) {
+@media (--max-md) {
+  .imageWrapper {
+    align-self: center;
+  }
   .header {
     flex-direction: column-reverse;
-    padding: 24px;
-    gap: 24px;
-    align-items: stretch;
+    padding: 20px 24px;
+    gap: 32px;
   }
   .content {
     max-width: 100%;
   }
-  .imageWrapper {
-    align-self: center;
-    flex: 0 0 auto;
-    height: auto;
-  }
-  .imageWrapper::before {
-    width: 140px;
-    height: 140px;
-    right: -8px;
-    top: -8px;
-    display: none;
-  }
-  .image {
-    width: 140px;
-    height: 140px;
-  }
   .title {
-    font-size: 34px;
+    font-size: 32px;
   }
   .meta {
     font-size: 13px;
     gap: 8px 12px;
+    margin-right: 0;
   }
   .metaLike {
-    padding: 2px 12px;
     font-size: 13px;
   }
 }

@@ -78,9 +78,11 @@
   background-image: url('/images/icon-max.png');
 }
 
-@media (max-width: 768px) {
-  .buttons {
-    flex-direction: column;
-    align-items: center;
+@media (--max-md) {
+  .block {
+    padding: 20px 24px;
+  }
+  .btn > span:last-child {
+    display: none;
   }
 }

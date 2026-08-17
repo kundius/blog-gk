@@ -174,7 +174,10 @@
   cursor: zoom-in;
 }
 
-@media (--below-md) {
+@media (--max-md) {
+  .content :global(.recipe-step) {
+    padding: 20px 24px;
+  }
   .content :global(.gallery) {
     gap: 12px;
   }
