@@ -3,8 +3,8 @@
 
 .Primary {
   position: relative;
-  padding-top: 62px;
-  padding-bottom: 62px;
+  padding-top: 64px;
+  padding-bottom: 128px;
 }
 
 .Primary::before {

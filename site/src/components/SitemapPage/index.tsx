@@ -3,8 +3,8 @@ import React from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
 
-import { MainLayout } from '@components/MainLayout'
 import { Container } from '@components/Container'
+import { PageHeader } from '@components/PageHeader'
 import type { CategoryWithChildren } from '@app/api/types'
 
 import * as api from './api'
@@ -38,11 +38,11 @@ export function SitemapPage() {
   )
 
   return (
-    <Container className="mt-20 mb-20">
-      <MainLayout>
-        <h1 className="mb-12">Карта сайта</h1>
+    <Container className="mt-12 mb-16 md:mt-16 md:mb-24">
+      <PageHeader title="Карта сайта" />
 
-      <h2 className="text-3xl mb-4 mt-24">Разделы</h2>
+      <div className="mx-auto mt-12 w-full max-w-[960px] md:mt-16">
+        <h2 className="text-3xl mb-4">Разделы</h2>
       <ul className="uppercase text-sm leading-tight text-red-400 space-y-2">
         <li>
           <Link href="/">Кулинарный блог Галины Кундиус</Link>
@@ -67,7 +67,7 @@ export function SitemapPage() {
           </li>
         ))}
       </ul>
-      </MainLayout>
+      </div>
     </Container>
   )
 }
