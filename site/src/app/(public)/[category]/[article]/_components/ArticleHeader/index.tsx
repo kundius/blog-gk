@@ -24,12 +24,9 @@ export function ArticleHeader({ data }: ArticleHeaderProps) {
 
   return (
     <>
-      <header className={`${styles.header} ${styles.patternBg}`}>
+      <header className={`${styles.header} hero-surface py-5 px-6 md:py-7 md:px-8 lg:py-10 lg:px-12`}>
         <div className={styles.content}>
-          <ArticleBreadcrumbs
-            categoryName={data.category.name}
-            categoryAlias={data.category.alias}
-          />
+          <ArticleBreadcrumbs category={data.category} />
 
           <h1 className={styles.title} itemProp="headline name">
             {data.name}

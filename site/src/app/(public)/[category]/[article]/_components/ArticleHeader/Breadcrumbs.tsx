@@ -1,20 +1,17 @@
 import React from 'react'
 import Link from 'next/link'
 
-import * as styles from './styles.module.css'
+import { breadcrumbCategories } from '@app/lib/breadcrumbs'
+import type { ArticleCategory } from '@app/api/types'
 
 export interface ArticleBreadcrumbsProps {
-  categoryName: string
-  categoryAlias: string
+  category: Pick<ArticleCategory, 'name' | 'alias' | 'ancestors'>
 }
 
-export function ArticleBreadcrumbs ({
-  categoryName,
-  categoryAlias
-}: ArticleBreadcrumbsProps) {
+export function ArticleBreadcrumbs ({ category }: ArticleBreadcrumbsProps) {
   return (
     <nav
-      className={styles.breadcrumbs}
+      className="mb-6 flex flex-wrap items-center gap-1.5 text-sm text-gray-400 dark:text-stone-400"
       itemScope
       itemType="http://schema.org/BreadcrumbList"
     >
@@ -23,23 +20,34 @@ export function ArticleBreadcrumbs ({
         itemScope
         itemType="http://schema.org/ListItem"
       >
-        <Link href="/" itemProp="item">
+        <Link
+          href="/"
+          itemProp="item"
+          className="transition-colors hover:text-[#d36d6d]"
+        >
           <span itemProp="name">Главная</span>
         </Link>
         <meta itemProp="position" content="1" />
       </span>
-      <span className={styles.sep}>/</span>
-      <span
-        itemProp="itemListElement"
-        itemScope
-        itemType="http://schema.org/ListItem"
-      >
-        <Link href={`/${categoryAlias}`} itemProp="item">
-          <span itemProp="name">{categoryName}</span>
-        </Link>
-        <meta itemProp="position" content="2" />
-      </span>
-      <span className={styles.sep}>/</span>
+      {breadcrumbCategories(category).map((item, index) => (
+        <React.Fragment key={item.alias}>
+          <span className="text-gray-300 dark:text-stone-600">/</span>
+          <span
+            itemProp="itemListElement"
+            itemScope
+            itemType="http://schema.org/ListItem"
+          >
+            <Link
+              href={`/${item.alias}`}
+              itemProp="item"
+              className="transition-colors hover:text-[#d36d6d]"
+            >
+              <span itemProp="name">{item.name}</span>
+            </Link>
+            <meta itemProp="position" content={String(index + 2)} />
+          </span>
+        </React.Fragment>
+      ))}
     </nav>
   )
 }

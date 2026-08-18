@@ -22,6 +22,7 @@ export interface Category {
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null
+  ancestors?: Category[]
 }
 
 export interface CategoryWithChildren extends Category {
@@ -36,6 +37,7 @@ export interface ArticleCategory {
   content?: string | null
   alias: string
   parentId?: string | null
+  ancestors?: Category[]
 }
 
 export interface ArticleListItem {

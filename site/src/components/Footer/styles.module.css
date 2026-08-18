@@ -1,4 +1,20 @@
 .Wrapper {
+  position: relative;
+}
+
+.Wrapper::before {
+  content: "";
+      border-top: 1px dashed var(--header-nav-border-color);
+      border-bottom: 1px dashed var(--header-nav-border-color);
+      z-index: 1;
+      pointer-events: none;
+      padding-top: 1px;
+      transition: all .3s ease-out;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
 }
 
 .Primary {

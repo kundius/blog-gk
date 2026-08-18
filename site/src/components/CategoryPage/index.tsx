@@ -11,6 +11,7 @@ import { CoverImage } from '@components/CoverImage'
 import { Spinner } from '@components/Spinner'
 import { fileUrl } from '@app/api/images'
 import { useScrollOnPageChange } from '@app/lib/hooks/useScrollOnPageChange'
+import { breadcrumbCategories } from '@app/lib/breadcrumbs'
 import type { ArticleListItem } from '@app/api/types'
 
 import * as api from './api'
@@ -88,20 +89,34 @@ export function CategoryPage({ alias }: CategoryPageProps) {
                 </Link>
                 <meta itemProp="position" content="1" />
               </span>
-              <span className="text-gray-300 dark:text-stone-600">/</span>
-              <span
-                itemProp="itemListElement"
-                itemScope
-                itemType="http://schema.org/ListItem"
-              >
-                <span
-                  itemProp="name"
-                  className="text-gray-600 dark:text-stone-200"
-                >
-                  {category.name}
-                </span>
-                <meta itemProp="position" content="2" />
-              </span>
+              {breadcrumbCategories(category).map((item, index) => (
+                <React.Fragment key={item.alias}>
+                  <span className="text-gray-300 dark:text-stone-600">/</span>
+                  <span
+                    itemProp="itemListElement"
+                    itemScope
+                    itemType="http://schema.org/ListItem"
+                  >
+                    {item.isCurrent ? (
+                      <span
+                        itemProp="name"
+                        className="text-gray-600 dark:text-stone-200"
+                      >
+                        {item.name}
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/${item.alias}`}
+                        itemProp="item"
+                        className="transition-colors hover:text-[#d36d6d]"
+                      >
+                        <span itemProp="name">{item.name}</span>
+                      </Link>
+                    )}
+                    <meta itemProp="position" content={String(index + 2)} />
+                  </span>
+                </React.Fragment>
+              ))}
             </nav>
 
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-stone-800 md:text-5xl lg:text-6xl dark:text-stone-100">

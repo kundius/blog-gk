@@ -6,6 +6,10 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ListCategoriesQueryDto } from './dto/list-categories.query';
 import { buildPaginationMeta } from '../common/dto/pagination.dto';
 import { parseSort } from '../common/utils/sort';
+import {
+  buildAncestors,
+  CATEGORY_ANCESTOR_SELECT,
+} from '../common/utils/category-ancestors';
 
 const CATEGORY_COUNT_INCLUDE = {
   _count: { select: { articleCategories: true } },
@@ -73,7 +77,10 @@ export class CategoriesService {
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    return category;
+    const rows = await this.prisma.category.findMany({
+      select: CATEGORY_ANCESTOR_SELECT,
+    });
+    return { ...category, ancestors: buildAncestors(rows, category.parentId) };
   }
 
   async tree() {

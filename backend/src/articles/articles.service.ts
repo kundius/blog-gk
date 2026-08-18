@@ -7,6 +7,10 @@ import { ListArticlesQueryDto } from './dto/list-articles.query';
 import { SearchArticlesQueryDto } from './dto/search-articles.query';
 import { buildPaginationMeta } from '../common/dto/pagination.dto';
 import { parseSort } from '../common/utils/sort';
+import {
+  buildAncestors,
+  CATEGORY_ANCESTOR_SELECT,
+} from '../common/utils/category-ancestors';
 
 const ARTICLE_LIST_INCLUDE = {
   category: true,
@@ -88,7 +92,7 @@ export class ArticlesService {
     if (!article) {
       throw new NotFoundException('Article not found');
     }
-    return article;
+    return this.enrichCategoryAncestors(article);
   }
 
   async findOne(id: string) {
@@ -99,7 +103,7 @@ export class ArticlesService {
     if (!article) {
       throw new NotFoundException('Article not found');
     }
-    return article;
+    return this.enrichCategoryAncestors(article);
   }
 
   async create(dto: CreateArticleDto) {
@@ -370,6 +374,24 @@ export class ArticlesService {
     });
 
     return rows.map((row) => row.id);
+  }
+
+  private async enrichCategoryAncestors<T extends { category?: { parentId?: string | null } | null }>(
+    article: T,
+  ): Promise<T> {
+    if (!article.category) {
+      return article;
+    }
+    const rows = await this.prisma.category.findMany({
+      select: CATEGORY_ANCESTOR_SELECT,
+    });
+    return {
+      ...article,
+      category: {
+        ...article.category,
+        ancestors: buildAncestors(rows, article.category.parentId),
+      },
+    };
   }
 
   async search(query: SearchArticlesQueryDto) {

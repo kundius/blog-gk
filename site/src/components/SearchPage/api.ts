@@ -1,5 +1,5 @@
-import { searchArticles, articleById } from '@app/api/articles'
-import type { ArticleDetail, ArticleListItem } from '@app/api/types'
+import { searchArticles } from '@app/api/articles'
+import type { ArticleListItem } from '@app/api/types'
 
 export interface SearchArgs {
   search: string
@@ -19,20 +19,6 @@ export interface SearchData {
 
 export type SearchResult = [string, (url: string) => Promise<SearchData>]
 
-export function Search ({ search, limit, page }: SearchArgs): SearchResult {
+export function Search({ search, limit, page }: SearchArgs): SearchResult {
   return searchArticles(search, limit, page) as SearchResult
-}
-
-export interface GetArticleArgs {
-  id: string
-}
-
-export interface GetArticleData {
-  data: ArticleDetail | null
-}
-
-export type GetArticleResult = [string, (url: string) => Promise<GetArticleData>]
-
-export function GetArticle ({ id }: GetArticleArgs): GetArticleResult {
-  return articleById(id) as GetArticleResult
 }

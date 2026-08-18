@@ -10,10 +10,10 @@ import {
   INITIAL_COLOR_MODE_CSS_PROP
 } from '@components/ThemeContext/constants'
 import { CLIENT_URL } from '@app/utils/config'
-import { Montserrat } from "next/font/google";
+import { Golos_Text } from "next/font/google";
 import { cn } from "@app/lib/utils";
 
-const montserrat = Montserrat({subsets:['latin','cyrillic'],variable:'--font-sans'});
+const golos = Golos_Text({subsets:['latin','cyrillic'],variable:'--font-sans'});
 
 export const metadata = {
   metadataBase: new URL(CLIENT_URL)
@@ -61,7 +61,7 @@ const MagicScriptTag = () => {
 
 export default function RootLayout ({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning className={cn("font-sans", montserrat.variable)}>
+    <html lang="ru" suppressHydrationWarning className={cn("font-sans", golos.variable)}>
       <body>
         <MagicScriptTag />
         <Providers>{children}</Providers>
