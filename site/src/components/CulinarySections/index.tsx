@@ -99,7 +99,7 @@ export function CulinarySections() {
                       {section.name}
                     </h3>
                     {section.content && (
-                      <p className="hidden max-h-0 translate-y-1.5 overflow-hidden text-sm leading-snug opacity-0 transition-all duration-300 group-hover:mt-1.5 group-hover:max-h-[60px] group-hover:translate-y-0 group-hover:opacity-100 sm:block sm:text-base [text-shadow:0_1px_5px_rgba(0,0,0,0.3)]">
+                      <p className="hidden max-h-0 translate-y-1.5 overflow-hidden text-sm leading-snug text-white opacity-0 transition-all duration-300 group-hover:mt-1.5 group-hover:max-h-[60px] group-hover:translate-y-0 group-hover:opacity-100 sm:block sm:text-base [text-shadow:0_1px_5px_rgba(0,0,0,0.3)]">
                         {section.content}
                       </p>
                     )}

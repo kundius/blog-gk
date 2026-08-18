@@ -66,7 +66,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
     : null
 
   return (
-    <Container className="mt-16 mb-16">
+    <Container className="mt-12 mb-16 md:mt-16 md:mb-24">
       <div
         className="flex flex-col gap-12"
         itemScope
@@ -77,17 +77,19 @@ export function ArticlePage({ alias }: ArticlePageProps) {
         <ArticleHeader data={data} />
 
         <ArticleLayoutMain>
-          <ArticleLayoutLeft>
-            <ArticleNutrition
-              calories={data.calories}
-              protein={data.protein}
-              fat={data.fat}
-              carbs={data.carbs}
-            />
-            <ArticleIngredients items={data.ingredients || []} />
-          </ArticleLayoutLeft>
+          {isRecipe && (
+            <ArticleLayoutLeft>
+              <ArticleNutrition
+                calories={data.calories}
+                protein={data.protein}
+                fat={data.fat}
+                carbs={data.carbs}
+              />
+              <ArticleIngredients items={data.ingredients || []} />
+            </ArticleLayoutLeft>
+          )}
 
-          <ArticleLayoutRight>
+          <ArticleLayoutRight wide={!isRecipe}>
             <ArticleContent
               html={data.content || ''}
               itemProp={isRecipe ? 'recipeInstructions' : 'articleBody'}
@@ -104,7 +106,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
         </ArticleLayoutMain>
 
         <ArticleLayoutBottom>
-          <ArticleNav prev={prev} next={next} />
+          <ArticleNav prev={prev} next={next} isRecipe={isRecipe} />
 
           <ArticleRelated
             id={data.id}

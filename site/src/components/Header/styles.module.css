@@ -257,12 +257,12 @@
   .nav {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 116px;
+    gap: calc(116px + 24px);
     width: 100%;
     align-self: stretch;
 
     @media (--max-xl) {
-      gap: 96px;
+      gap: calc(96px + 16px);
     }
   }
 
@@ -319,7 +319,7 @@
   .menu li:hover .menuSub {
     opacity: 1;
     visibility: visible;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
     box-shadow:
       rgb(0 0 0 / 2%) 0px -5.9px 2.7px,
       rgb(0 0 0 / 2%) 0px -1.2px 6.9px,
@@ -332,8 +332,7 @@
     display: grid;
     position: absolute;
     top: 100%;
-    left: 50%;
-    transform: translate(-50%, -10px);
+    transform: translateY(-10px);
     width: max-content;
     min-width: 240px;
     box-sizing: border-box;
@@ -359,6 +358,14 @@
       visibility 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
+  .menuLeft .menuSub {
+    left: 0;
+  }
+
+  .menuRight .menuSub {
+    right: 0;
+  }
+
   .menuSub li a {
     display: flex;
     align-items: center;
@@ -369,6 +376,7 @@
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
+    flex-grow: 1;
     color: var(--popover-foreground);
     position: relative;
     white-space: nowrap;

@@ -136,3 +136,29 @@
 :global(.dark) .Quote {
   background: #44403c;
 }
+
+@media (--max-md) {
+  .Avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    font-size: 18px;
+  }
+
+  .Headline {
+    flex-wrap: wrap;
+  }
+
+  .Name {
+    max-width: none;
+    font-size: 13px;
+  }
+
+  .Text {
+    font-size: 13px;
+  }
+
+  .Quote {
+    font-size: 11px;
+  }
+}

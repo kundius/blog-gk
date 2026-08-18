@@ -75,7 +75,7 @@ export function Comments({ threadId, threadType }: CommentsProps) {
       <div
         className={cn(
           styles.Wall,
-          'transition duration-300 dark:bg-gray-800 md:rounded-3xl'
+          'transition duration-300 dark:bg-gray-800'
         )}
       >
         <div className="max-w-2xl ml-auto mr-auto">

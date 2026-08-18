@@ -1,15 +1,32 @@
+'use client'
 import React from 'react'
 import { BsBook } from 'react-icons/bs'
 import { BiSitemap } from 'react-icons/bi'
+import useSWR from 'swr'
 
 import { YandexMetrica } from '@components/YandexMetrica'
 import { Container } from '@components/Container'
 import { FooterMenu } from '@components/FooterMenu'
 import { TablewareIcon } from '@components/Icon/tableware'
+import { categoriesTree } from '@app/api/categories'
+import type { CategoryWithChildren } from '@app/api/types'
 
 import * as styles from './styles.module.css'
 
 export const Footer = () => {
+  const [key, fetcher] = categoriesTree()
+  const { data } = useSWR<{ data: CategoryWithChildren[] }>(key, fetcher)
+  const roots = data?.data ?? []
+
+  const cooking = roots.find((c) => c.alias === 'cooking')
+  const article = roots.find((c) => c.alias === 'article')
+  const notes = roots.find((c) => c.alias === 'notes')
+
+  const toItems = (category?: CategoryWithChildren) => (category?.children ?? []).map((child) => ({
+    title: child.name,
+    href: `/${child.alias}`
+  }))
+
   return (
     <div className={styles.Wrapper}>
       <Container>
@@ -17,76 +34,31 @@ export const Footer = () => {
           <div>
             <FooterMenu
               section={{
-                title: 'Кулинария',
+                title: cooking?.name ?? 'Кулинария',
                 href: '/cooking',
                 icon: <TablewareIcon />
               }}
-              items={[{
-                title: 'Первые блюда',
-                href: '/first-courses'
-              }, {
-                title: 'Вторые блюда',
-                href: '/second-courses'
-              }, {
-                title: 'Выпечка',
-                href: '/vypechka'
-              }, {
-                title: 'Салаты и Закуски',
-                href: '/salaty-i-zakuski'
-              }, {
-                title: 'Сладкий стол',
-                href: '/sladkij-stol'
-              }, {
-                title: 'Заготовки',
-                href: '/zagotovki'
-              }]}
+              items={toItems(cooking)}
             />
           </div>
           <div>
             <FooterMenu
               section={{
-                title: 'Статьи',
+                title: article?.name ?? 'Статьи',
                 href: '/article',
                 icon: <BsBook />
               }}
-              items={[{
-                title: 'Храмы',
-                href: '/temples'
-              }, {
-                title: 'Жизненные истории',
-                href: '/subsection-2'
-              }, {
-                title: 'Отношения',
-                href: '/relationship'
-              }, {
-                title: 'Сверхъестественное',
-                href: '/supernatural'
-              }]}
+              items={toItems(article)}
             />
           </div>
           <div>
             <FooterMenu
               section={{
-                title: 'Заметки',
+                title: notes?.name ?? 'Заметки',
                 href: '/notes',
                 icon: <BsBook />
               }}
-              items={[{
-                title: 'Заметки о первых блюдах',
-                href: '/zametki-o-pervyh-blyudah'
-              }, {
-                title: 'Заметки о вторых блюдах',
-                href: '/zametki-o-vtoryh-blyudah'
-              }, {
-                title: 'Заметки о выпечке',
-                href: '/zametki-o-vypechke'
-              }, {
-                title: 'Заметки о напитках',
-                href: '/zametki-o-napitkah'
-              }, {
-                title: 'Полезные советы',
-                href: '/useful-tips'
-              }]}
+              items={toItems(notes)}
             />
           </div>
           <div>

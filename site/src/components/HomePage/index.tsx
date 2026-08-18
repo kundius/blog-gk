@@ -47,7 +47,7 @@ export function HomePage() {
   const { data: collections } = useSWR<{ data: Collection[] }>(keyCollections, fetcherCollections)
 
   return (
-    <div className="my-16">
+    <div className="mt-12 mb-16 md:mt-16 md:mb-24">
       <Container>
         <Hero />
         <div className="mx-auto w-full max-w-[640px] mt-16 mb-8 lg:mt-24 lg:mb-12">

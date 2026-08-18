@@ -49,7 +49,7 @@ export default async function CategoryRoute ({ params }: { params: Promise<Categ
   const [categoryKey, categoryFetcher] = categoryByAlias(category)
   const [articlesKey, articlesFetcher] = listArticles({
     categories: [category],
-    limit: 5,
+    limit: 12,
     page: 1
   })
 

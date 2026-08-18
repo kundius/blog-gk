@@ -228,4 +228,24 @@ export function IngredientIcon ({ kind, className }: IngredientIconProps) {
   return <Icon className={className} />
 }
 
+export function IngredientsIcon ({ className }: { className?: string }) {
+  const Icon = base(
+    <>
+      <path d="M6 4h12l2 5H4l2-5z" />
+      <path d="M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9z" />
+      <path d="M4 13h16M10 13v-2M14 13v-2" />
+    </>
+  )
+  return <Icon className={className} />
+}
+
+export function CloseIcon ({ className }: { className?: string }) {
+  const Icon = base(
+    <>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </>
+  )
+  return <Icon className={className} />
+}
+
 export { Icons }

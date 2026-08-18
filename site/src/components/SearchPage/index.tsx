@@ -1,6 +1,7 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
+import { useQueryState, parseAsInteger } from 'nuqs'
 
 import { MainLayout } from '@components/MainLayout'
 import { Container } from '@components/Container'
@@ -19,8 +20,8 @@ export interface SearchPageProps {
 export function SearchPage({ query }: SearchPageProps) {
   const listRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(20)
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [limit] = useState(20)
 
   useEffect(() => {
     if (mounted) {
@@ -28,10 +29,6 @@ export function SearchPage({ query }: SearchPageProps) {
     }
     setMounted(true)
   }, [page])
-
-  useEffect(() => {
-    setPage(1)
-  }, [query])
 
   const [searchKey, searchFetcher] = api.Search({
     search: query,
@@ -94,7 +91,7 @@ export function SearchPage({ query }: SearchPageProps) {
             current={page}
             total={searchResult?.meta?.total}
             pageSize={limit}
-            onChange={setPage}
+            onChange={(p) => void setPage(p)}
           />
         )}
       </div>

@@ -11,9 +11,10 @@ export interface ArticleNavItem {
 export interface ArticleNavProps {
   prev?: ArticleNavItem | null
   next?: ArticleNavItem | null
+  isRecipe?: boolean
 }
 
-export function ArticleNav ({ prev, next }: ArticleNavProps) {
+export function ArticleNav ({ prev, next, isRecipe = false }: ArticleNavProps) {
   if (!prev && !next) return null
 
   return (
@@ -21,13 +22,13 @@ export function ArticleNav ({ prev, next }: ArticleNavProps) {
       <div className={styles.nav}>
         {prev && (
           <Link href={prev.href} rel="prev" className={styles.card}>
-            <div className={styles.label}>← Предыдущий рецепт</div>
+            <div className={styles.label}>{isRecipe ? '← Предыдущий рецепт' : '← Предыдущая статья'}</div>
             <div className={styles.title}>{prev.name}</div>
           </Link>
         )}
         {next && (
           <Link href={next.href} rel="next" className={styles.card}>
-            <div className={styles.label}>Следующий рецепт →</div>
+            <div className={styles.label}>{isRecipe ? 'Следующий рецепт →' : 'Следующая статья →'}</div>
             <div className={styles.title}>{next.name}</div>
           </Link>
         )}

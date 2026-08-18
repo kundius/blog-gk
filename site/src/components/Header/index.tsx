@@ -102,7 +102,7 @@ export const Header = () => {
                   <FaRss />
                 </Link>
               </div>
-              <ul className={styles.menu}>
+              <ul className={cn(styles.menu, styles.menuLeft)}>
                 {leftItems.map((item) => (
                   <MenuItem
                     key={item.href}
@@ -113,7 +113,7 @@ export const Header = () => {
                   />
                 ))}
               </ul>
-              <ul className={styles.menu}>
+              <ul className={cn(styles.menu, styles.menuRight)}>
                 {rightItems.map((item) => (
                   <MenuItem
                     key={item.href}

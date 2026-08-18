@@ -57,7 +57,7 @@ export function CommentsForm ({
 }: CommentsFormProps) {
   return (
     <div className={styles.Wrapper} ref={formRef}>
-      <div className={`${styles.Avatar} mt-10`}>
+      <div className={styles.Avatar}>
         <img src={getAvatar()} alt="" />
       </div>
       <div className={styles.Form}>

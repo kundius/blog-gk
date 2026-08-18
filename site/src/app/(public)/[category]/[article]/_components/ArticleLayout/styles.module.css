@@ -11,6 +11,13 @@
   gap: 40px;
 }
 
+.rightWide {
+  flex: 0 1 960px;
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
 .left {
   flex: 0 0 30%;
   display: flex;
