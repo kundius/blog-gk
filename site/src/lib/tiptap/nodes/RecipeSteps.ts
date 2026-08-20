@@ -48,7 +48,7 @@ export const RecipeSteps = Node.create({
       'section',
       mergeAttributes(HTMLAttributes, { class: 'recipe-steps' }),
       ['h2', { class: 'recipe-steps__title' }, node.attrs.title || RECIPE_STEPS_TITLE],
-      ['div', { class: 'recipe-steps__content' }, 0],
+      ['div', { class: 'recipe-steps__content', itemprop: 'recipeInstructions' }, 0],
     ]
   },
 

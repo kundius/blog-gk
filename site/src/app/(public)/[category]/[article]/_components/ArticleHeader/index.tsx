@@ -36,6 +36,7 @@ export function ArticleHeader({ data }: ArticleHeaderProps) {
             id={data.id}
             isRecipe={isRecipe}
             cookingTime={data.cookingTime}
+            portionCount={data.portionCount}
             dateCreated={data.dateCreated}
             hitsCount={data.hitsCount}
             commentsCount={data.commentsCount}
@@ -53,7 +54,7 @@ export function ArticleHeader({ data }: ArticleHeaderProps) {
             >
               <CoverImage
                 src={thumbnailUrl}
-                alt={thumbnail.title || ''}
+                alt={thumbnail.title || data.name}
                 blurHash={thumbnail.blurhash}
                 sizes="264px"
                 loading="lazy"
@@ -69,6 +70,10 @@ export function ArticleHeader({ data }: ArticleHeaderProps) {
 
         <div className="hidden">
           <span itemProp="author">Галина Кундиус</span>
+          <meta
+            itemProp="description"
+            content={data.excerpt || data.seoDescription || ''}
+          />
           <div
             itemProp="publisher"
             itemScope

@@ -69,7 +69,7 @@ export class FilesService {
       data: {
         filenameDisk,
         filenameDownload: file.originalname,
-        title: meta.title || file.originalname,
+        title: meta.title ?? null,
         description: meta.description,
         type: file.mimetype || null,
         filesize: file.size,

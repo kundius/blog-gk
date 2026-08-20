@@ -1,4 +1,5 @@
 import React from 'react'
+import { Eye } from 'lucide-react'
 import { API_URL } from '@app/utils/config'
 import { postJson } from '@app/api/http'
 
@@ -26,11 +27,8 @@ export function Hits ({ id, initialHits }: HitsProps) {
   }, [id])
 
   return (
-    <div className={styles.item}>
-      <svg className={styles.metaIcon} viewBox="0 0 24 24">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
+    <div className={styles.item} title="Просмотры">
+      <Eye className={styles.metaIcon} />
       <span>{formatHits(hits)}</span>
     </div>
   )

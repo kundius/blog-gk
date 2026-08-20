@@ -20,7 +20,7 @@ export function ThumbnailField({ file, onClear, onPick }: ThumbnailFieldProps) {
         <div className="relative size-32 overflow-hidden rounded-md border">
           <CoverImage
             src={fileStreamUrl(file.id)}
-            alt={file.title ?? ''}
+            alt={file.title ?? file.filenameDownload}
             blurHash={file.blurhash}
             sizes="128px"
           />

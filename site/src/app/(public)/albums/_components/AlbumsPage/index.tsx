@@ -76,7 +76,7 @@ export function AlbumsPage() {
                 thumbnail={
                   album.thumbnail
                     ? {
-                        name: album.thumbnail?.title || undefined,
+                        name: album.thumbnail?.filenameDownload || undefined,
                         blurHash: album.thumbnail?.blurhash || undefined,
                         url: fileUrl(album.thumbnail)
                       }

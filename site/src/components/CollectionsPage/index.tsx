@@ -78,7 +78,7 @@ export function CollectionsPage() {
                 thumbnail={
                   collection.thumbnail
                     ? {
-                        name: collection.thumbnail?.title || undefined,
+                        name: collection.thumbnail?.filenameDownload || undefined,
                         blurHash: collection.thumbnail?.blurhash || undefined,
                         url: fileUrl(collection.thumbnail)
                       }

@@ -92,7 +92,7 @@ export function ArticlePage({ alias }: ArticlePageProps) {
           <ArticleLayoutRight wide={!isRecipe}>
             <ArticleContent
               html={data.content || ''}
-              itemProp={isRecipe ? 'recipeInstructions' : 'articleBody'}
+              itemProp={isRecipe ? undefined : 'articleBody'}
             />
 
             <ArticleShare

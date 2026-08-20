@@ -213,7 +213,9 @@ export default function AdminFilesPage() {
                 </div>
                 <CardContent className="p-2">
                   <div className="truncate text-xs" title={file.filenameDownload}>
-                    {file.title ?? file.filenameDownload}
+                    {file.title
+                      ? <span className="text-foreground">{file.title}</span>
+                      : <span className="text-muted-foreground">{file.filenameDownload}</span>}
                   </div>
                   <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                     <LinkIcon className="size-3" />

@@ -123,7 +123,7 @@ export function AlbumForm({ album, mutate }: AlbumFormProps) {
                 >
                   <CoverImage
                     src={fileStreamUrl(file.id)}
-                    alt={file.title ?? ''}
+                    alt={file.title ?? file.filenameDownload}
                     blurHash={file.blurhash}
                     sizes="112px"
                     loading="lazy"

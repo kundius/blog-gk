@@ -26,9 +26,14 @@ export const RecipeStep = Node.create({
   renderHTML({ HTMLAttributes }) {
     return [
       'div',
-      mergeAttributes(HTMLAttributes, { class: 'recipe-step' }),
+      mergeAttributes(HTMLAttributes, {
+        class: 'recipe-step',
+        itemprop: 'recipeStep',
+        itemscope: '',
+        itemtype: 'https://schema.org/HowToStep'
+      }),
       ['span', { class: 'recipe-step__num', 'aria-hidden': 'true' }],
-      ['div', { class: 'recipe-step__body' }, 0],
+      ['div', { class: 'recipe-step__body', itemprop: 'text' }, 0],
     ]
   },
 

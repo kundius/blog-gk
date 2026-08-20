@@ -138,7 +138,7 @@ export default function AdminArticlesPage() {
                           <div className="relative size-10 shrink-0 overflow-hidden rounded-md border bg-muted">
                             <CoverImage
                               src={fileStreamUrl(article.thumbnail.id)}
-                              alt={article.thumbnail.title ?? ''}
+                              alt={article.thumbnail.title || article.name}
                               blurHash={article.thumbnail.blurhash}
                               sizes="40px"
                               loading="lazy"

@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { Clock, MessageCircle, Users } from 'lucide-react'
+
 import { formatCookingTime, formatDate } from './format'
 import { Hits } from './Hits'
 import { LikeButton } from './LikeButton'
@@ -9,6 +11,7 @@ export interface ArticleMetaProps {
   id: string
   isRecipe: boolean
   cookingTime?: string | null
+  portionCount?: string | null
   dateCreated: string
   hitsCount: number
   commentsCount: number
@@ -19,6 +22,7 @@ export function ArticleMeta ({
   id,
   isRecipe,
   cookingTime,
+  portionCount,
   dateCreated,
   hitsCount,
   commentsCount,
@@ -30,11 +34,8 @@ export function ArticleMeta ({
   return (
     <div className={styles.meta}>
       {isRecipe && timeLabel && (
-        <div className={styles.item}>
-          <svg className={styles.metaIcon} viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 6v6l4 2" />
-          </svg>
+        <div className={styles.item} title="Время приготовления">
+          <Clock className={styles.metaIcon} />
           <span>{timeLabel}</span>
           <meta
             itemProp="totalTime"
@@ -43,12 +44,18 @@ export function ArticleMeta ({
         </div>
       )}
 
+      {isRecipe && portionCount && (
+        <div className={styles.item} title="Количество порций">
+          <Users className={styles.metaIcon} />
+          <span>{portionCount}</span>
+          <meta itemProp="recipeYield" content={`${portionCount} порций`} />
+        </div>
+      )}
+
       <Hits id={id} initialHits={hitsCount} />
 
-      <a href="#comments" className={styles.item}>
-        <svg className={styles.metaIcon} viewBox="0 0 24 24">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
+      <a href="#comments" className={styles.item} title="Комментарии">
+        <MessageCircle className={styles.metaIcon} />
         <span>{commentsCount}</span>
       </a>
 
