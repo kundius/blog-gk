@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { SearchPage } from './_components/SearchPage'
 import { CLIENT_URL } from '@app/utils/config'
@@ -14,5 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function SearchRoute() {
-  return <SearchPage query="" />
+  return (
+    <Suspense>
+      <SearchPage query="" />
+    </Suspense>
+  )
 }

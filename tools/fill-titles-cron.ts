@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 
 const PROJECT_ROOT = resolve(import.meta.dirname, "..");
@@ -8,43 +8,79 @@ const APPLIED_FILE = "applied-titles.json";
 
 // ── Environment detection ───────────────────────────────────────────────────
 
-function detectExec(): { exec: (cmd: string) => string; backend: "docker" | "podman" | "direct" } {
+type Env = {
+  exec: (cmd: string) => string;
+  copyFrom: (containerPath: string, hostPath: string) => void;
+  copyTo: (hostPath: string, containerPath: string) => void;
+  isContainer: boolean;
+};
+
+function detectExec(): Env {
   try {
     execSync("docker compose ps", { stdio: "ignore", cwd: PROJECT_ROOT });
+    const client = "docker";
     return {
       exec: (cmd: string) =>
-        execSync(`docker compose exec -T backend sh -c "${cmd}"`, {
+        execSync(`${client} compose exec -T backend sh -c "${cmd}"`, {
           cwd: PROJECT_ROOT,
           stdio: "pipe",
         }).toString(),
-      backend: "docker",
+      copyFrom: (containerPath: string, hostPath: string) =>
+        execSync(`${client} compose cp backend:${containerPath} ${hostPath}`, {
+          cwd: PROJECT_ROOT,
+          stdio: "pipe",
+        }),
+      copyTo: (hostPath: string, containerPath: string) =>
+        execSync(`${client} compose cp ${hostPath} backend:${containerPath}`, {
+          cwd: PROJECT_ROOT,
+          stdio: "pipe",
+        }),
+      isContainer: true,
     };
   } catch {}
 
   try {
     execSync("podman compose ps", { stdio: "ignore", cwd: PROJECT_ROOT });
+    const client = "podman";
     return {
       exec: (cmd: string) =>
-        execSync(`podman compose exec -T backend sh -c "${cmd}"`, {
+        execSync(`${client} compose exec -T backend sh -c "${cmd}"`, {
           cwd: PROJECT_ROOT,
           stdio: "pipe",
         }).toString(),
-      backend: "podman",
+      copyFrom: (containerPath: string, hostPath: string) =>
+        execSync(`${client} compose cp backend:${containerPath} ${hostPath}`, {
+          cwd: PROJECT_ROOT,
+          stdio: "pipe",
+        }),
+      copyTo: (hostPath: string, containerPath: string) =>
+        execSync(`${client} compose cp ${hostPath} backend:${containerPath}`, {
+          cwd: PROJECT_ROOT,
+          stdio: "pipe",
+        }),
+      isContainer: true,
     };
   } catch {}
 
   return {
     exec: (cmd: string) =>
-      execSync(cmd, { cwd: resolve(PROJECT_ROOT, "backend"), stdio: "pipe" }).toString(),
-    backend: "direct",
+      execSync(cmd, { cwd: PROJECT_ROOT, stdio: "pipe" }).toString(),
+    copyFrom: () => {},
+    copyTo: () => {},
+    isContainer: false,
   };
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function runFind(env: ReturnType<typeof detectExec>): number {
-  console.log(`[${env.backend}] Running find-empty-titles.ts...`);
+function runFind(env: Env): number {
+  const label = env.isContainer ? "docker" : "direct";
+  console.log(`[${label}] Running find-empty-titles.ts...`);
   env.exec("npx tsx prisma/find-empty-titles.ts");
+
+  if (env.isContainer) {
+    env.copyFrom("/app/" + CONTEXT_FILE, CONTEXT_FILE);
+  }
 
   if (!existsSync(CONTEXT_FILE)) {
     console.log("empty-titles-context.json not found — nothing to do.");
@@ -62,8 +98,9 @@ function runFind(env: ReturnType<typeof detectExec>): number {
   return entries.length;
 }
 
-function runApply(env: ReturnType<typeof detectExec>): void {
-  console.log(`[${env.backend}] Running apply-file-titles.ts...`);
+function runApply(env: Env): void {
+  const label = env.isContainer ? "docker" : "direct";
+  console.log(`[${label}] Running apply-file-titles.ts...`);
   env.exec("npx tsx prisma/apply-file-titles.ts");
 }
 
@@ -71,7 +108,8 @@ function runApply(env: ReturnType<typeof detectExec>): void {
 
 function main(): void {
   const env = detectExec();
-  console.log(`Environment: ${env.backend}`);
+  const label = env.isContainer ? "docker" : "direct";
+  console.log(`Environment: ${label}`);
 
   // Step 1: Find
   const count = runFind(env);
@@ -79,26 +117,12 @@ function main(): void {
 
   // Step 2: Run opencode
   const prompt = [
-    "Прочитай файл empty-titles-context.json в текущей директории.",
-    "Для каждого объекта сгенерируй title на русском языке по следующим правилам:",
-    "",
-    "Формат title по типу context.type:",
-    '- thumbnail: "{entityName}"',
-    '- album_photo: "Фото из альбома «{entityName}»"',
-    '- content_step: "{entityName}: {краткое описание изображения по rawContext}"',
-    '- content_inline: "{entityName}: {краткое описание изображения по rawContext}"',
-    "",
-    "Требования к title:",
-    "- Русский язык",
-    "- 3-15 слов, не более 125 символов",
-    "- Если rawContext содержит текст — используй его для описания изображения",
-    "- Если rawContext null — используй entityName",
-    "",
-    "Запиши результат в файл applied-titles.json в формате:",
-    '[{"fileId":"...","title":"...","articleId":"...","filenameDisk":"..."}]',
-    "",
-    "Не изменяй никакие другие файлы. Только applied-titles.json.",
-  ].join("\n");
+    "Заполни пустые title файлов.",
+    "Используй скилл fill-file-titles.",
+    "Данные в empty-titles-context.json в текущей директории.",
+    "Результат запиши в applied-titles.json.",
+    "Не изменяй никакие другие файлы.",
+  ].join(" ");
 
   console.log("Running opencode run...");
   try {
@@ -117,7 +141,16 @@ function main(): void {
     process.exit(1);
   }
 
+  if (env.isContainer) {
+    env.copyTo(APPLIED_FILE, "/app/" + APPLIED_FILE);
+  }
+
   runApply(env);
+
+  // Cleanup host copies
+  rmSync(CONTEXT_FILE, { force: true });
+  rmSync(APPLIED_FILE, { force: true });
+
   console.log("Done.");
 }
 

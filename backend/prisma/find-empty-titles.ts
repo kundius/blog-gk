@@ -10,6 +10,43 @@ const BATCH_SIZE = 100;
 
 // ── HTML context extraction ──────────────────────────────────────────────────
 
+function extractText(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
+
+function truncate(text: string): string {
+  if (text.length <= 125) return text;
+  const cut = text.substring(0, 122);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 60 ? cut.substring(0, lastSpace) : cut) + "...";
+}
+
+function findNearestText(searchArea: string, imgLocalPos: number): string | null {
+  // Find the <p> that contains the <img>
+  const beforeImg = searchArea.substring(0, imgLocalPos);
+  const pStart = beforeImg.lastIndexOf("<p");
+  if (pStart < 0) return null;
+
+  // Step 1: search backward for previous <p> with text
+  const beforeP = searchArea.substring(0, pStart);
+  const backwardMatches = [...beforeP.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+  for (let i = backwardMatches.length - 1; i >= 0; i--) {
+    const text = extractText(backwardMatches[i][1]);
+    if (text.length > 5) return truncate(text);
+  }
+
+  // Step 2: search forward for next <p> with text
+  const imgEnd = imgLocalPos + (searchArea.substring(imgLocalPos).indexOf(">") + 1);
+  const afterImg = searchArea.substring(imgEnd);
+  const forwardMatches = [...afterImg.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)];
+  for (const m of forwardMatches) {
+    const text = extractText(m[1]);
+    if (text.length > 5) return truncate(text);
+  }
+
+  return null;
+}
+
 function extractImageContext(
   html: string,
   filenameDisk: string,
@@ -63,28 +100,36 @@ function extractImageContext(
     searchArea = html.substring(start, end);
   }
 
-  // Extract text from block elements
+  // Find text near img: backward → forward → fallback
+  const imgLocalPos = isRecipeStep ? imgPos : imgPos - Math.max(0, imgPos - 1500);
+  const raw = findNearestText(searchArea, imgLocalPos);
+  if (raw) return { rawContext: raw, isRecipeStep, imgSnippet };
+
+  // Fallback: closest text by position
   const texts: string[] = [];
   const blockRegex = /<(?:p|li|h[2-6])[^>]*>([\s\S]*?)<\/(?:p|li|h[2-6])>/gi;
   let m: RegExpExecArray | null;
   while ((m = blockRegex.exec(searchArea)) !== null) {
-    const text = m[1].replace(/<[^>]*>/g, "").trim();
+    const text = extractText(m[1]);
     if (text.length > 5) texts.push(text);
   }
 
   if (texts.length === 0) return { rawContext: null, isRecipeStep, imgSnippet };
 
-  // Find closest text to img
-  const imgLocalPos = isRecipeStep ? imgPos : imgPos - Math.max(0, imgPos - 1500);
   let best = texts[0];
   let bestDist = Infinity;
   for (const t of texts) {
-    const tPos = searchArea.indexOf(t);
-    const dist = Math.abs(tPos - imgLocalPos);
-    if (dist < bestDist) { bestDist = dist; best = t; }
+    let searchFrom = 0;
+    while (searchFrom < searchArea.length) {
+      const tPos = searchArea.indexOf(t, searchFrom);
+      if (tPos < 0) break;
+      const dist = Math.abs(tPos - imgLocalPos);
+      if (dist < bestDist) { bestDist = dist; best = t; }
+      searchFrom = tPos + 1;
+    }
   }
 
-  return { rawContext: best, isRecipeStep, imgSnippet };
+  return { rawContext: truncate(best), isRecipeStep, imgSnippet };
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────
