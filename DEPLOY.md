@@ -13,6 +13,7 @@
 |------|-----------|
 | `backend/.env` | конфиг **NestJS** (читается и при локальном запуске, и в docker через `env_file`). Прод-шаблон: `backend/.env.example` |
 | `site/.env` | конфиг **Next.js** (читается на сборке и при запуске; в docker — через `env_file`). Прод-шаблон: `site/.env.example` |
+| `opencode/.env` | конфиг **opencode serve** (внутренний сервис; в docker — через `env_file`, в проде — через `env_file` pm2). Шаблона нет: содержит секреты (`OPENCODE_SERVER_PASSWORD`, `OPENCODE_API_KEY`) |
 | `.env` (корень репо) | только для docker: учётные данные postgres и pgadmin (`env_file` сервисов). Шаблон: `.env.example` |
 
 NestJS грузит `.env` через `ConfigModule.forRoot` (`backend/src/app.module.ts`),
@@ -94,14 +95,14 @@ docker compose logs -f backend
 
 | Что                        | URL |
 |----------------------------|-----|
-| Site (Next.js)             | http://localhost:3030 |
-| API (NestJS, префикс /api) | http://localhost:4040/api |
+| Site (Next.js)             | http://localhost:5021 |
+| API (NestJS, префикс /api) | http://localhost:5022/api |
 | pgadmin                    | http://localhost:5050 (`admin@blog-gk.dev` / `blog_gk_password`) |
 | Prisma Studio               | `./run.sh studio start` → http://localhost:51212 |
 
 Пример запроса к API:
 ```sh
-curl http://localhost:4040/api/articles
+curl http://localhost:5022/api/articles
 ```
 
 ### 1.6. Остановка
@@ -143,7 +144,7 @@ cp .env.example .env
 # заполни .env:
 #   DATABASE_URL  → postgresql://blog_gk_user:ПАРОЛЬ@localhost:5432/blog_gk_db
 #                   (пароль со спецсимволами URL-кодировать: @ → %40, # → %23, % → %25, / → %2F, ? → %3F)
-#   PORT          → 4000
+#   PORT          → 5022
 #   CORS_ORIGIN   → https://blog-gk.ru (или * )
 #   S3_*          → заполни позже
 
@@ -174,7 +175,31 @@ cp .env.example .env
 npm run build
 ```
 
-### 2.5. Запуск через pm2
+### 2.5. OpenCode serve (внутренний сервис)
+
+Backend обращается к opencode по HTTP (`127.0.0.1:5023`), opencode отвечает текстом.
+Сервис не публикуется наружу, инструменты запрещены (`{"permission":{"*":"deny"}}`),
+а правила поведения задаёт `opencode/AGENTS.md` (чат-ассистент, без правок кода).
+PM2 запускает его из `opencode/` (`cwd`), поэтому opencode видит `AGENTS.md` проекта.
+
+```sh
+npm i -g opencode-ai
+mkdir -p /var/www/blog-gk/opencode
+# создай /var/www/blog-gk/opencode/.env:
+#   OPENCODE_SERVER_PASSWORD=<пароль>            # basic auth (username: opencode)
+#   OPENCODE_API_KEY=<ключ OpenCode Zen>          # бесплатная модель deepseek-v4-flash-free
+#   OPENCODE_CONFIG_CONTENT={"permission":{"*":"deny"}}   # инструменты запрещены
+#   OPENCODE_DISABLE_AUTOUPDATE=1
+#   OPENCODE_DISABLE_MODELS_FETCH=1
+```
+
+В `backend/.env` добавь (тот же пароль):
+```
+OPENCODE_SERVER_URL=http://127.0.0.1:5023
+OPENCODE_SERVER_PASSWORD=<пароль>
+```
+
+### 2.6. Запуск через pm2
 
 ```sh
 cd /var/www/blog-gk
@@ -184,18 +209,20 @@ pm2 startup   # автозапуск при перезагрузке серве�
 ```
 
 `ecosystem.config.js` читает переменные окружения через `env_file`:
-`backend/.env` и `site/.env`. Бэкенд стартует как `node dist/main.js --use-system-ca`.
+`backend/.env`, `site/.env` и `opencode/.env`. Бэкенд стартует как `node dist/main.js --use-system-ca`,
+opencode — как `opencode serve` (слушает только `127.0.0.1:5023`).
 
-### 2.6. Проверка
+### 2.7. Проверка
 
 ```sh
 pm2 status
 pm2 logs blog-gk-backend
-curl http://localhost:4000/api/articles
-curl http://localhost:3000
+curl http://localhost:5022/api/articles
+curl http://localhost:5021
+curl http://localhost:5022/api/opencode/hello   # тест opencode
 ```
 
-### 2.7. Обновление
+### 2.8. Обновление
 
 ```sh
 cd /var/www/blog-gk && git pull
@@ -211,18 +238,18 @@ npm ci
 npm run build
 
 cd ..
-pm2 reload blog-gk-backend blog-gk-site
+pm2 reload blog-gk-backend blog-gk-site blog-gk-opencode
 ```
 
-### 2.8. Nginx / SSL
+### 2.9. Nginx / SSL
 
 Проксировать:
-- `blog-gk.ru` → `127.0.0.1:3000` (site)
-- `api.blog-gk.ru` (или `/api`) → `127.0.0.1:4000` (API)
+- `blog-gk.ru` → `127.0.0.1:5021` (site)
+- `api.blog-gk.ru` (или `/api`) → `127.0.0.1:5022` (API)
 
 Выдать сертификаты (Let's Encrypt / certbot).
 
-### 2.9. Примечания
+### 2.10. Примечания
 
 - `node_args: --use-system-ca` требует установленных системных CA-сертификатов,
   включая российский корневой CA (для S3-эндпоинтов с российскими сертификатами):
@@ -232,7 +259,7 @@ pm2 reload blog-gk-backend blog-gk-site
   update-ca-certificates
   ```
 - Без заполненного `S3_*` загрузка файлов не работает (добавится позже).
-- Порт API: 4000, порт site: 3000 — зафиксированы в `ecosystem.config.js`.
+- Порт API: 5022, порт site: 5021, порт opencode: 5023 — зафиксированы в `ecosystem.config.js`.
 
 ---
 
@@ -243,12 +270,12 @@ pm2 reload blog-gk-backend blog-gk-site
 cd backend
 npm ci
 npx prisma generate
-npm run start:dev          # http://localhost:4000
+npm run start:dev          # http://localhost:5022
 
 # терминал 2 — site
 cd site
 npm ci
-npm run dev                # http://localhost:3000
+npm run dev -- -p 5021     # http://localhost:5021
 ```
 
 Применение миграций:

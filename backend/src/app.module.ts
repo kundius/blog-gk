@@ -13,6 +13,7 @@ import { AlbumsModule } from './albums/albums.module';
 import { CollectionsModule } from './collections/collections.module';
 import { CommentsModule } from './comments/comments.module';
 import { SubscribersModule } from './subscribers/subscribers.module';
+import { OpencodeModule } from './opencode/opencode.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SubscribersModule } from './subscribers/subscribers.module';
     CollectionsModule,
     CommentsModule,
     SubscribersModule,
+    OpencodeModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
