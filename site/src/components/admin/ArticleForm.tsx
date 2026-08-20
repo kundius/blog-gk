@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, ImagePlus, X, GripVertical, RotateCcw, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
+import { Loader2, Save, RotateCcw, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
 import type {
   ArticleRecord,
@@ -73,9 +73,6 @@ export function ArticleForm({ article }: ArticleFormProps) {
     })) ?? emptyIngredients,
   )
   const [thumbnail, setThumbnail] = useState<FileRecord | null>(article?.thumbnail ?? null)
-  const [gallery, setGallery] = useState<FileRecord[]>(
-    article?.files?.map((f) => f.file).filter((f): f is FileRecord => Boolean(f)) ?? [],
-  )
   const [related, setRelated] = useState<ArticleRecord[]>(
     article?.related
       ?.map((row) => row.relatedArticle)
@@ -90,7 +87,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const [categories, setCategories] = useState<CategoryRecord[]>([])
   const [saving, setSaving] = useState(false)
 
-  const [picker, setPicker] = useState<'thumbnail' | 'gallery' | 'related' | null>(null)
+  const [picker, setPicker] = useState<'thumbnail' | 'related' | null>(null)
 
   const loadOptions = async () => {
     const treeRes = await api.list<CategoryRecord>('/categories/tree?limit=200')
@@ -112,13 +109,6 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
   const handlePickerConfirm = (files: FileRecord[]) => {
     if (picker === 'thumbnail' && files[0]) setThumbnail(files[0])
-    if (picker === 'gallery') {
-      setGallery((prev) => {
-        const existing = new Set(prev.map((f) => f.id))
-        const fresh = files.filter((f) => !existing.has(f.id))
-        return [...prev, ...fresh]
-      })
-    }
   }
 
   const addRelated = (chosen: ArticleRecord[]) => {
@@ -158,7 +148,6 @@ export function ArticleForm({ article }: ArticleFormProps) {
         carbs,
         ingredients,
         thumbnailId: thumbnail?.id,
-        files: gallery.map((f) => f.id),
         relatedIds: related.map((a) => a.id),
         ...seo,
       }
@@ -245,6 +234,17 @@ export function ArticleForm({ article }: ArticleFormProps) {
           </div>
       </FieldGroup>
 
+      <FieldGroup title="Медиа" contentClassName="space-y-4">
+          <div className="space-y-2">
+            <Label>Миниатюра</Label>
+            <ThumbnailField
+              file={thumbnail}
+              onClear={() => setThumbnail(null)}
+              onPick={() => setPicker('thumbnail')}
+            />
+          </div>
+      </FieldGroup>
+
       <FieldGroup
         title="Контент"
         titleAction={
@@ -311,56 +311,6 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
       <FieldGroup title="Ингредиенты">
         <IngredientsEditor items={ingredients} onChange={setIngredients} />
-      </FieldGroup>
-
-      <FieldGroup title="Медиа" contentClassName="space-y-4">
-          <div className="space-y-2">
-            <Label>Миниатюра</Label>
-            <ThumbnailField
-              file={thumbnail}
-              onClear={() => setThumbnail(null)}
-              onPick={() => setPicker('thumbnail')}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Галерея</Label>
-            <div className="flex flex-wrap gap-2">
-              {gallery.map((file) => (
-                <div
-                  key={file.id}
-                  className="relative size-24 overflow-hidden rounded-md border"
-                >
-                  <CoverImage
-                    src={fileStreamUrl(file.id)}
-                    alt={file.title ?? ''}
-                    blurHash={file.blurhash}
-                    sizes="96px"
-                    loading="lazy"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setGallery((prev) => prev.filter((f) => f.id !== file.id))
-                    }
-                    className="absolute right-0.5 top-0.5 rounded-full bg-background/90 p-0.5 text-foreground hover:text-destructive"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                  <span className="absolute bottom-0.5 left-0.5 rounded bg-background/90 p-0.5">
-                    <GripVertical className="size-3.5 text-muted-foreground" />
-                  </span>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setPicker('gallery')}
-                className="flex size-24 items-center justify-center rounded-md border border-dashed text-muted-foreground transition-colors hover:border-ring"
-              >
-                <ImagePlus className="size-5" />
-              </button>
-            </div>
-          </div>
       </FieldGroup>
 
       <FieldGroup title="Похожие статьи" contentClassName="space-y-2">
@@ -464,7 +414,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
       <MediaPicker
         open={picker !== null && picker !== 'related'}
         onOpenChange={(open) => !open && setPicker(null)}
-        multiple={picker === 'gallery'}
+        multiple={false}
         onConfirm={handlePickerConfirm}
       />
       <ArticlePicker

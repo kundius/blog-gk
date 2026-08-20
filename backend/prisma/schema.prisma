@@ -21,7 +21,6 @@ model File {
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   articles       Article[]     @relation("ArticleThumbnail")
-  articleGallery ArticleFile[]
   albums         Album[]       @relation("AlbumThumbnail")
   albumGallery   AlbumFile[]
   categories     Category[]    @relation("CategoryThumbnail")
@@ -81,7 +80,6 @@ model Article {
 
   category  Category      @relation("ArticlePrimaryCategory", fields: [categoryId], references: [id], onDelete: Restrict)
   thumbnail File?         @relation("ArticleThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
-  files     ArticleFile[]
   categories ArticleCategory[]
   comments  Comment[]
   collections CollectionArticle[]
@@ -113,18 +111,6 @@ model ArticleCategory {
   category Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("articles_categories")
-}
-
-model ArticleFile {
-  id        Int     @id @default(autoincrement())
-  articleId String? @map("article") @db.Uuid
-  fileId    String? @map("file") @db.Uuid
-  sort      Int?
-
-  article Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  file    File?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
-
-  @@map("articles_files")
 }
 
 model Album {

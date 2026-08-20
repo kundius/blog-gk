@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { SearchPage } from '@components/SearchPage'
+import { SearchPage } from './_components/SearchPage'
 import { CLIENT_URL } from '@app/utils/config'
 
 export const revalidate = 900

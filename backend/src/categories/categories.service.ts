@@ -80,14 +80,29 @@ export class CategoriesService {
     const rows = await this.prisma.category.findMany({
       select: CATEGORY_ANCESTOR_SELECT,
     });
-    return { ...category, ancestors: buildAncestors(rows, category.parentId) };
+    const enriched = {
+      ...category,
+      ancestors: buildAncestors(rows, category.parentId),
+    };
+    const collages = await this.collageThumbnails([enriched, ...enriched.children]);
+    return {
+      ...enriched,
+      collageThumbnails: collages.get(enriched.id) ?? null,
+      children: enriched.children.map((child) => ({
+        ...child,
+        collageThumbnails: collages.get(child.id) ?? null,
+      })),
+    };
   }
 
   async tree() {
     type CategoryRow = Prisma.CategoryGetPayload<{
       include: typeof CATEGORY_COUNT_INCLUDE;
     }>;
-    type CategoryNode = CategoryRow & { children: CategoryNode[] };
+    type CategoryNode = CategoryRow & {
+      children: CategoryNode[];
+      collageThumbnails: Array<Prisma.FileGetPayload<{}>> | null;
+    };
 
     const rows = await this.prisma.category.findMany({
       include: CATEGORY_COUNT_INCLUDE,
@@ -96,7 +111,7 @@ export class CategoriesService {
 
     const byId = new Map<string, CategoryNode>();
     for (const row of rows) {
-      byId.set(row.id, { ...row, children: [] });
+      byId.set(row.id, { ...row, children: [], collageThumbnails: null });
     }
 
     const roots: CategoryNode[] = [];
@@ -109,7 +124,84 @@ export class CategoriesService {
       }
     }
 
+    const flat: CategoryNode[] = [];
+    const walk = (nodes: CategoryNode[]) => {
+      for (const node of nodes) {
+        flat.push(node);
+        walk(node.children);
+      }
+    };
+    walk(roots);
+
+    const collages = await this.collageThumbnails(flat);
+    for (const node of flat) {
+      node.collageThumbnails = collages.get(node.id) ?? null;
+    }
+
     return roots;
+  }
+
+  private async collageThumbnails(
+    targets: Array<{ id: string; thumbnailId?: string | null }>,
+  ): Promise<Map<string, Array<Prisma.FileGetPayload<{}>>>> {
+    const map = new Map<string, Array<Prisma.FileGetPayload<{}>>>();
+    const need = targets.filter((item) => !item.thumbnailId);
+    if (need.length === 0) {
+      return map;
+    }
+
+    const rows = await this.prisma.category.findMany({
+      select: { id: true, parentId: true },
+    });
+    const childrenByParent = new Map<string | null, string[]>();
+    for (const row of rows) {
+      const list = childrenByParent.get(row.parentId) ?? [];
+      list.push(row.id);
+      childrenByParent.set(row.parentId, list);
+    }
+    const subtreeIds = (id: string): string[] => {
+      const ids: string[] = [];
+      const queue = [id];
+      while (queue.length > 0) {
+        const current = queue.pop()!;
+        ids.push(current);
+        for (const child of childrenByParent.get(current) ?? []) {
+          queue.push(child);
+        }
+      }
+      return ids;
+    };
+
+    await Promise.all(
+      need.map(async (category) => {
+        const ids = subtreeIds(category.id);
+        const articles = await this.prisma.article.findMany({
+          where: {
+            status: 'published',
+            thumbnailId: { not: null },
+            OR: [
+              { categoryId: { in: ids } },
+              { categories: { some: { categoryId: { in: ids } } } },
+            ],
+          },
+          orderBy: { hitsCount: 'desc' },
+          select: { thumbnail: true },
+          take: 10,
+        });
+        const seen = new Set<string>();
+        const files: Array<Prisma.FileGetPayload<{}>> = [];
+        for (const article of articles) {
+          if (!article.thumbnail || seen.has(article.thumbnail.id)) {
+            continue;
+          }
+          seen.add(article.thumbnail.id);
+          files.push(article.thumbnail);
+        }
+        map.set(category.id, files);
+      }),
+    );
+
+    return map;
   }
 
   async create(dto: CreateCategoryDto) {

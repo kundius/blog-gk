@@ -58,7 +58,7 @@ export function ArticleShare ({ url, title = '', heading = 'Поделиться
         <ShareButton
           label="Поделиться в MAX"
           icon="max"
-          href={`https://connect.mail.ru/share?url=${encodedUrl}&title=${encodedTitle}`}
+          href={`https://max.ru/:share?text=${encodedTitle} ${encodedUrl}`}
         >
           MAX
         </ShareButton>

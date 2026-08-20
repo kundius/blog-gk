@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { CategoryPage } from '@components/CategoryPage'
+import { CategoryPage } from './_components/CategoryPage'
 import { categoryByAlias, listCategories } from '@app/api/categories'
 import { listArticles } from '@app/api/articles'
 import { CLIENT_URL } from '@app/utils/config'

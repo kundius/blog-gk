@@ -19,6 +19,7 @@ export interface Category {
   parentId?: string | null
   thumbnailId?: string | null
   thumbnail?: File | null
+  collageThumbnails?: File[] | null
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null
@@ -28,7 +29,7 @@ export interface Category {
 export interface CategoryWithChildren extends Category {
   parent?: Category | null
   children?: CategoryWithChildren[]
-  _count?: { articles: number }
+  _count?: { articleCategories: number }
 }
 
 export interface ArticleCategory {
@@ -75,7 +76,6 @@ export interface ArticleDetail extends ArticleListItem {
   seoTitle?: string | null
   seoKeywords?: string | null
   seoDescription?: string | null
-  files: ArticleFile[]
 }
 
 export interface Album {

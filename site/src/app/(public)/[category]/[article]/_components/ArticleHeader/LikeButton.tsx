@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ArticleLikes } from '@components/ArticleLikes'
+import { ArticleLikes } from '../ArticleLikes'
 
 import * as styles from './styles.module.css'
 

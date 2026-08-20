@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { CollectionPage } from '@components/CollectionPage'
+import { CollectionPage } from './_components/CollectionPage'
 import { collectionByAlias, listCollections } from '@app/api/collections'
 
 import { SWRPreload } from '../../../swr-preload'

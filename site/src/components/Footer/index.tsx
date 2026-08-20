@@ -1,13 +1,12 @@
 'use client'
 import React from 'react'
-import { BsBook } from 'react-icons/bs'
-import { BiSitemap } from 'react-icons/bi'
+import { Book, CookingPot, Map } from 'lucide-react'
 import useSWR from 'swr'
 
 import { YandexMetrica } from '@components/YandexMetrica'
 import { Container } from '@components/Container'
 import { FooterMenu } from '@components/FooterMenu'
-import { TablewareIcon } from '@components/Icon/tableware'
+
 import { categoriesTree } from '@app/api/categories'
 import type { CategoryWithChildren } from '@app/api/types'
 
@@ -36,7 +35,7 @@ export const Footer = () => {
               section={{
                 title: cooking?.name ?? 'Кулинария',
                 href: '/cooking',
-                icon: <TablewareIcon />
+                icon: <CookingPot />
               }}
               items={toItems(cooking)}
             />
@@ -46,7 +45,7 @@ export const Footer = () => {
               section={{
                 title: article?.name ?? 'Статьи',
                 href: '/article',
-                icon: <BsBook />
+                icon: <Book />
               }}
               items={toItems(article)}
             />
@@ -56,7 +55,7 @@ export const Footer = () => {
               section={{
                 title: notes?.name ?? 'Заметки',
                 href: '/notes',
-                icon: <BsBook />
+                icon: <Book />
               }}
               items={toItems(notes)}
             />
@@ -66,7 +65,7 @@ export const Footer = () => {
               section={{
                 title: 'Страницы',
                 href: '/sitemap',
-                icon: <BiSitemap />
+                icon: <Map />
               }}
               items={[{
                 title: 'Обо мне',

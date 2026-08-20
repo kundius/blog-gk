@@ -66,6 +66,13 @@ export class FilesController {
   }
 
   @Roles('admin')
+  @Post(':id/enhance')
+  @HttpCode(HttpStatus.CREATED)
+  async enhance(@Param('id', ParseUUIDPipe) id: string) {
+    return { data: await this.filesService.enhance(id) };
+  }
+
+  @Roles('admin')
   @Patch(':id')
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateFileDto) {
     return { data: await this.filesService.update(id, dto) };

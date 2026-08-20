@@ -15,9 +15,9 @@
 }
 
 :global(.dark) .card {
-  background-color: #292524;
+  background-color: #111827;
   background-image:
-    linear-gradient(#292524, #292524),
+    linear-gradient(#111827, #111827),
     linear-gradient(
       135deg,
       rgba(211, 109, 109, 0.4) 0%,

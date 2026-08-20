@@ -1,7 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
-import { BsBook } from 'react-icons/bs'
+import { Book } from 'lucide-react'
 import { CoverImage } from '@components/CoverImage'
+import { pluralRecipes } from '@app/lib/plural'
 
 export interface CardProps {
   name: string
@@ -13,14 +14,6 @@ export interface CardProps {
     name?: string
     blurHash?: string
   }
-}
-
-function pluralRecipes(count: number): string {
-  const mod10 = count % 10
-  const mod100 = count % 100
-  if (mod10 === 1 && mod100 !== 11) return 'рецепт'
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'рецепта'
-  return 'рецептов'
 }
 
 export function Card ({
@@ -48,7 +41,7 @@ export function Card ({
           </div>
         ) : (
           <div className="h-full w-full bg-gray-200 transition duration-300 ease-out dark:bg-gray-600">
-            <BsBook className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" size={40} />
+            <Book className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" size={40} />
           </div>
         )}
       </div>
@@ -62,7 +55,7 @@ export function Card ({
         {count !== undefined && count > 0 && (
           <div className="mt-2 flex sm:mt-3">
             <span className="inline-flex items-center gap-1.5 text-xs text-foreground/80 sm:text-sm">
-              <BsBook className="text-primary" size={16} strokeWidth={1} />
+              <Book className="text-primary" size={16} strokeWidth={1} />
               {count} {pluralRecipes(count)}
             </span>
           </div>

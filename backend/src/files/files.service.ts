@@ -106,6 +106,79 @@ export class FilesService {
     });
   }
 
+  async enhance(id: string) {
+    const original = await this.ensureExists(id);
+
+    if (!original.type?.startsWith('image/')) {
+      throw new BadRequestException('Only images can be enhanced');
+    }
+
+    const existing = await this.prisma.file.findFirst({
+      where: { description: id },
+    });
+
+    if (!original.filenameDisk) {
+      throw new NotFoundException('Original file has no storage key');
+    }
+
+    let object: StorageObject;
+    try {
+      object = await this.storage.get(original.filenameDisk);
+    } catch {
+      throw new NotFoundException('Original file not found in storage');
+    }
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of object.body) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    const inputBuffer = Buffer.concat(chunks);
+
+    const processed = await sharp(inputBuffer)
+      .modulate({ saturation: 1.45, brightness: 1.08 })
+      .gamma(1.1)
+      .linear(1.03, 3)
+      .sharpen({ sigma: 0.7 })
+      .jpeg({ quality: 90 })
+      .toBuffer();
+
+    const metadata = await sharp(processed).metadata();
+    const blurhash = await this.computeBlurhash(processed);
+
+    if (existing) {
+      if (existing.filenameDisk) {
+        await this.storage.put(existing.filenameDisk, processed, original.type);
+      }
+      return this.prisma.file.update({
+        where: { id: existing.id },
+        data: {
+          filesize: processed.length,
+          width: metadata.width,
+          height: metadata.height,
+          blurhash,
+        },
+      });
+    }
+
+    const filenameDisk = `processed/${original.id}.jpg`;
+    await this.storage.put(filenameDisk, processed, original.type);
+
+    return this.prisma.file.create({
+      data: {
+        filenameDisk,
+        filenameDownload: original.filenameDownload,
+        title: `${original.title ?? original.filenameDownload} (улучшено)`,
+        description: id,
+        type: original.type,
+        filesize: processed.length,
+        width: metadata.width,
+        height: metadata.height,
+        blurhash,
+        createdAt: original.createdAt,
+      },
+    });
+  }
+
   async remove(id: string) {
     const file = await this.ensureExists(id);
 
@@ -135,6 +208,8 @@ export class FilesService {
     }
 
     res.setHeader('Content-Type', file.type ?? 'application/octet-stream');
+    const isEnhanced = file.description && /^[0-9a-f]{8}-/i.test(file.description);
+    res.setHeader('Cache-Control', isEnhanced ? 'no-cache, must-revalidate' : 'public, max-age=86400');
     const contentLength = object.contentLength ?? file.filesize;
     if (contentLength !== undefined && contentLength !== null) {
       res.setHeader('Content-Length', String(contentLength));

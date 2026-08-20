@@ -7,6 +7,7 @@ export interface FileRecord {
   width?: number | null
   height?: number | null
   blurhash?: string | null
+  description?: string | null
   createdAt?: string | null
 }
 
@@ -59,7 +60,6 @@ export interface ArticleRecord {
     sort?: number | null
   }>
   thumbnail?: FileRecord | null
-  files?: Array<{ id: number; file?: FileRecord | null; fileId?: string | null }>
   related?: Array<{
     id: number
     sort?: number | null

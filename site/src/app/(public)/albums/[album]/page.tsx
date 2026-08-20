@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { AlbumPage } from '@components/AlbumPage'
+import { AlbumPage } from './_components/AlbumPage'
 import { albumByAlias, listAlbums } from '@app/api/albums'
 
 import { SWRPreload } from '../../../swr-preload'

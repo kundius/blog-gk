@@ -1,13 +1,14 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Upload, Check } from 'lucide-react'
-import { api, fileStreamUrl } from '@app/lib/admin/client'
+import { Upload, Check, WandSparkles, Loader2 } from 'lucide-react'
+import { api, fileStreamUrl, isEnhanced, enhanceFile } from '@app/lib/admin/client'
 import type { FileRecord } from '@app/lib/admin/types'
 import { toast } from 'sonner'
 import { cn } from '@app/lib/utils'
 import { Button } from '@components/ui/button'
 import { SearchInput } from '@components/admin/SearchInput'
+import { PaginationControls } from '@components/admin/Pagination'
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,8 @@ import {
 } from '@components/ui/dialog'
 import { Skeleton } from '@components/ui/skeleton'
 import { CoverImage } from '@components/CoverImage'
+
+const PAGE_SIZE = 24
 
 interface MediaPickerProps {
   open: boolean
@@ -34,19 +37,25 @@ export function MediaPicker({
   const [files, setFiles] = useState<FileRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [uploading, setUploading] = useState(false)
+  const [enhancingId, setEnhancingId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const load = useCallback(async (q?: string) => {
+  const load = useCallback(async (q?: string, p?: number) => {
     setLoading(true)
     try {
-      const params = new URLSearchParams({ limit: '100', sort: '-createdAt' })
+      const params = new URLSearchParams({ limit: String(PAGE_SIZE), sort: '-createdAt' })
       if (q) params.set('search', q)
+      params.set('page', String(p ?? 1))
       const res = await api.list<FileRecord>(`/files?${params.toString()}`)
       setFiles(res.data)
+      setTotalPages(res.meta.totalPages)
     } catch {
       setFiles([])
+      setTotalPages(1)
     } finally {
       setLoading(false)
     }
@@ -56,13 +65,20 @@ export function MediaPicker({
     if (open) {
       setSelected(new Set())
       setSearch('')
-      load()
+      setPage(1)
+      load(undefined, 1)
     }
   }, [open, load])
 
   const handleSearch = (value: string) => {
     setSearch(value)
-    load(value)
+    setPage(1)
+    load(value, 1)
+  }
+
+  const handlePageChange = (p: number) => {
+    setPage(p)
+    void load(search, p)
   }
 
   const toggle = (id: string) => {
@@ -90,12 +106,25 @@ export function MediaPicker({
         formData.append('file', file)
         await api.upload<FileRecord>('/files', formData)
       }
-      await load(search)
+      await load(search, page)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Ошибка загрузки')
     } finally {
       input.value = ''
       setUploading(false)
+    }
+  }
+
+  const handleEnhance = async (file: FileRecord) => {
+    setEnhancingId(file.id)
+    try {
+      await enhanceFile(file.id)
+      toast.success('Файл улучшен')
+      await load(search, page)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Ошибка улучшения')
+    } finally {
+      setEnhancingId(null)
     }
   }
 
@@ -164,6 +193,27 @@ export function MediaPicker({
                   sizes="(max-width: 640px) 50vw, 25vw"
                   loading="lazy"
                 />
+                {file.type?.startsWith('image/') && !isEnhanced(file) && (
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="icon-xs"
+                    className="absolute left-1 top-1 bg-background/80 text-foreground hover:bg-background/90"
+                    disabled={enhancingId === file.id}
+                    onClick={(e) => { e.stopPropagation(); void handleEnhance(file) }}
+                  >
+                    <span>
+                      {enhancingId === file.id
+                        ? <Loader2 className="size-3 animate-spin" />
+                        : <WandSparkles className="size-3" />}
+                    </span>
+                  </Button>
+                )}
+                {isEnhanced(file) && (
+                  <span className="absolute left-1 top-1 rounded bg-gradient-to-r from-purple-500 to-pink-500 px-1 py-0.5 text-[9px] font-medium text-white">
+                    улучшено
+                  </span>
+                )}
                 {selected.has(file.id) && (
                   <span className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
                     <Check className="size-3" />
@@ -178,6 +228,12 @@ export function MediaPicker({
           )}
           </div>
         </div>
+
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

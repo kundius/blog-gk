@@ -65,11 +65,6 @@ export class CreateArticleDto {
 
   @IsOptional()
   @IsArray()
-  @IsUUID('4', { each: true })
-  files?: string[];
-
-  @IsOptional()
-  @IsArray()
   @ArrayUnique()
   @ArrayMaxSize(4)
   @IsUUID('4', { each: true })

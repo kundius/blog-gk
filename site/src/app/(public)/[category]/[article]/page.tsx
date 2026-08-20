@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
-import { ArticlePage } from '@components/ArticlePage'
+import { ArticlePage } from './_components/ArticlePage'
 import { articleByAlias, relatedArticles, listArticles } from '@app/api/articles'
 import { fileUrl } from '@app/api/images'
 import { CLIENT_URL } from '@app/utils/config'

@@ -5,7 +5,7 @@
 }
 
 :global(.dark) .wrapper {
-  background-color: #1c1917;
+  background-color: #292524;
 }
 
 .nav {
@@ -26,8 +26,8 @@
 }
 
 :global(.dark) .card {
-  background-color: #292524;
-  border-color: #44403c;
+  background-color: #44403c;
+  border-color: #57534e;
   color: #e7e5e4;
 }
 

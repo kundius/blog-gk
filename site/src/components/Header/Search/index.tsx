@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { FaSearch } from 'react-icons/fa'
+import { Search as SearchIcon } from 'lucide-react'
 import { useSpring, animated, useSpringRef, useChain } from '@react-spring/web'
 
 import styles from './styles.module.css'
@@ -84,7 +84,7 @@ export const Search = () => {
         type="button"
         onClick={handleButtonCick}
       >
-        <FaSearch />
+        <SearchIcon />
       </button>
     </form>
   )

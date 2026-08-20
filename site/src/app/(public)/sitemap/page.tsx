@@ -1,4 +1,4 @@
-import { SitemapPage } from '@components/SitemapPage'
+import { SitemapPage } from './_components/SitemapPage'
 import { listArticles } from '@app/api/articles'
 import { categoriesTree } from '@app/api/categories'
 

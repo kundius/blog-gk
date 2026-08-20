@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react'
 import { useQueryState, parseAsInteger } from 'nuqs'
-import { Trash2, Upload, Link as LinkIcon, Copy, Check } from 'lucide-react'
-import { api, fileStreamUrl } from '@app/lib/admin/client'
+import { Trash2, Upload, Link as LinkIcon, Copy, Check, WandSparkles, Loader2, Download } from 'lucide-react'
+import { api, fileStreamUrl, fileDownloadUrl, isEnhanced, enhanceFile } from '@app/lib/admin/client'
 import { usePaginatedList } from '@app/lib/admin/usePaginatedList'
 import type { FileRecord } from '@app/lib/admin/types'
 import { toast } from 'sonner'
@@ -22,6 +22,7 @@ export default function AdminFilesPage() {
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [uploading, setUploading] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [enhancingId, setEnhancingId] = useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const commitSearch = (value: string) => {
@@ -84,6 +85,19 @@ export default function AdminFilesPage() {
     }
   }
 
+  const handleEnhance = async (file: FileRecord) => {
+    setEnhancingId(file.id)
+    try {
+      await enhanceFile(file.id)
+      toast.success('Файл улучшен')
+      void mutate()
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Ошибка улучшения')
+    } finally {
+      setEnhancingId(null)
+    }
+  }
+
   return (
     <div>
       <PageHeader title="Медиатека" description="Файлы блога" />
@@ -140,6 +154,24 @@ export default function AdminFilesPage() {
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                     loading="lazy"
                   />
+                  {file.type?.startsWith('image/') && !isEnhanced(file) && (
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="absolute left-1.5 top-1.5 bg-background/80 text-foreground hover:bg-background/90"
+                      disabled={enhancingId === file.id}
+                      onClick={() => void handleEnhance(file)}
+                    >
+                      {enhancingId === file.id
+                        ? <Loader2 className="size-3.5 animate-spin" />
+                        : <WandSparkles className="size-3.5" />}
+                    </Button>
+                  )}
+                  {isEnhanced(file) && (
+                    <span className="absolute left-1.5 top-1.5 rounded bg-gradient-to-r from-purple-500 to-pink-500 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                      улучшено
+                    </span>
+                  )}
                   <div className="absolute inset-x-0 bottom-0 flex justify-end gap-0.5 bg-gradient-to-t from-black/50 to-transparent p-1.5 opacity-0 transition-opacity group-hover:opacity-100">
                     <Button
                       variant="ghost"
@@ -152,6 +184,16 @@ export default function AdminFilesPage() {
                       ) : (
                         <Copy className="size-3.5" />
                       )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="bg-background/80 text-foreground"
+                      asChild
+                    >
+                      <a href={fileDownloadUrl(file.id)} download>
+                        <Download className="size-3.5" />
+                      </a>
                     </Button>
                     <ConfirmDelete
                       title="Удалить файл?"

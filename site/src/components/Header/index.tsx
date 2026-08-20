@@ -1,7 +1,7 @@
 'use client'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { FaRss } from 'react-icons/fa'
+import { Rss } from 'lucide-react'
 import useSWR from 'swr'
 
 import { Container } from '@components/Container'
@@ -99,7 +99,7 @@ export const Header = () => {
                   </button>
                 )}
                 <Link href="/rss" target="_blank" className={styles.button}>
-                  <FaRss />
+                  <Rss />
                 </Link>
               </div>
               <ul className={cn(styles.menu, styles.menuLeft)}>

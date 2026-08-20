@@ -1,4 +1,4 @@
-import { HomePage } from '@components/HomePage'
+import { HomePage } from './_components/HomePage'
 import { listArticles } from '@app/api/articles'
 
 import { SWRPreload } from '../swr-preload'

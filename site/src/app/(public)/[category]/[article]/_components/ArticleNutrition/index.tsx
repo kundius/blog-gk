@@ -42,7 +42,7 @@ export function ArticleNutrition (data: ArticleNutritionProps) {
           })}
         </div>
         <div className={styles.note}>
-          Калорийность рассчитана для сырых продуктов
+          Приблизительный расчёт для сырых продуктов
         </div>
       </div>
     </section>

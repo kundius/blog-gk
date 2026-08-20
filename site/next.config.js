@@ -756,8 +756,8 @@ module.exports = {
         destination: '/api/rss'
       },
       {
-        source: '/files/:key',
-        destination: '/api/files/:key'
+        source: '/files/:path*',
+        destination: '/api/files/:path*'
       }
     ]
   }

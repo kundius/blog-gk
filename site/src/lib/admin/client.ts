@@ -1,4 +1,5 @@
 import { API_URL } from '@app/utils/config'
+import type { FileRecord } from './types'
 
 const TOKEN_KEY = 'admin_token'
 
@@ -107,6 +108,10 @@ export function fileStreamUrl(id: string): string {
   return `${API_URL}/api/files/${id}/file`
 }
 
+export function fileDownloadUrl(id: string): string {
+  return `${API_URL}/api/files/${id}/download`
+}
+
 export function slugify(input: string): string {
   const map: Record<string, string> = {
     а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z',
@@ -123,4 +128,12 @@ export function slugify(input: string): string {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+export function isEnhanced(file: FileRecord): boolean {
+  return !!file.description && /^[0-9a-f]{8}-/i.test(file.description)
+}
+
+export async function enhanceFile(id: string): Promise<FileRecord> {
+  return api.post<FileRecord>(`/files/${id}/enhance`)
 }

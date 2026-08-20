@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import useSWR from 'swr'
 import {
   LayoutDashboard,
   FileText,
@@ -16,6 +17,8 @@ import {
 } from 'lucide-react'
 
 import { cn } from '@app/lib/utils'
+import { api } from '@app/lib/admin/client'
+import type { CommentRecord } from '@app/lib/admin/types'
 import { Button } from '@components/ui/button'
 import { Avatar, AvatarFallback } from '@components/ui/avatar'
 import { Sheet, SheetContent } from '@components/ui/sheet'
@@ -34,6 +37,13 @@ const NAV_ITEMS = [
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
+  const { data: pendingData } = useSWR(
+    '/admin/pending-comments-count',
+    () => api.list<CommentRecord>('/comments?status=pending&limit=1'),
+    { refreshInterval: 30_000 },
+  )
+  const pendingCount = pendingData?.meta.total ?? 0
+
   return (
     <nav className="flex flex-col gap-1 p-3">
       {NAV_ITEMS.map((item) => {
@@ -55,7 +65,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             )}
           >
             <Icon className="size-4 shrink-0" />
-            {item.label}
+            <span className="flex-1">{item.label}</span>
+            {item.href === '/admin/comments' && pendingCount > 0 && (
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold leading-none text-white">
+                {pendingCount > 99 ? '99+' : pendingCount}
+              </span>
+            )}
           </Link>
         )
       })}

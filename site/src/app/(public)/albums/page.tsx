@@ -1,4 +1,4 @@
-import { AlbumsPage } from '@components/AlbumsPage'
+import { AlbumsPage } from './_components/AlbumsPage'
 import { listAlbums } from '@app/api/albums'
 
 import { SWRPreload } from '../../swr-preload'

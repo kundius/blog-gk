@@ -20,7 +20,6 @@ const ARTICLE_LIST_INCLUDE = {
 const ARTICLE_DETAIL_INCLUDE = {
   category: true,
   thumbnail: true,
-  files: { include: { file: true }, orderBy: { sort: 'asc' } },
   categories: { include: { category: true }, orderBy: { sort: 'asc' } },
   related: {
     include: {
@@ -33,7 +32,6 @@ const ARTICLE_DETAIL_INCLUDE = {
 const EXTRA_INCLUDES: Record<string, Prisma.ArticleInclude> = {
   category: { category: true },
   thumbnail: { thumbnail: true },
-  files: { files: { include: { file: true }, orderBy: { sort: 'asc' } } },
   comments: { comments: true },
 };
 
@@ -111,7 +109,6 @@ export class ArticlesService {
     await this.validateReferences({
       categories: categoryIds,
       thumbnailId: dto.thumbnailId,
-      files: dto.files,
       relatedIds: dto.relatedIds,
     });
 
@@ -135,7 +132,6 @@ export class ArticlesService {
         seoKeywords: dto.seoKeywords,
         seoDescription: dto.seoDescription,
         dateCreated: new Date(),
-        files: { create: (dto.files ?? []).map((fileId, i) => ({ fileId, sort: i })) },
         categories: {
           create: categoryIds.map((categoryId, i) => ({ categoryId, sort: i })),
         },
@@ -170,21 +166,11 @@ export class ArticlesService {
       categoryId: dto.categoryId,
       categories: categoryIds,
       thumbnailId: dto.thumbnailId,
-      files: dto.files,
       relatedIds: dto.relatedIds,
       selfId: id,
     });
 
     return this.prisma.$transaction(async (tx) => {
-      if (dto.files) {
-        await tx.articleFile.deleteMany({ where: { articleId: id } });
-        if (dto.files.length) {
-          await tx.articleFile.createMany({
-            data: dto.files.map((fileId, i) => ({ articleId: id, fileId, sort: i })),
-          });
-        }
-      }
-
       if (categoryIds !== undefined) {
         await tx.articleCategory.deleteMany({ where: { articleId: id } });
         if (categoryIds.length) {
@@ -449,7 +435,6 @@ export class ArticlesService {
     categoryId?: string;
     categories?: string[];
     thumbnailId?: string;
-    files?: string[];
     relatedIds?: string[];
     selfId?: string;
   }) {
@@ -472,13 +457,6 @@ export class ArticlesService {
       });
       if (!thumbnail) {
         throw new BadRequestException('Thumbnail file not found');
-      }
-    }
-
-    if (dto.files?.length) {
-      const count = await this.prisma.file.count({ where: { id: { in: dto.files } } });
-      if (count !== dto.files.length) {
-        throw new BadRequestException('Some files do not exist');
       }
     }
 
