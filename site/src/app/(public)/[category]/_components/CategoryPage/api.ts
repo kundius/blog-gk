@@ -2,6 +2,8 @@ import { listArticles } from '@app/api/articles'
 import { categoryByAlias } from '@app/api/categories'
 import type { ArticleListItem, CategoryWithChildren } from '@app/api/types'
 
+export const CATEGORY_PAGE_SIZE = 12
+
 export interface GetArticlesArgs {
   alias: string
   page: number

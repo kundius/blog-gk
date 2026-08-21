@@ -186,6 +186,13 @@ body {
   --admin-glow-rose: oklch(0.78 0.09 30 / 0.3);
   --admin-glow-teal: oklch(0.86 0.05 190 / 0.28);
   --admin-glow-amber: oklch(0.86 0.08 90 / 0.22);
+
+  --color-text: #000000;
+  --color-background: #ffffff;
+  --color-blurred-background: rgba(255, 255, 255, 0.85);
+  --slogan-border-top-color: #ccc;
+  --slogan-color: #666;
+  --header-nav-border-color: #e2dbd4;
 }
 
 .dark {
@@ -223,6 +230,13 @@ body {
   --admin-glow-rose: oklch(0.5 0.09 30 / 0.26);
   --admin-glow-teal: oklch(0.56 0.05 190 / 0.22);
   --admin-glow-amber: oklch(0.56 0.08 90 / 0.18);
+
+  --color-text: #ffffff;
+  --color-background: #111827;
+  --color-blurred-background: rgba(17, 24, 39, 0.85);
+  --slogan-border-top-color: #6B7280;
+  --slogan-color: #6B7280;
+  --header-nav-border-color: #6B7280;
 }
 
 @media (--max-2xl) {

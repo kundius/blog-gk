@@ -88,6 +88,7 @@
   margin: 0 24px;
 }
 
+.rc-pagination-prev a,
 .rc-pagination-prev button {
   display: inline-block;
   min-width: 44px;
@@ -106,6 +107,7 @@
   position: relative;
 }
 
+.rc-pagination-prev a::after,
 .rc-pagination-prev button::after {
   content: '';
   width: 8px;
@@ -119,7 +121,8 @@
   margin-left: 2px;
 }
 
-.rc-pagination-prev:hover button:hover {
+.rc-pagination-prev a:hover,
+.rc-pagination-prev button:hover {
   color: var(--color-text);
 }
 
@@ -127,6 +130,7 @@
   margin: 0 24px;
 }
 
+.rc-pagination-next a,
 .rc-pagination-next button {
   display: inline-block;
   min-width: 44px;
@@ -145,6 +149,7 @@
   position: relative;
 }
 
+.rc-pagination-next a::after,
 .rc-pagination-next button::after {
   content: '';
   width: 8px;
@@ -158,7 +163,8 @@
   margin-left: -2px;
 }
 
-.rc-pagination-next:hover button:hover {
+.rc-pagination-next a:hover,
+.rc-pagination-next button:hover {
   color: var(--color-text);
 }
 
@@ -168,7 +174,9 @@
 }
 
 .rc-pagination-jump-prev button,
-.rc-pagination-jump-next button {
+.rc-pagination-jump-next button,
+.rc-pagination-jump-prev span,
+.rc-pagination-jump-next span {
   display: inline-block;
   min-width: 44px;
   height: 44px;
@@ -187,6 +195,8 @@
 }
 
 .rc-pagination-jump-prev button::after,
-.rc-pagination-jump-next button::after {
+.rc-pagination-jump-next button::after,
+.rc-pagination-jump-prev span::after,
+.rc-pagination-jump-next span::after {
   content: '....';
 }

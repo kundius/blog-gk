@@ -18,6 +18,7 @@ export async function generateMetadata ({ params }: { params: Promise<SearchRout
 
   return {
     title: `Поиск «${decoded || '...'}»`,
+    robots: { index: false },
     alternates: {
       canonical: `${CLIENT_URL}/search/${decoded}`
     }

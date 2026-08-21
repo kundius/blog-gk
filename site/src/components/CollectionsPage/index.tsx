@@ -68,7 +68,7 @@ export function CollectionsPage() {
         )}
 
         {(collectionsResult?.data?.length || 0) > 0 && (
-          <div className="grid grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-2">
             {collectionsResult?.data?.map((collection) => (
               <Card
                 key={collection.alias}

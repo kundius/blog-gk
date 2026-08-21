@@ -1,7 +1,7 @@
-import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CategoryPage } from './_components/CategoryPage'
+import { CATEGORY_PAGE_SIZE } from './_components/CategoryPage/api'
 import { categoryByAlias, listCategories } from '@app/api/categories'
 import { listArticles } from '@app/api/articles'
 import { CLIENT_URL } from '@app/utils/config'
@@ -58,7 +58,7 @@ export default async function CategoryRoute({
   const [categoryKey, categoryFetcher] = categoryByAlias(category)
   const [articlesKey, articlesFetcher] = listArticles({
     categories: [category],
-    limit: 12,
+    limit: CATEGORY_PAGE_SIZE,
     page: 1
   })
 
@@ -73,9 +73,7 @@ export default async function CategoryRoute({
 
   return (
     <SWRPreload preloadData={preloadData}>
-      <Suspense>
-        <CategoryPage alias={category} />
-      </Suspense>
+      <CategoryPage alias={category} page={1} />
     </SWRPreload>
   )
 }

@@ -70,10 +70,14 @@ export function HomePage() {
             <div className="grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-2">
               {!collections
                 ? Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="animate-pulse overflow-hidden rounded-2xl border bg-muted">
-                      <div className="aspect-[5/6] bg-muted" />
-                      <div className="space-y-3 p-5">
-                        <div className="h-4 w-2/3 rounded-full bg-muted" />
+                    <div
+                      key={i}
+                      className="flex animate-pulse items-center gap-3 overflow-hidden rounded-2xl border bg-card sm:gap-5"
+                    >
+                      <div className="aspect-square w-24 shrink-0 bg-muted sm:w-36" />
+                      <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 py-3 pr-4 sm:py-4 sm:pr-5">
+                        <div className="h-4 w-2/3 rounded-full bg-muted sm:h-5" />
+                        <div className="h-3 w-1/3 rounded-full bg-muted" />
                       </div>
                     </div>
                   ))

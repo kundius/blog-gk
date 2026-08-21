@@ -1,19 +1,16 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import useSWR from 'swr'
 import Link from 'next/link'
-import { useQueryState, parseAsInteger } from 'nuqs'
 
-import { Pagination } from '@components/Pagination'
+import { CategoryPagination } from '@components/CategoryPagination'
 import { RecipeCard } from '@components/RecipeCard'
 import { Container } from '@components/Container'
 import { CoverImage } from '@components/CoverImage'
 import { CategoryCollage } from '@components/CategoryCollage'
-import { Spinner } from '@components/Spinner'
 import { ChefHat } from 'lucide-react'
 import { pluralRecipes } from '@app/lib/plural'
 import { fileUrl } from '@app/api/images'
-import { useScrollOnPageChange } from '@app/lib/hooks/useScrollOnPageChange'
 import { breadcrumbCategories } from '@app/lib/breadcrumbs'
 import type { ArticleListItem } from '@app/api/types'
 
@@ -21,11 +18,11 @@ import * as api from './api'
 
 interface CategoryPageProps {
   alias: string
+  page: number
 }
 
-export function CategoryPage({ alias }: CategoryPageProps) {
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
-  const limit = 12
+export function CategoryPage({ alias, page }: CategoryPageProps) {
+  const limit = api.CATEGORY_PAGE_SIZE
 
   const [keyCategory, fetcherCategory] = api.getCategory({ alias })
   const { data: categoryResult } = useSWR<api.GetCategoryData>(
@@ -33,11 +30,14 @@ export function CategoryPage({ alias }: CategoryPageProps) {
     fetcherCategory
   )
 
-  const [keyArticles, fetcherArticles] = api.getArticles({ alias, limit, page })
-  const { data: articlesResult, isValidating } = useSWR<api.GetArticlesData>(
+  const [keyArticles, fetcherArticles] = api.getArticles({
+    alias,
+    limit,
+    page
+  })
+  const { data: articlesResult } = useSWR<api.GetArticlesData>(
     keyArticles,
-    fetcherArticles,
-    { keepPreviousData: true }
+    fetcherArticles
   )
 
   const category = categoryResult?.data
@@ -45,28 +45,6 @@ export function CategoryPage({ alias }: CategoryPageProps) {
     category?.children?.filter((child) => child !== undefined) ?? []
   const articles = articlesResult?.data ?? []
   const total = articlesResult?.meta?.total ?? 0
-  const loaded = articlesResult !== undefined
-  const hasContent = (articlesResult?.data?.length ?? 0) > 0
-
-  const didMount = useRef(false)
-  const prevPageRef = useRef(page)
-  const [hasNavigated, setHasNavigated] = useState(false)
-
-  useEffect(() => {
-    if (!didMount.current) {
-      didMount.current = true
-      prevPageRef.current = page
-      return
-    }
-    if (prevPageRef.current !== page) {
-      prevPageRef.current = page
-      setHasNavigated(true)
-    }
-  }, [page])
-
-  const loadingTransition = hasNavigated && isValidating && loaded
-
-  const listRef = useScrollOnPageChange({ page, loaded, hasContent })
 
   return (
     <Container className="mt-12 mb-16 md:mt-16 md:mb-24">
@@ -123,10 +101,10 @@ export function CategoryPage({ alias }: CategoryPageProps) {
             </nav>
 
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-stone-800 md:text-5xl lg:text-6xl dark:text-stone-100">
-              {category.name}
+              {page > 1 ? `${category.name} — страница ${page}` : category.name}
             </h1>
 
-            {category.content && (
+            {category.content && page === 1 && (
               <p className="mt-5 max-w-[750px] text-base leading-relaxed text-stone-500 dark:text-stone-400 md:text-lg">
                 {category.content}
               </p>
@@ -134,7 +112,7 @@ export function CategoryPage({ alias }: CategoryPageProps) {
           </header>
         )}
 
-        {children.length > 0 && (
+        {children.length > 0 && page === 1 && (
           <section className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
             {children.map((child, index) => (
               <Link
@@ -193,30 +171,19 @@ export function CategoryPage({ alias }: CategoryPageProps) {
         )}
 
         {total > 0 && (
-          <section
-            ref={listRef}
-            style={{ scrollMarginTop: 96 }}
-            className="relative flex flex-col gap-10"
-          >
-            {loadingTransition && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/60 backdrop-blur-sm">
-                <Spinner className="h-60 w-60 text-[#d36d6d]" />
-              </div>
-            )}
+          <section className="flex flex-col gap-10">
             <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
               {articles.map((article) => (
                 <RecipeCard key={article.id} article={article} />
               ))}
             </div>
 
-            {total > limit && (
-              <Pagination
-                current={page}
-                total={total}
-                pageSize={limit}
-                onChange={(p) => void setPage(p)}
-              />
-            )}
+            <CategoryPagination
+              alias={alias}
+              current={page}
+              total={total}
+              pageSize={limit}
+            />
           </section>
         )}
       </div>
