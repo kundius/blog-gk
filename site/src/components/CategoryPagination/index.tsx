@@ -67,7 +67,7 @@ export function CategoryPagination({
         if (item.type === 'jump-prev' || item.type === 'jump-next') {
           return (
             <li key={item.type} className={`rc-pagination-${item.type}`}>
-              <span>••••</span>
+              <span></span>
             </li>
           )
         }
