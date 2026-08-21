@@ -15,7 +15,7 @@ export interface CategoryPageParams {
   category: string
 }
 
-export async function generateStaticParams () {
+export async function generateStaticParams() {
   const [key, fetcher] = listCategories({ limit: 1000 })
   const result = await fetcher(key)
   return (result.data || []).map((category: { alias: string }) => ({
@@ -23,7 +23,11 @@ export async function generateStaticParams () {
   }))
 }
 
-export async function generateMetadata ({ params }: { params: Promise<CategoryPageParams> }): Promise<Metadata> {
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<CategoryPageParams>
+}): Promise<Metadata> {
   const { category } = await params
   const [categoryKey, categoryFetcher] = categoryByAlias(category)
   const result = await categoryFetcher(categoryKey)
@@ -44,7 +48,11 @@ export async function generateMetadata ({ params }: { params: Promise<CategoryPa
   }
 }
 
-export default async function CategoryRoute ({ params }: { params: Promise<CategoryPageParams> }) {
+export default async function CategoryRoute({
+  params
+}: {
+  params: Promise<CategoryPageParams>
+}) {
   const { category } = await params
 
   const [categoryKey, categoryFetcher] = categoryByAlias(category)
@@ -64,10 +72,10 @@ export default async function CategoryRoute ({ params }: { params: Promise<Categ
   }
 
   return (
-    <Suspense>
-      <SWRPreload preloadData={preloadData}>
+    <SWRPreload preloadData={preloadData}>
+      <Suspense>
         <CategoryPage alias={category} />
-      </SWRPreload>
-    </Suspense>
+      </Suspense>
+    </SWRPreload>
   )
 }
