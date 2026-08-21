@@ -12,6 +12,7 @@ import type { CategoryWithChildren } from '@app/api/types'
 import { METRIKA_ID } from '@app/utils/config'
 
 import * as styles from './styles.module.css'
+import Script from 'next/script'
 
 export const Footer = () => {
   const [key, fetcher] = categoriesTree()
@@ -97,6 +98,12 @@ export const Footer = () => {
           </div>
           <div>
             {METRIKA_ID !== null && <YandexMetrica id={METRIKA_ID} />}
+            <Script
+              id="geckochat"
+              strategy="afterInteractive"
+              src="https://geckochat.ru/widget.js"
+              async
+            />
           </div>
           <a
             href="http://domenart-studio.ru/"
