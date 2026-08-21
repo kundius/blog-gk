@@ -1,5 +1,7 @@
 import { HomePage } from './_components/HomePage'
 import { listArticles } from '@app/api/articles'
+import { listCollections } from '@app/api/collections'
+import { categoriesTree } from '@app/api/categories'
 
 import { SWRPreload } from '../swr-preload'
 
@@ -11,31 +13,54 @@ export const metadata = {
   keywords: 'блог кулинария рецепты кулинарные первые вторые блюда домашняя выпечка храмы церкви истории статьи путешествия по святым местам Галина Кундиус'
 }
 
+function seasonRange(): { from: string; to: string } {
+  const now = new Date()
+  const month = now.getMonth()
+  const year = now.getFullYear()
+  let start: Date
+  if (month >= 11 || month <= 1) {
+    start = new Date(month >= 11 ? year : year - 1, 11, 1)
+  } else if (month <= 4) {
+    start = new Date(year, 2, 1)
+  } else if (month <= 7) {
+    start = new Date(year, 5, 1)
+  } else {
+    start = new Date(year, 8, 1)
+  }
+  return { from: start.toISOString(), to: now.toISOString() }
+}
+
 export default async function HomePageRoute () {
-  const [keyBaking, fetcherBaking] = listArticles({
-    categories: ['baking'],
-    limit: 6
+  const period = seasonRange()
+
+  const [keySeason, fetcherSeason] = listArticles({
+    limit: 4,
+    sort: '-hitsCount',
+    dateFrom: period.from,
+    dateTo: period.to
   })
 
-  const [keyEntrees, fetcherEntrees] = listArticles({
-    categories: ['entrees'],
-    limit: 6
+  const [keyFresh, fetcherFresh] = listArticles({
+    limit: 4,
+    sort: '-dateCreated'
   })
 
-  const [keyDesserts, fetcherDesserts] = listArticles({
-    categories: ['drinks'],
-    limit: 6
+  const [keyCollections, fetcherCollections] = listCollections({
+    featured: true
   })
+
+  const [keyTree, fetcherTree] = categoriesTree()
 
   const preloadData = {
-    [keyBaking]: await fetcherBaking(keyBaking),
-    [keyEntrees]: await fetcherEntrees(keyEntrees),
-    [keyDesserts]: await fetcherDesserts(keyDesserts)
+    [keySeason]: await fetcherSeason(keySeason),
+    [keyFresh]: await fetcherFresh(keyFresh),
+    [keyCollections]: await fetcherCollections(keyCollections),
+    [keyTree]: await fetcherTree(keyTree)
   }
 
   return (
     <SWRPreload preloadData={preloadData}>
-      <HomePage />
+      <HomePage period={period} />
     </SWRPreload>
   )
 }

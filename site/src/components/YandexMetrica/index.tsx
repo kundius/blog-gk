@@ -1,16 +1,71 @@
-import React from 'react'
+'use client'
+
+import React, { useEffect } from 'react'
+import Script from 'next/script'
+import { usePathname } from 'next/navigation'
 
 export interface YandexMetricaProps {
   id: number
 }
 
-export const YandexMetrica = ({
-  id
-}: YandexMetricaProps) => {
+declare global {
+  interface Window {
+    ym?: (id: number, action: string, payload?: unknown) => void
+  }
+}
+
+const CounterInit = ({ id }: YandexMetricaProps) => (
+  <Script id="yandex-metrika" strategy="afterInteractive">
+    {`
+      (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+      ym(${id}, "init", {
+        defer: true,
+        trackHash: true,
+        clickmap: true,
+        accurateTrackBounce: true,
+        trackLinks: true,
+        referrer: document.referrer,
+        url: location.href
+      });
+    `}
+  </Script>
+)
+
+const HitTracker = ({ id }: YandexMetricaProps) => {
+  const pathname = usePathname()
+
+  useEffect(() => {
+    window.ym?.(id, 'hit', window.location.href)
+  }, [id, pathname])
+
+  return null
+}
+
+export const YandexMetrica = ({ id }: YandexMetricaProps) => {
   return (
     <>
+      <CounterInit id={id} />
+      <HitTracker id={id} />
+      <noscript>
+        <div>
+          <img
+            src={`https://mc.yandex.ru/watch/${id}`}
+            style={{
+              position: 'absolute',
+              left: '-9999px'
+            }}
+            alt=""
+          />
+        </div>
+      </noscript>
       <a
-        href={`https://metrika.yandex.ru/stat/?id=${id}&amp;from=informer`}
+        href={`https://metrika.yandex.ru/stat/?id=${id}&from=informer`}
         target="_blank"
         rel="nofollow"
       >
@@ -28,19 +83,6 @@ export const YandexMetrica = ({
           data-lang="ru"
         />
       </a>
-      <script dangerouslySetInnerHTML={{ __html: `
-        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-        ym(${id}, "init", {
-              clickmap:true,
-              trackLinks:true,
-              accurateTrackBounce:true,
-              webvisor:true,
-              trackHash:true
-        });
-      ` }} />
     </>
   )
 }

@@ -64,18 +64,8 @@ export function CulinarySections() {
         </div>
 
         <div className="relative z-10">
-          {!data ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="animate-pulse aspect-[4/3] overflow-hidden rounded-[20px] bg-muted"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-              {sections.map((section, index) => (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+            {sections.map((section, index) => (
                 <Link
                   key={section.id}
                   href={`/${section.alias}`}
@@ -128,8 +118,7 @@ export function CulinarySections() {
                   </div>
                 </Link>
               ))}
-            </div>
-          )}
+          </div>
         </div>
       </Container>
     </section>

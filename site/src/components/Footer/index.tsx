@@ -9,6 +9,7 @@ import { FooterMenu } from '@components/FooterMenu'
 
 import { categoriesTree } from '@app/api/categories'
 import type { CategoryWithChildren } from '@app/api/types'
+import { METRIKA_ID } from '@app/utils/config'
 
 import * as styles from './styles.module.css'
 
@@ -95,7 +96,7 @@ export const Footer = () => {
             Копирование материалов сайта возможно только с&nbsp;указанием активной действующей ссылки на&nbsp;источник.
           </div>
           <div>
-            {/*<YandexMetrica id={35935260} />*/}
+            {METRIKA_ID !== null && <YandexMetrica id={METRIKA_ID} />}
           </div>
           <a
             href="http://domenart-studio.ru/"
