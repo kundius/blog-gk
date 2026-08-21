@@ -43,14 +43,16 @@ cp .env.example .env   # если прод тоже на docker
 - `backend/.env` — для docker укажи `DATABASE_URL` с хостом `postgres` (имя сервиса):
   ```
   DATABASE_URL=postgresql://blog_gk_user:blog_gk_password@postgres:5432/blog_gk_db
+  PORT=4000
   ```
-  (для локального запуска вне docker — хост `localhost`)
+  (для локального запуска вне docker — хост `localhost`; на проде в ecosystem.config.js подменяется на 5022)
 - `site/.env` — для docker укажи адреса на сервис `backend`:
   ```
-  API_URL=http://backend:4000
-  GRAPHQL_URL=http://backend:4000/graphql
+  NEXT_PUBLIC_API_URL=http://backend:4000
+  NEXT_PUBLIC_CLIENT_URL=http://localhost:5021
+  IMAGE_DOMAINS=localhost
   ```
-  (для локального запуска вне docker — `localhost`)
+  (для локального запуска вне docker — `localhost`; на проде порт бэкенда 5022, а переменные требуют префикс `NEXT_PUBLIC_`)
 - корневой `.env` — учётные данные postgres/pgadmin:
   ```sh
   cp .env.example .env
@@ -144,7 +146,7 @@ cp .env.example .env
 # заполни .env:
 #   DATABASE_URL  → postgresql://blog_gk_user:ПАРОЛЬ@localhost:5432/blog_gk_db
 #                   (пароль со спецсимволами URL-кодировать: @ → %40, # → %23, % → %25, / → %2F, ? → %3F)
-#   PORT          → 5022
+#   PORT          → 5022        # в примере стоит 4000 (dev), на проде поменяй
 #   CORS_ORIGIN   → https://blog-gk.ru (или * )
 #   S3_*          → заполни позже
 
@@ -166,11 +168,9 @@ npm ci
 cp .env.example .env
 
 # заполни .env:
-#   CLIENT_URL    → https://blog-gk.ru
-#   API_URL       → https://api.blog-gk.ru (или https://blog-gk.ru/api при одном домене)
-#   GRAPHQL_URL   → оставь для совместимости
-#   SECRET        → случайная строка
-#   IMAGE_DOMAINS → blog-gk.ru,api.blog-gk.ru
+#   NEXT_PUBLIC_CLIENT_URL → https://blog-gk.ru
+#   NEXT_PUBLIC_API_URL    → https://api.blog-gk.ru (или https://blog-gk.ru/api при одном домене)
+#   IMAGE_DOMAINS          → blog-gk.ru,api.blog-gk.ru
 
 npm run build
 ```
