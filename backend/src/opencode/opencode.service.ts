@@ -55,6 +55,7 @@ export class OpencodeService {
   async run(prompt: string): Promise<string> {
     const errors: string[] = [];
     for (const model of this.models) {
+      this.logger.log(`opencode запрос: ${model.providerID}/${model.modelID}`);
       try {
         return await this.runWithModel(model, prompt);
       } catch (err) {
