@@ -6,6 +6,11 @@ interface WordstatItem {
   count: string;
 }
 
+export interface WordstatPhrase {
+  phrase: string;
+  count: number;
+}
+
 interface WordstatResponse {
   totalCount?: string;
   results?: WordstatItem[];
@@ -27,7 +32,7 @@ export class WordstatService {
       'https://searchapi.api.cloud.yandex.net/v2/wordstat/topRequests';
   }
 
-  async getTopPhrases(phrase: string, numPhrases = 30): Promise<string[]> {
+  async getTopPhrases(phrase: string, numPhrases = 30): Promise<WordstatPhrase[]> {
     if (!this.apiKey) {
       throw new Error('AI_STUDIO_API_KEY is not configured');
     }
@@ -62,6 +67,9 @@ export class WordstatService {
     }
 
     const data = (await res.json()) as WordstatResponse;
-    return (data.results ?? []).map((item) => item.phrase);
+    return (data.results ?? []).map((item) => ({
+      phrase: item.phrase,
+      count: Number(item.count) || 0,
+    }));
   }
 }

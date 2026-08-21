@@ -174,7 +174,7 @@ export function RichTextEditor({
 
   return (
     <div className="rounded-md border bg-background">
-      <div className="sticky top-0 z-10 rounded-t-md border-b bg-muted p-1">
+      <div className="sticky top-0 z-20 rounded-t-md border-b bg-muted p-1">
         <div className="flex flex-wrap items-center gap-0.5">
           <ToolbarButton
             onClick={() => editor.chain().focus().undo().run()}

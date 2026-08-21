@@ -14,6 +14,8 @@ import {
   Images,
   Copy,
   Check,
+  Calculator,
+  Sparkles,
 } from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
 import type {
@@ -100,7 +102,9 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const [saving, setSaving] = useState(false)
   const [seoLoading, setSeoLoading] = useState(false)
   const [altsLoading, setAltsLoading] = useState(false)
-  const [keywords, setKeywords] = useState<string[]>([])
+  const [nutritionLoading, setNutritionLoading] = useState(false)
+  const [relatedLoading, setRelatedLoading] = useState(false)
+  const [keywords, setKeywords] = useState<{ key: string; freq?: number }[]>([])
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
   const [picker, setPicker] = useState<'thumbnail' | 'related' | null>(null)
@@ -155,7 +159,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
     setSeoLoading(true)
     try {
       const result = await api.post<{
-        keys?: string[]
+        keys?: { key: string; freq?: number }[]
         seo_keywords?: string[]
         seo_title?: string
         seo_description?: string
@@ -164,7 +168,22 @@ export function ArticleForm({ article }: ArticleFormProps) {
         excerpt,
         content,
       })
-      setKeywords([...new Set(result.keys ?? [])])
+      const normalized = ((result.keys ?? []) as Array<{
+        key?: unknown
+        phrase?: unknown
+        freq?: unknown
+      }>)
+        .map((item) => ({
+          key:
+            typeof item.key === 'string'
+              ? item.key.trim()
+              : typeof item.phrase === 'string'
+                ? item.phrase.trim()
+                : '',
+          freq: typeof item.freq === 'number' ? item.freq : undefined,
+        }))
+        .filter((item) => item.key.length > 0)
+      setKeywords([...new Map(normalized.map((k) => [k.key, k])).values()])
       setSeo((prev) => ({
         ...prev,
         seoTitle: result.seo_title ?? prev.seoTitle ?? '',
@@ -209,6 +228,60 @@ export function ArticleForm({ article }: ArticleFormProps) {
       toast.error(err instanceof Error ? err.message : 'Ошибка заполнения описаний')
     } finally {
       setAltsLoading(false)
+    }
+  }
+
+  const handleCalcNutrition = async () => {
+    if (ingredients.length === 0) {
+      toast.error('Сначала добавьте ингредиенты')
+      return
+    }
+    setNutritionLoading(true)
+    try {
+      const result = await api.post<{
+        calories?: number
+        protein?: number
+        fat?: number
+        carbs?: number
+      }>('/opencode/nutrition/calculate', {
+        ingredients,
+      })
+      if (result.calories != null)
+        setCalories(String(Number(result.calories.toFixed(1))))
+      if (result.protein != null)
+        setProtein(String(Number(result.protein.toFixed(1))))
+      if (result.fat != null) setFat(String(Number(result.fat.toFixed(1))))
+      if (result.carbs != null)
+        setCarbs(String(Number(result.carbs.toFixed(1))))
+      toast.success('КБЖУ рассчитаны (на 100 г)')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Ошибка расчёта КБЖУ')
+    } finally {
+      setNutritionLoading(false)
+    }
+  }
+
+  const handlePickRelated = async () => {
+    if (!categoryId) {
+      toast.error('Сначала выберите категорию')
+      return
+    }
+    setRelatedLoading(true)
+    try {
+      const result = await api.post<{ articles?: ArticleRecord[] }>(
+        '/opencode/articles/related',
+        {
+          title: stripSeoTags(name),
+          categoryId,
+          excludeId: article?.id,
+        },
+      )
+      setRelated((result.articles ?? []).slice(0, 4))
+      toast.success('Похожие статьи подобраны')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Ошибка подбора похожих')
+    } finally {
+      setRelatedLoading(false)
     }
   }
 
@@ -370,7 +443,25 @@ export function ArticleForm({ article }: ArticleFormProps) {
           </div>
       </FieldGroup>
 
-      <FieldGroup title="КБЖУ">
+      <FieldGroup
+        title="КБЖУ"
+        titleAction={
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleCalcNutrition}
+            disabled={nutritionLoading}
+            className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-indigo-500 text-white hover:text-white hover:opacity-90"
+          >
+            {nutritionLoading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Calculator className="size-4" />
+            )}
+            Посчитать КБЖУ
+          </Button>
+        }
+      >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
               <Label htmlFor="calories">Ккал</Label>
@@ -415,7 +506,26 @@ export function ArticleForm({ article }: ArticleFormProps) {
         <IngredientsEditor items={ingredients} onChange={setIngredients} />
       </FieldGroup>
 
-      <FieldGroup title="Похожие статьи" contentClassName="space-y-2">
+      <FieldGroup
+        title="Похожие статьи"
+        contentClassName="space-y-2"
+        titleAction={
+          <Button
+            type="button"
+            size="sm"
+            onClick={handlePickRelated}
+            disabled={relatedLoading}
+            className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-indigo-500 text-white hover:text-white hover:opacity-90"
+          >
+            {relatedLoading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Sparkles className="size-4" />
+            )}
+            Подобрать похожие
+          </Button>
+        }
+      >
           {related.map((articleItem, index) => (
             <div
               key={articleItem.id}
@@ -509,23 +619,33 @@ export function ArticleForm({ article }: ArticleFormProps) {
         }
       >
         {keywords.length > 0 && (
-          <div className="mb-4 flex flex-wrap gap-2">
-            {keywords.map((key) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => void copyKeyword(key)}
-                title="Скопировать"
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border bg-muted/50 px-3.5 py-1.5 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-400 hover:bg-gradient-to-r hover:from-fuchsia-500/10 hover:via-violet-500/10 hover:to-indigo-500/10 hover:shadow-md active:scale-95"
-              >
-                {copiedKey === key ? (
-                  <Check className="size-4 text-green-600" />
-                ) : (
-                  <Copy className="size-3.5 text-muted-foreground" />
-                )}
-                {key}
-              </button>
-            ))}
+          <div className="mb-4">
+            <p className="mb-2 text-xs text-muted-foreground">
+              Ключевые слова из Вордстата — нажмите, чтобы скопировать
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {keywords.map(({ key, freq }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => void copyKeyword(key)}
+                  title="Скопировать"
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border bg-muted/50 px-3.5 py-1.5 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-400 hover:bg-gradient-to-r hover:from-fuchsia-500/10 hover:via-violet-500/10 hover:to-indigo-500/10 hover:shadow-md active:scale-95"
+                >
+                  {copiedKey === key ? (
+                    <Check className="size-4 text-green-600" />
+                  ) : (
+                    <Copy className="size-3.5 text-muted-foreground" />
+                  )}
+                  {key}
+                  {freq != null && freq > 0 && (
+                    <span className="text-xs font-normal text-muted-foreground">
+                      ({freq.toLocaleString('ru-RU')})
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         <SeoFields values={seo} onChange={setSeo} />

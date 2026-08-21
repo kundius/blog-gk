@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OpencodeService } from './opencode.service';
 import { WordstatService } from './wordstat.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface ArticleTextInput {
   title: string;
@@ -8,8 +9,13 @@ export interface ArticleTextInput {
   content: string;
 }
 
+export interface SeoKey {
+  key: string;
+  freq?: number;
+}
+
 export interface SeoOptimizeResult {
-  keys: string[];
+  keys: SeoKey[];
   seo_keywords: string[];
   seo_title: string;
   seo_description: string;
@@ -19,11 +25,37 @@ export interface AltsResult {
   content: string;
 }
 
+export interface NutritionResult {
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+}
+
+export interface NutritionInput {
+  ingredients: { name: string; amount?: string }[];
+}
+
+export interface RelatedArticleSuggestion {
+  id: string;
+  name: string;
+  alias: string | null;
+  category: { id: string; name: string; alias: string } | null;
+  thumbnail: { id: string; blurhash: string | null } | null;
+}
+
+export interface RelatedPickInput {
+  title: string;
+  categoryId: string;
+  excludeId?: string;
+}
+
 @Injectable()
 export class SeoService {
   constructor(
     private readonly opencode: OpencodeService,
     private readonly wordstat: WordstatService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async optimizeSeo(input: ArticleTextInput): Promise<SeoOptimizeResult> {
@@ -36,11 +68,59 @@ export class SeoService {
       `Название статьи (H1): ${input.title}`,
       `Анонс статьи: ${input.excerpt ?? ''}`,
       `Единый текст рецепта (HTML): ${input.content}`,
-      `Сырой список ключевых слов из API:\n${phrases.join('\n')}`,
+      `Сырой список ключевых слов из API (формат «фраза — частотность»):\n${phrases
+        .map((p) => `${p.phrase} — ${p.count}`)
+        .join('\n')}`,
     ].join('\n');
 
     const raw = await this.opencode.run(prompt);
-    return this.parseJson<SeoOptimizeResult>(raw);
+    const parsed = this.parseJson<{
+      keys?: Array<string | { key?: unknown; freq?: unknown }>;
+      seo_keywords?: unknown;
+      seo_title?: unknown;
+      seo_description?: unknown;
+    }>(raw);
+
+    const freqMap = new Map(
+      phrases.map((p) => [p.phrase.trim().toLowerCase(), p.count]),
+    );
+    const seen = new Set<string>();
+    const keys = (parsed.keys ?? [])
+      .map((item): { key: string; freq?: number } | null => {
+        const key =
+          typeof item === 'string'
+            ? item.trim()
+            : typeof item?.key === 'string'
+              ? item.key.trim()
+              : '';
+        if (!key) return null;
+        const directFreq =
+          typeof item === 'object' && typeof item.freq === 'number'
+            ? item.freq
+            : undefined;
+        return {
+          key,
+          freq: directFreq ?? freqMap.get(key.toLowerCase()),
+        };
+      })
+      .filter((k): k is { key: string; freq?: number } => {
+        if (!k || seen.has(k.key)) return false;
+        seen.add(k.key);
+        return true;
+      });
+
+    return {
+      keys,
+      seo_keywords: Array.isArray(parsed.seo_keywords)
+        ? parsed.seo_keywords.filter((k): k is string => typeof k === 'string')
+        : [],
+      seo_title:
+        typeof parsed.seo_title === 'string' ? parsed.seo_title : '',
+      seo_description:
+        typeof parsed.seo_description === 'string'
+          ? parsed.seo_description
+          : '',
+    };
   }
 
   async fillAlts(input: ArticleTextInput): Promise<AltsResult> {
@@ -58,6 +138,122 @@ export class SeoService {
     const raw = await this.opencode.run(prompt);
     const parsed = this.parseJson<{ full_text: string }>(raw);
     return { content: this.restoreImageSrc(input.content, parsed.full_text) };
+  }
+
+  async calculateNutrition(input: NutritionInput): Promise<NutritionResult> {
+    const list = input.ingredients
+      .map((i) => `- ${i.name}${i.amount ? ` — ${i.amount}` : ''}`)
+      .join('\n');
+    const prompt = [
+      'Выполни навык `nutrition-calculate` и строго следуй его инструкциям.',
+      'Входные данные:',
+      `Список ингредиентов с количествами:\n${list}`,
+    ].join('\n');
+
+    const attempts = await Promise.allSettled(
+      Array.from({ length: 3 }, () =>
+        this.opencode
+          .run(prompt)
+          .then((raw) => this.parseJson<NutritionResult>(raw)),
+      ),
+    );
+
+    const valid = attempts
+      .map((r) => (r.status === 'fulfilled' ? r.value : null))
+      .filter(
+        (r): r is NutritionResult =>
+          r != null &&
+          [r.calories, r.protein, r.fat, r.carbs].every(
+            (v) => typeof v === 'number' && Number.isFinite(v),
+          ),
+      );
+
+    if (!valid.length) {
+      const failed = attempts.find(
+        (a): a is PromiseRejectedResult => a.status === 'rejected',
+      );
+      throw new Error(
+        failed ? String(failed.reason) : 'Не удалось рассчитать КБЖУ',
+      );
+    }
+
+    const pick = (get: (r: NutritionResult) => number) =>
+      Number(this.median(valid.map(get)).toFixed(1));
+
+    return {
+      calories: pick((r) => r.calories),
+      protein: pick((r) => r.protein),
+      fat: pick((r) => r.fat),
+      carbs: pick((r) => r.carbs),
+    };
+  }
+
+  private median(values: number[]): number {
+    const sorted = [...values].sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 !== 0
+      ? sorted[mid]
+      : (sorted[mid - 1] + sorted[mid]) / 2;
+  }
+
+  async pickRelated(
+    input: RelatedPickInput,
+  ): Promise<{ articles: RelatedArticleSuggestion[] }> {
+    const candidates = await this.prisma.article.findMany({
+      where: {
+        categoryId: input.categoryId,
+        status: 'published',
+        ...(input.excludeId ? { id: { not: input.excludeId } } : {}),
+      },
+      select: { id: true, name: true },
+      orderBy: { dateUpdated: 'desc' },
+      take: 50,
+    });
+    if (!candidates.length) return { articles: [] };
+
+    const list = candidates.map((c, i) => `${i + 1}. ${c.name}`).join('\n');
+    const prompt = [
+      'Выполни навык `related-articles-pick` и строго следуй его инструкциям.',
+      'Входные данные:',
+      `Заголовок целевой статьи: ${input.title}`,
+      `Пронумерованный список статей-кандидатов (номер. заголовок):\n${list}`,
+    ].join('\n');
+
+    const raw = await this.opencode.run(prompt);
+    const parsed = this.parseJson<{ numbers?: unknown }>(raw);
+    const numbers = Array.isArray(parsed.numbers)
+      ? parsed.numbers.filter(
+          (n): n is number =>
+            typeof n === 'number' &&
+            Number.isInteger(n) &&
+            n >= 1 &&
+            n <= candidates.length,
+        )
+      : [];
+
+    const seen = new Set<string>();
+    const pickedIds = numbers
+      .map((n) => candidates[n - 1].id)
+      .filter((id) => {
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      })
+      .slice(0, 4);
+    if (!pickedIds.length) return { articles: [] };
+
+    const rows = await this.prisma.article.findMany({
+      where: { id: { in: pickedIds } },
+      include: { category: true, thumbnail: true },
+    });
+    const byId = new Map(rows.map((row) => [row.id, row]));
+    const articles = pickedIds
+      .map((id) => byId.get(id))
+      .filter(
+        (row): row is (typeof rows)[number] => row !== undefined,
+      ) as unknown as RelatedArticleSuggestion[];
+
+    return { articles };
   }
 
   private async extractBasePhrase(input: ArticleTextInput): Promise<string> {

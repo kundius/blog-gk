@@ -2,6 +2,8 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { OpencodeService } from './opencode.service';
 import { SeoService } from './seo.service';
 import { ArticleContentDto } from './dto/article-content.dto';
+import { NutritionCalcDto } from './dto/nutrition-calc.dto';
+import { RelatedPickDto } from './dto/related-pick.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 
@@ -31,5 +33,17 @@ export class OpencodeController {
   @Post('content/alts')
   async fillAlts(@Body() dto: ArticleContentDto) {
     return { data: await this.seoService.fillAlts(dto) };
+  }
+
+  @Roles('admin')
+  @Post('nutrition/calculate')
+  async calculateNutrition(@Body() dto: NutritionCalcDto) {
+    return { data: await this.seoService.calculateNutrition(dto) };
+  }
+
+  @Roles('admin')
+  @Post('articles/related')
+  async pickRelated(@Body() dto: RelatedPickDto) {
+    return { data: await this.seoService.pickRelated(dto) };
   }
 }

@@ -286,6 +286,16 @@
   padding: 0 0.5rem;
 }
 
+@media (max-width: 640px) {
+  .admin-editor .block-toolbar__add {
+    padding: 0 0.375rem;
+  }
+
+  .admin-editor .block-toolbar__add span {
+    display: none;
+  }
+}
+
 .admin-editor .block-toolbar__delete,
 .admin-editor .block-toolbar__drag {
   width: 2rem;
