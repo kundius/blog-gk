@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CategoryPage } from './_components/CategoryPage'
@@ -63,8 +64,10 @@ export default async function CategoryRoute ({ params }: { params: Promise<Categ
   }
 
   return (
-    <SWRPreload preloadData={preloadData}>
-      <CategoryPage alias={category} />
-    </SWRPreload>
+    <Suspense>
+      <SWRPreload preloadData={preloadData}>
+        <CategoryPage alias={category} />
+      </SWRPreload>
+    </Suspense>
   )
 }
