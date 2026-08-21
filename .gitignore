@@ -5,12 +5,8 @@ dist/
 *.tsbuildinfo
 .DS_Store
 __pycache__/
-tools/convert_recipes/transformed.json
 *.log
 landing/public/widget/
 *.pgsql
 *.tar.gz
-tools/migrate/*.sql
 /*.sql
-tools/convert_recipes/backups/*.sql
-tools/kbju/backups/*.sql

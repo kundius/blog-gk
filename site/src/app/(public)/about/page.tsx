@@ -3,6 +3,7 @@ import { ContentPage } from '@components/ContentPage'
 
 export const metadata: Metadata = {
   title: 'Обо мне',
+  description: 'Блог Галины Кундиус — кулинарные рецепты, истории из жизни, советы по похудению и здоровому образу жизни.',
 }
 
 const content = `<p><img src="/files/82495297-fb46-43bb-89cc-cb208c1d2503..jpg" alt="Foto Galina" width="1260" height="1680" /></p>
@@ -27,14 +28,14 @@ const content = `<p><img src="/files/82495297-fb46-43bb-89cc-cb208c1d2503..jpg" 
 <p>Детей станем меньше доставать со своим опеканием и нытьем, у них и так сейчас такой усиленный ритм жизни. Дети будут только рады за своих родителей, ведь мы им дороги и любят они нас.</p>
 <p>А для себя сделала вывод, что не нужно думать о возрасте, просто жить и радоваться жизни. Чем меньше думаем о возрасте тем лучше будем себя чувствовать. А еще хорошо бы найти интересное занятие или дело, которое будет доставлять удовольствие тогда времени на какие-то такие мысли, не будет совсем.</p>
 <p>У меня сейчас свободного времени нет и я рада этому, что могу заниматься любимым делом, просто жить, радоваться прожитому дню и благодарить Бога за это.&nbsp;</p>
-<p><img src="files/13572539 (1).jpg" alt="" width="400" />Храм Преображения Господня в г. Харькове, я посетила в ноябре 2018 году.</p>
+<p><img src="/files/13572539 (1).jpg" alt="Храм Преображения Господня в г. Харькове, ноябрь 2018" width="400" />Храм Преображения Господня в г. Харькове, я посетила в ноябре 2018 году.</p>
 <p><img src="/files/bbfabf3d-48d6-42af-b924-77530144b728..jpg" alt="Foto Galina4" width="1536" height="2048" /></p>
 <p>&nbsp;На пороге Нового 2019 года.</p>
 <p><img src="/files/47cdfdb5-fa70-46d4-8903-293a97608152..jpeg" alt="Foto Galina7" width="960" height="1280" /></p>
 <p><img src="/files/ab165ae3-80d9-4f77-86c9-390a7d5375d4..jpeg" alt="Foto Galina8" width="960" height="1280" /></p>
 <p>Лето 2019 год, село Дидовка Украина.</p>
 <p><img src="/files/16d8db69-7186-41a0-8c8c-3a3988472c8a..jpg" alt="Foto Galina3" width="768" height="768" /></p>
-<p><img src="files/galina_k (4).jpeg" alt="" width="400" /><img src="/files/bf790e94-8433-472e-bc4c-c29f7c2cfa0b..jpeg" alt="Foto Galina5" width="960" height="1280" /><img src="/files/7c76dd64-8c80-4a19-952e-463f3dbcd842..jpeg" alt="" width="400" /></p>`
+<p><img src="/files/galina_k (4).jpeg" alt="Галина Кундиус" width="400" /><img src="/files/bf790e94-8433-472e-bc4c-c29f7c2cfa0b..jpeg" alt="Foto Galina5" width="960" height="1280" /><img src="/files/7c76dd64-8c80-4a19-952e-463f3dbcd842..jpeg" alt="Галина Кундиус" width="400" /></p>`
 
 export default function AboutPage() {
   return <ContentPage page={{ name: 'Обо мне', content }} />

@@ -4,7 +4,8 @@ import { listCollections } from '@app/api/collections'
 import { SWRPreload } from '../../swr-preload'
 
 export const metadata = {
-  title: 'Подборки'
+  title: 'Подборки рецептов',
+  description: 'Подборки кулинарных рецептов Галины Кундиус по темам и категориям — салаты, первые блюда, вторые блюда, выпечка и десерты.',
 }
 
 export default async function CollectionsRoute () {

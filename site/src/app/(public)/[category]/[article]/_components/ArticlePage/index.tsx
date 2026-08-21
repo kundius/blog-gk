@@ -19,6 +19,8 @@ import * as api from './api'
 import { ArticleIngredients } from '@app/app/(public)/[category]/[article]/_components/ArticleIngredients'
 import { ArticleNutrition } from '@app/app/(public)/[category]/[article]/_components/ArticleNutrition'
 import { ArticleLayoutLeft } from '@app/app/(public)/[category]/[article]/_components/ArticleLayout/Left'
+import { RecipeSchema } from '../Schema'
+import { buildRecipeLd, buildArticleLd } from '../Schema/buildLd'
 
 interface ArticlePageProps {
   alias: string
@@ -116,6 +118,8 @@ export function ArticlePage({ alias }: ArticlePageProps) {
           <Comments threadId={data.id} threadType="articles" />
         </ArticleLayoutBottom>
       </div>
+
+      <RecipeSchema data={isRecipe ? buildRecipeLd(data) : buildArticleLd(data)} />
     </Container>
   )
 }
