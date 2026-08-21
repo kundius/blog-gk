@@ -1,3 +1,22 @@
+const { readFileSync } = require('fs');
+
+function loadEnv(path) {
+  try {
+    return Object.fromEntries(
+      readFileSync(`${__dirname}/${path}`, 'utf8')
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line && !line.startsWith('#') && line.includes('='))
+        .map((line) => {
+          const i = line.indexOf('=');
+          return [line.slice(0, i).trim(), line.slice(i + 1).trim()];
+        }),
+    );
+  } catch {
+    return {};
+  }
+}
+
 module.exports = {
   apps: [
     {
@@ -5,9 +24,9 @@ module.exports = {
       cwd: '/var/www/blog-gk/backend',
       script: 'dist/main.js',
       node_args: '--use-system-ca',
-      env_file: 'backend/.env',
       env: {
         NODE_ENV: 'production',
+        ...loadEnv('backend/.env'),
       },
     },
     {
@@ -15,9 +34,9 @@ module.exports = {
       cwd: '/var/www/blog-gk/site',
       script: 'node_modules/.bin/next',
       args: 'start -p 5021',
-      env_file: 'site/.env',
       env: {
         NODE_ENV: 'production',
+        ...loadEnv('site/.env'),
       },
     },
     {
@@ -26,9 +45,9 @@ module.exports = {
       script: 'opencode',
       args: 'serve --hostname 127.0.0.1 --port 5023',
       interpreter: 'none',
-      env_file: 'opencode/.env',
       env: {
         NODE_ENV: 'production',
+        ...loadEnv('opencode/.env'),
       },
     },
   ],
