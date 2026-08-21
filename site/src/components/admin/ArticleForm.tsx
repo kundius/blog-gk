@@ -2,7 +2,19 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, RotateCcw, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
+import {
+  Loader2,
+  Save,
+  RotateCcw,
+  Plus,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  WandSparkles,
+  Images,
+  Copy,
+  Check,
+} from 'lucide-react'
 import { api, fileStreamUrl } from '@app/lib/admin/client'
 import type {
   ArticleRecord,
@@ -86,6 +98,10 @@ export function ArticleForm({ article }: ArticleFormProps) {
 
   const [categories, setCategories] = useState<CategoryRecord[]>([])
   const [saving, setSaving] = useState(false)
+  const [seoLoading, setSeoLoading] = useState(false)
+  const [altsLoading, setAltsLoading] = useState(false)
+  const [keywords, setKeywords] = useState<string[]>([])
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
   const [picker, setPicker] = useState<'thumbnail' | 'related' | null>(null)
 
@@ -128,18 +144,86 @@ export function ArticleForm({ article }: ArticleFormProps) {
   const removeRelated = (index: number) =>
     setRelated(related.filter((_, i) => i !== index))
 
+  const stripSeoTags = (html: string): string =>
+    html.replace(/<ins\b[^>]*class="[^"]*seo-keyword[^"]*"[^>]*>([\s\S]*?)<\/ins>/gi, '$1')
+
+  const handleSeoOptimize = async () => {
+    if (!stripSeoTags(name).trim() || !content.trim()) {
+      toast.error('Заполните название и текст статьи')
+      return
+    }
+    setSeoLoading(true)
+    try {
+      const result = await api.post<{
+        keys?: string[]
+        seo_keywords?: string[]
+        seo_title?: string
+        seo_description?: string
+      }>('/opencode/seo/optimize', {
+        title: stripSeoTags(name),
+        excerpt,
+        content,
+      })
+      setKeywords([...new Set(result.keys ?? [])])
+      setSeo((prev) => ({
+        ...prev,
+        seoTitle: result.seo_title ?? prev.seoTitle ?? '',
+        seoDescription: result.seo_description ?? prev.seoDescription ?? '',
+        seoKeywords: result.seo_keywords?.length
+          ? result.seo_keywords.join(', ')
+          : prev.seoKeywords ?? '',
+      }))
+      toast.success('SEO-поля сформированы')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Ошибка SEO-оптимизации')
+    } finally {
+      setSeoLoading(false)
+    }
+  }
+
+  const copyKeyword = async (key: string) => {
+    try {
+      await navigator.clipboard.writeText(key)
+      setCopiedKey(key)
+      setTimeout(() => setCopiedKey((cur) => (cur === key ? null : cur)), 1500)
+    } catch {
+      toast.error('Не удалось скопировать')
+    }
+  }
+
+  const handleFillAlts = async () => {
+    if (!content.trim()) {
+      toast.error('Сначала заполните текст статьи')
+      return
+    }
+    setAltsLoading(true)
+    try {
+      const result = await api.post<{ content?: string }>('/opencode/content/alts', {
+        title: stripSeoTags(name),
+        excerpt,
+        content,
+      })
+      if (result.content) setContent(result.content)
+      toast.success('Описания файлов заполнены')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Ошибка заполнения описаний')
+    } finally {
+      setAltsLoading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
     try {
       const payload = {
-        name,
+        name: stripSeoTags(name),
         alias,
         status,
         categoryId,
         categories: selectedCategories,
         excerpt,
-        content,
+        content: stripSeoTags(content),
         portionCount,
         cookingTime,
         calories,
@@ -149,7 +233,9 @@ export function ArticleForm({ article }: ArticleFormProps) {
         ingredients,
         thumbnailId: thumbnail?.id,
         relatedIds: related.map((a) => a.id),
-        ...seo,
+        seoTitle: stripSeoTags(seo.seoTitle ?? ''),
+        seoKeywords: seo.seoKeywords ?? '',
+        seoDescription: stripSeoTags(seo.seoDescription ?? ''),
       }
       if (isEdit && article) {
         await api.patch(`/articles/${article.id}`, payload)
@@ -248,17 +334,33 @@ export function ArticleForm({ article }: ArticleFormProps) {
       <FieldGroup
         title="Контент"
         titleAction={
-          isEdit && article?.oldContent ? (
+          <div className="flex items-center gap-2">
+            {/* {isEdit && article?.oldContent ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setContent(article.oldContent ?? '')}
+              >
+                <RotateCcw className="size-4" />
+                Вернуть старую версию
+              </Button>
+            ) : null} */}
             <Button
               type="button"
-              variant="outline"
               size="sm"
-              onClick={() => setContent(article.oldContent ?? '')}
+              onClick={handleFillAlts}
+              disabled={altsLoading}
+              className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-indigo-500 text-white hover:text-white hover:opacity-90"
             >
-              <RotateCcw className="size-4" />
-              Вернуть старую версию
+              {altsLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Images className="size-4" />
+              )}
+              Заполнить описания файлов
             </Button>
-          ) : null
+          </div>
         }
         contentClassName="space-y-4"
       >
@@ -387,7 +489,45 @@ export function ArticleForm({ article }: ArticleFormProps) {
           </p>
       </FieldGroup>
 
-      <FieldGroup title="SEO">
+      <FieldGroup
+        title="SEO"
+        titleAction={
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleSeoOptimize}
+            disabled={seoLoading}
+            className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-indigo-500 text-white hover:text-white hover:opacity-90"
+          >
+            {seoLoading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <WandSparkles className="size-4" />
+            )}
+            SEO оптимизация
+          </Button>
+        }
+      >
+        {keywords.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {keywords.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => void copyKeyword(key)}
+                title="Скопировать"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border bg-muted/50 px-3.5 py-1.5 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-400 hover:bg-gradient-to-r hover:from-fuchsia-500/10 hover:via-violet-500/10 hover:to-indigo-500/10 hover:shadow-md active:scale-95"
+              >
+                {copiedKey === key ? (
+                  <Check className="size-4 text-green-600" />
+                ) : (
+                  <Copy className="size-3.5 text-muted-foreground" />
+                )}
+                {key}
+              </button>
+            ))}
+          </div>
+        )}
         <SeoFields values={seo} onChange={setSeo} />
       </FieldGroup>
 

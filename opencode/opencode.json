@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "aitunnel": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "AITUNNEL",
+      "options": {
+        "baseURL": "https://api.aitunnel.ru/v1",
+        "apiKey": "{env:AITUNNEL_API_KEY}"
+      },
+      "models": {
+        "qwen3.7-flash": {
+          "name": "Qwen3.7 Flash",
+          "limit": {
+            "context": 1000000,
+            "output": 65536
+          }
+        },
+      }
+    }
+  }
+}

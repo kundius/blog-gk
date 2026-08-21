@@ -620,6 +620,23 @@
   color: var(--foreground);
 }
 
+/* SEO keyword highlight (AI-marked keywords) */
+.admin-editor ins.seo-keyword {
+  background: linear-gradient(135deg, #fce7f3, #f3e8ff, #c7d2fe);
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0 1px rgba(192, 132, 252, 0.4);
+  color: #4c1d95;
+  font-weight: 600;
+  padding: 0 0.15em;
+  text-decoration: none;
+}
+
+.dark .admin-editor ins.seo-keyword {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.25));
+  box-shadow: 0 0 0 1px rgba(192, 132, 252, 0.4);
+  color: #f5f3ff;
+}
+
 /* Placeholder */
 .admin-editor
   .is-empty[data-placeholder] {

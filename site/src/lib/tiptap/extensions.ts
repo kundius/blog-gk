@@ -9,6 +9,7 @@ import { TableRow } from '@tiptap/extension-table-row'
 import { TableHeader } from '@tiptap/extension-table-header'
 import { TableCell } from '@tiptap/extension-table-cell'
 import { RecipeSteps, RecipeStep, IngredientsMarker, Gallery, GalleryImage } from './nodes'
+import { SeoKeyword } from './marks/SeoKeyword'
 
 export function buildEditorExtensions() {
   return [
@@ -38,5 +39,6 @@ export function buildEditorExtensions() {
     Gallery,
     GalleryImage,
     Image,
+    SeoKeyword,
   ]
 }
