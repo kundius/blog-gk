@@ -1,4 +1,4 @@
-import { Node } from '@tiptap/core'
+import { mergeAttributes, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 import { GalleryView } from './GalleryView'
 
@@ -30,7 +30,7 @@ export const Gallery = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', HTMLAttributes, 0]
+    return ['div', mergeAttributes(HTMLAttributes, { class: 'gallery' }), 0]
   },
 
   addNodeView() {
