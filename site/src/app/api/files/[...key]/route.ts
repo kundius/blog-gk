@@ -1,4 +1,7 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { NodeHttpHandler } from '@smithy/node-http-handler'
+import { Agent as HttpAgent } from 'http'
+import { Agent as HttpsAgent } from 'https'
 import { Readable } from 'stream'
 
 export const runtime = 'nodejs'
@@ -11,7 +14,11 @@ const client = new S3Client({
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || ''
-  }
+  },
+  requestHandler: new NodeHttpHandler({
+    httpAgent: new HttpAgent({ maxSockets: 500 }),
+    httpsAgent: new HttpsAgent({ maxSockets: 500 })
+  })
 })
 
 export async function GET (
