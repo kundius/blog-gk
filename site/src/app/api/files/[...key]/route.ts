@@ -1,28 +1,34 @@
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { NodeHttpHandler } from '@smithy/node-http-handler'
-import { Agent as HttpAgent } from 'http'
-import { Agent as HttpsAgent } from 'https'
-import { Readable } from 'stream'
-
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const client = new S3Client({
-  region: process.env.S3_REGION || 'us-east-1',
-  endpoint: process.env.S3_ENDPOINT || undefined,
-  forcePathStyle: process.env.S3_FORCE_PATH_STYLE === 'true',
-  credentials: {
-    accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || ''
-  },
-  requestHandler: new NodeHttpHandler({
-    httpAgent: new HttpAgent({ maxSockets: 500 }),
-    httpsAgent: new HttpsAgent({ maxSockets: 500 })
-  })
-})
+const CACHE_CONTROL = 'public, max-age=31536000, immutable'
+const UPSTREAM_TIMEOUT_MS = 30_000
+
+function buildObjectUrl (filename: string): string | undefined {
+  const endpoint = process.env.S3_ENDPOINT?.replace(/\/+$/, '')
+  const bucket = process.env.S3_BUCKET
+  if (!bucket) return undefined
+
+  const key = filename.split('/').map(encodeURIComponent).join('/')
+  const forcePathStyle = process.env.S3_FORCE_PATH_STYLE === 'true'
+
+  if (endpoint) {
+    if (forcePathStyle) {
+      return `${endpoint}/${encodeURIComponent(bucket)}/${key}`
+    }
+
+    const url = new URL(endpoint)
+    url.hostname = `${bucket}.${url.hostname}`
+    url.pathname = `${url.pathname.replace(/\/+$/, '')}/${key}`
+    return url.toString()
+  }
+
+  const region = process.env.S3_REGION || 'us-east-1'
+  return `https://${bucket}.s3.${region}.amazonaws.com/${key}`
+}
 
 export async function GET (
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ key: string | string[] }> }
 ): Promise<Response> {
   const { key } = await params
@@ -32,38 +38,51 @@ export async function GET (
     return Response.json({ error: 'missing key' }, { status: 400 })
   }
 
-  const bucket = process.env.S3_BUCKET || ''
+  const objectUrl = buildObjectUrl(filename)
+  if (!objectUrl) {
+    return Response.json({ error: 'storage is not configured' }, { status: 500 })
+  }
 
-  let result
+  const requestHeaders = new Headers()
+  const range = request.headers.get('range')
+  if (range) requestHeaders.set('Range', range)
+
+  let upstream: Response
   try {
-    result = await client.send(
-      new GetObjectCommand({ Bucket: bucket, Key: filename })
+    upstream = await fetch(objectUrl, {
+      signal: AbortSignal.any([request.signal, AbortSignal.timeout(UPSTREAM_TIMEOUT_MS)]),
+      headers: requestHeaders,
+      cache: 'no-store'
+    })
+  } catch (error) {
+    const timedOut = error instanceof Error && error.name === 'TimeoutError'
+    return Response.json(
+      { error: timedOut ? 'storage timeout' : 'storage unavailable' },
+      { status: timedOut ? 504 : 502 }
     )
-  } catch {
+  }
+
+  if (upstream.status === 404) {
     return Response.json({ error: 'not found' }, { status: 404 })
+  }
+
+  if (!upstream.ok) {
+    return Response.json({ error: 'storage error' }, { status: 502 })
   }
 
   const headers = new Headers()
-  if (result.ContentType) {
-    headers.set('Content-Type', result.ContentType)
+  for (const name of [
+    'Content-Type',
+    'Content-Length',
+    'Content-Range',
+    'Accept-Ranges',
+    'ETag',
+    'Last-Modified'
+  ]) {
+    const value = upstream.headers.get(name)
+    if (value) headers.set(name, value)
   }
-  if (result.ContentLength !== undefined) {
-    headers.set('Content-Length', String(result.ContentLength))
-  }
-  headers.set('Cache-Control', 'public, max-age=31536000, immutable')
+  headers.set('Cache-Control', CACHE_CONTROL)
 
-  const body = result.Body
-  if (!body) {
-    return Response.json({ error: 'not found' }, { status: 404 })
-  }
-
-  if (body instanceof Readable) {
-    return new Response(Readable.toWeb(body) as ReadableStream, { headers })
-  }
-
-  if (typeof (body as Readable).pipe === 'function') {
-    return new Response(Readable.toWeb(body as Readable) as ReadableStream, { headers })
-  }
-
-  return new Response(new Uint8Array(body as Uint8Array), { headers })
+  return new Response(upstream.body, { status: upstream.status, headers })
 }
