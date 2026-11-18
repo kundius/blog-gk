@@ -101,6 +101,17 @@ sudo adduser deploy
 sudo usermod -aG sudo deploy
 ```
 
+`sudo` без ввода пароля (`deploy` ходит только по ключу):
+
+```bash
+echo 'deploy ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/90-deploy >/dev/null
+sudo chmod 440 /etc/sudoers.d/90-deploy
+sudo visudo -cf /etc/sudoers.d/90-deploy
+```
+
+Файл в `/etc/sudoers.d/` должен иметь права `440`, иначе `sudo` его проигнорирует.
+Проверка: `sudo -u deploy sudo -n true && echo ok`.
+
 Ключ генерируется на локальной машине:
 
 ```bash
