@@ -105,16 +105,35 @@ sudo usermod -aG sudo deploy
 
 ```bash
 ssh-keygen -t ed25519 -a 100 -C "deploy@blog-gk" -f ~/.ssh/blog_gk_deploy
+```
+
+### Вариант 1: `ssh-copy-id`
+
+Подходит, пока на сервере разрешён вход по паролю (у `deploy` или `root`):
+
+```bash
 ssh-copy-id -i ~/.ssh/blog_gk_deploy.pub deploy@SERVER_IP
 ```
 
-Если вход по паролю на сервере уже закрыт:
+`ssh-copy-id` сам создаст `~/.ssh` с правами `700` и `authorized_keys` с `600`.
+
+### Вариант 2: перенос ключа от root
+
+Если у `root` уже настроен вход по ключу, скопируйте его `authorized_keys` пользователю `deploy`:
 
 ```bash
 sudo install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
-echo '<содержимое blog_gk_deploy.pub>' | sudo tee -a /home/deploy/.ssh/authorized_keys
+sudo cp /root/.ssh/authorized_keys /home/deploy/.ssh/authorized_keys
 sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys
 sudo chmod 600 /home/deploy/.ssh/authorized_keys
+```
+
+Права обязательны: SSH игнорирует ключи, если `~/.ssh` доступен группе/остальным (`700`),
+файл — (`600`), а домашний каталог доступен на запись другим:
+
+```bash
+sudo chmod 750 /home/deploy
+sudo chown deploy:deploy /home/deploy
 ```
 
 Проверьте вход в новой сессии, затем закройте root и пароль:
