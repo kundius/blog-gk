@@ -5,7 +5,7 @@
 
 Локальная разработка и Docker-сценарий — в [`deploy-docker.md`](./deploy-docker.md).
 
-- TLS: отдельный сертификат на `blog-gk.ru` (+ `www`) и `api.blog-gk.ru`.
+- TLS: один сертификат на `blog-gk.ru`, `www.blog-gk.ru`, `api.blog-gk.ru`.
 - Медиа хранится в S3 (Beget) и стримится через backend/site — файлового сервера нет.
 - Миграции БД применяются **только вручную** и только после бэкапа.
 
@@ -417,13 +417,8 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ```bash
 sudo certbot certonly --webroot -w /var/www/html \
-  -d blog-gk.ru -d www.blog-gk.ru \
+  -d blog-gk.ru -d www.blog-gk.ru -d api.blog-gk.ru \
   --cert-name blog-gk.ru \
-  --agree-tos -m admin@blog-gk.ru --no-eff-email
-
-sudo certbot certonly --webroot -w /var/www/html \
-  -d api.blog-gk.ru \
-  --cert-name api.blog-gk.ru \
   --agree-tos -m admin@blog-gk.ru --no-eff-email
 ```
 
@@ -433,11 +428,6 @@ sudo certbot certonly --webroot -w /var/www/html \
 sudo tee /etc/nginx/snippets/ssl-blog-gk.conf >/dev/null <<'EOF'
 ssl_certificate     /etc/letsencrypt/live/blog-gk.ru/fullchain.pem;
 ssl_certificate_key /etc/letsencrypt/live/blog-gk.ru/privkey.pem;
-EOF
-
-sudo tee /etc/nginx/snippets/ssl-api-blog-gk.conf >/dev/null <<'EOF'
-ssl_certificate     /etc/letsencrypt/live/api.blog-gk.ru/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/api.blog-gk.ru/privkey.pem;
 EOF
 
 sudo tee /etc/nginx/snippets/blog-gk-headers.conf >/dev/null <<'EOF'
@@ -491,7 +481,7 @@ server {
     http2 on;
     server_name api.blog-gk.ru;
 
-    include snippets/ssl-api-blog-gk.conf;
+    include snippets/ssl-blog-gk.conf;
     include snippets/blog-gk-headers.conf;
 
     client_max_body_size 20m;
