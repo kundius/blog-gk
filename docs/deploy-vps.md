@@ -1,7 +1,7 @@
 # Развёртывание blog-gk на VPS (Nginx + PM2 + PostgreSQL)
 
-Упрощённая инструкция под этот проект: **без Docker на проде**.
-Стек: Nginx, Node.js 26 LTS, PM2, PostgreSQL 16+, Certbot.
+Инструкция под этот проект: **без Docker на проде**.
+Стек: Nginx, Node.js 26 LTS, PM2, PostgreSQL, Certbot.
 
 Локальная разработка и Docker-сценарий — в корневом [`DEPLOY.md`](../DEPLOY.md).
 
@@ -19,7 +19,7 @@
 | — | opencode `127.0.0.1:5023` (внутренний, наружу не публикуется) |
 | — | PostgreSQL `127.0.0.1:5432` |
 
-Порты зафиксированы в `ecosystem.config.js` и `nginx/gateway.conf`:
+Порты зафиксированы в `ecosystem.config.js`:
 
 | Сервис | Порт | PM2-процесс |
 |---|---|---|
@@ -31,7 +31,7 @@
 
 - Ubuntu 24.04/26.04, 2+ vCPU, 4+ ГБ RAM, 20+ ГБ диска.
 - Публичный IPv4 (при NAT нужен проброс TCP 80/443).
-- Доступ по SSH-ключу, пользователь `deploy` с `sudo`.
+- Доступ по SSH-ключу.
 
 ## 3. DNS
 
@@ -43,9 +43,7 @@ www.blog-gk.ru
 api.blog-gk.ru
 ```
 
-Если IPv6 не используется — убедитесь, что старых AAAA-записей нет. При Cloudflare до окончания настройки — **DNS only** (оранжевый прокси потребует настройки `real_ip`).
-
-Проверка:
+Если IPv6 не используется — убедитесь, что старых AAAA-записей нет. При Cloudflare до окончания настройки — **DNS only**.
 
 ```bash
 for d in blog-gk.ru www.blog-gk.ru api.blog-gk.ru; do
@@ -53,13 +51,14 @@ for d in blog-gk.ru www.blog-gk.ru api.blog-gk.ru; do
 done
 ```
 
-## 4. Базовая настройка сервера
+## 4. Пакеты
 
 ```bash
 sudo apt update && sudo apt full-upgrade -y
-sudo hostnamectl set-hostname blog-gk-prod
-sudo timedatectl set-timezone Europe/Moscow
-sudo timedatectl set-ntp true
+sudo apt install -y nginx postgresql postgresql-client certbot \
+  git curl wget gnupg ca-certificates ufw fail2ban python3-systemd \
+  unattended-upgrades logrotate build-essential python3 make g++ \
+  htop jq unzip
 ```
 
 Swap, если RAM меньше 8 ГБ:
@@ -72,23 +71,44 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ```
 
-### Пользователь `deploy`
+Node.js 26 LTS:
 
-Все команды `git`, `npm`, `pm2` и бэкапы выполняются от него, без `sudo`:
+```bash
+curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash -
+sudo apt install -y nodejs
+node -v
+npm -v
+```
+
+PM2:
+
+```bash
+sudo npm install -g pm2
+```
+
+Российский корневой CA (нужен для S3 Beget, backend стартует с `--use-system-ca`):
+
+```bash
+sudo curl -sSf -o /usr/local/share/ca-certificates/russian-trusted-root-ca.crt \
+  https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
+sudo update-ca-certificates
+```
+
+## 5. Пользователь, SSH и firewall
 
 ```bash
 sudo adduser deploy
 sudo usermod -aG sudo deploy
 ```
 
-SSH-ключ (генерируется на локальной машине):
+Ключ генерируется на локальной машине:
 
 ```bash
 ssh-keygen -t ed25519 -a 100 -C "deploy@blog-gk" -f ~/.ssh/blog_gk_deploy
 ssh-copy-id -i ~/.ssh/blog_gk_deploy.pub deploy@SERVER_IP
 ```
 
-Для `ssh-copy-id` нужен временно разрешённый вход по паролю. Если его нет, скопируйте ключ вручную:
+Если вход по паролю на сервере уже закрыт:
 
 ```bash
 sudo install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
@@ -97,13 +117,11 @@ sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys
 sudo chmod 600 /home/deploy/.ssh/authorized_keys
 ```
 
-Проверьте вход **в новой сессии**:
+Проверьте вход в новой сессии, затем закройте root и пароль:
 
 ```bash
 ssh -i ~/.ssh/blog_gk_deploy deploy@SERVER_IP
 ```
-
-Только после этого закрывайте root и парольный вход:
 
 ```bash
 sudo tee /etc/ssh/sshd_config.d/99-blog-gk.conf >/dev/null <<'EOF'
@@ -119,12 +137,9 @@ ClientAliveCountMax 2
 EOF
 sudo sshd -t
 sudo systemctl reload ssh
-sudo sshd -T | grep -E 'permitrootlogin|passwordauthentication|allowusers'
 ```
 
-Если cloud-init переопределяет настройки — проверьте `/etc/ssh/sshd_config.d/50-cloud-init.conf`.
-
-### Firewall
+UFW:
 
 ```bash
 sudo ufw default deny incoming
@@ -136,12 +151,9 @@ sudo ufw enable
 sudo ufw status verbose
 ```
 
-Сначала разрешите SSH — иначе можно потерять доступ.
-
 fail2ban и автообновления:
 
 ```bash
-sudo apt install -y fail2ban python3-systemd unattended-upgrades
 sudo tee /etc/fail2ban/jail.d/blog-gk.local >/dev/null <<'EOF'
 [DEFAULT]
 banaction = ufw
@@ -158,76 +170,16 @@ sudo systemctl enable --now fail2ban
 sudo systemctl enable --now unattended-upgrades
 ```
 
-## 5. Пакеты
-
-```bash
-sudo apt install -y nginx postgresql postgresql-client certbot \
-  git curl wget gnupg ca-certificates ufw fail2ban \
-  unattended-upgrades logrotate build-essential python3 make g++ \
-  htop jq unzip
-```
-
-Node.js 26 LTS (Active LTS, ноябрь 2026):
-
-```bash
-curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash -
-sudo apt install -y nodejs
-node -v   # v26.x
-npm -v
-```
-
-Если prebuilt-бинарники нативных модулей (`sharp`, `@prisma/engines`) не находятся под Node 26,
-обновите зависимости или временно откатитесь на Node 24 LTS (`setup_24.x`). Docker-образы проекта
-собраны на `node:22-alpine` — это не влияет на прод под PM2.
-
-PM2:
-
-```bash
-sudo npm install -g pm2
-```
-
-Российский корневой CA — обязателен для S3 Beget (backend запускается с `--use-system-ca`):
-
-```bash
-sudo curl -sSf -o /usr/local/share/ca-certificates/russian-trusted-root-ca.crt \
-  https://gu-st.ru/content/lending/russian_trusted_root_ca_pem.crt
-sudo update-ca-certificates
-```
-
 ## 6. PostgreSQL
-
-### Версия
-
-Пакетов `postgresql-16` / `postgresql-client-16` может не быть в репозиториях Ubuntu:
-версия зависит от релиза ОС (24.04 — 16, 25.10/26.04 — 17/18). Ставьте дефолтный пакет:
 
 ```bash
 sudo apt install -y postgresql postgresql-client
 psql --version
-```
-
-Дамп снят через `pg_dump` 16, а `pg_restore` новых мажорных версий восстанавливает дампы
-старых версий — конвертация не нужна. Проверьте кластер и сервис:
-
-```bash
 pg_lsclusters
 sudo systemctl status postgresql --no-pager
 ```
 
-Если нужна именно версия 16 (например, чтобы совпадала с продом), подключите PGDG:
-
-```bash
-sudo install -d /usr/share/postgresql-common/pgdg
-sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
-  https://www.postgresql.org/media/keys/ACCC4CF8.asc
-. /etc/os-release
-echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
-  | sudo tee /etc/apt/sources.list.d/pgdg.list
-sudo apt update
-sudo apt install -y postgresql-16 postgresql-client-16
-```
-
-Создать пользователя и базу (пароль — свой, длинный):
+Создать пользователя и базу:
 
 ```bash
 sudo -u postgres psql <<'SQL'
@@ -236,11 +188,9 @@ CREATE DATABASE blog_gk_db OWNER blog_gk_user;
 SQL
 ```
 
-PostgreSQL слушает только `127.0.0.1` (дефолт Ubuntu) — наружу порт не открывать.
+PostgreSQL слушает только `127.0.0.1` — наружу порт не открывать.
 
-### Восстановление из дампа
-
-Дампы в формате `pg_dump -Fc` (custom) восстанавливаются от суперпользователя, чтобы не зависеть от владельцев объектов:
+Восстановление дампа:
 
 ```bash
 sudo -u postgres pg_restore -d blog_gk_db \
@@ -252,16 +202,13 @@ sudo -u postgres pg_restore -d blog_gk_db \
 ```bash
 sudo -u postgres psql -d blog_gk_db -c '\dt'
 sudo -u postgres psql -d blog_gk_db -c 'select count(*) from articles;'
-sudo -u postgres psql -d blog_gk_db -c 'select migration_name, finished_at from _prisma_migrations order by started_at desc limit 5;'
+sudo -u postgres psql -d blog_gk_db -c \
+  'select migration_name, finished_at from _prisma_migrations order by started_at desc limit 5;'
 ```
 
-Если таблица `_prisma_migrations` есть — после установки зависимостей применяйте только новые миграции
-(`npx prisma migrate deploy`). Если её нет — сначала сверьте схему, не запускайте миграции вслепую.
+## 7. Код и `.env`
 
-## 7. Код и каталоги
-
-Все команды `git`, `npm`, `pm2` и бэкапы выполняются от `deploy`, без `sudo`.
-Если вы сейчас root — переключитесь:
+Все команды `git`, `npm`, `pm2` и бэкапы — от `deploy`, без `sudo`:
 
 ```bash
 su - deploy
@@ -273,21 +220,7 @@ sudo mv /home/deploy/blog-gk-src /var/www/blog-gk
 sudo chown -R deploy:deploy /var/www/blog-gk
 ```
 
-`sudo` нужен только для `mv` в `/var/www`. Для приватного репозитория у `deploy` должен быть
-SSH-доступ к GitHub: сгенерируйте ключ (`ssh-keygen -t ed25519 -C "deploy@blog-gk-prod"`) и добавьте
-`.pub` в GitHub → репозиторий → **Settings → Deploy keys** (read-only). Проверка: `ssh -T git@github.com`.
-
-### `.env`
-
-Приложения читают свои файлы (см. таблицу в `DEPLOY.md`):
-
-| Файл | Назначение |
-|---|---|
-| `backend/.env` | NestJS: БД, порт, CORS, JWT, S3, opencode |
-| `site/.env` | Next.js: публичные URL, домены картинок, S3, метрика |
-| `opencode/.env` | внутренний сервис: пароль, ключ, конфиг |
-
-Корневой `.env` на проде **не нужен** — он только для Docker (postgres/pgadmin).
+Для приватного репозитория добавьте ключ `deploy` в GitHub → **Settings → Deploy keys** (read-only).
 
 `backend/.env`:
 
@@ -349,9 +282,11 @@ AITUNNEL_API_KEY=<key>
 chmod 600 /var/www/blog-gk/backend/.env /var/www/blog-gk/site/.env /var/www/blog-gk/opencode/.env
 ```
 
-## 8. Сборка и миграции
+Ключи S3 в `backend/.env` и `site/.env` должны совпадать с реальными ключами объектов
+в `files.filename_disk`: site отдаёт их через `/files/*` → `/api/files/*`, backend — через `/api/files/:id/file`.
+Пустой бакет = записи в БД есть, картинки 404/502.
 
-От пользователя `deploy`:
+## 8. Сборка и миграции
 
 ```bash
 cd /var/www/blog-gk/backend
@@ -364,13 +299,13 @@ npm ci
 npm run build
 ```
 
-При нехватке памяти на сборке Next.js:
+При нехватке памяти:
 
 ```bash
 NODE_OPTIONS=--max-old-space-size=4096 npm run build
 ```
 
-Миграции — **вручную**, после бэкапа:
+Применить миграции (только после бэкапа):
 
 ```bash
 cd /var/www/blog-gk/backend
@@ -379,15 +314,13 @@ npx prisma migrate deploy
 
 `NEXT_PUBLIC_*` вшиваются в бандл на этапе `next build` — после их изменения пересборка site обязательна.
 
-opencode ставится глобально (один раз):
+opencode (один раз):
 
 ```bash
 npm i -g opencode-ai
 ```
 
 ## 9. PM2
-
-Конфиг уже в репозитории: `ecosystem.config.js` (порты, `cwd`, загрузка `.env`, `--use-system-ca`).
 
 ```bash
 cd /var/www/blog-gk
@@ -396,7 +329,6 @@ pm2 save
 
 sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u deploy --hp /home/deploy
 sudo systemctl enable pm2-deploy
-sudo systemctl status pm2-deploy --no-pager
 ```
 
 Логи:
@@ -408,11 +340,9 @@ pm2 set pm2-logrotate:retain 14
 pm2 set pm2-logrotate:compress true
 ```
 
-Backend запускать в `fork`, не в `cluster` — иначе cron `@nestjs/schedule` задублируется.
+Backend запускается в `fork` — в `cluster` cron `@nestjs/schedule` задублируется.
 
 ## 10. Nginx и TLS
-
-### 10.1. Подготовка
 
 ```bash
 sudo rm -f /etc/nginx/sites-enabled/default
@@ -431,12 +361,9 @@ client_body_timeout 60s;
 client_header_timeout 60s;
 send_timeout 60s;
 keepalive_timeout 65;
-server_names_hash_bucket_size 64;
 ```
 
-`server_tokens`, `ssl_protocols`, `ssl_prefer_server_ciphers`, `ssl_session_*` задаются один раз в `/etc/nginx/nginx.conf`.
-
-### 10.2. HTTP (ACME + редирект)
+### HTTP и сертификаты
 
 `/etc/nginx/sites-available/blog-gk-http.conf`:
 
@@ -464,8 +391,6 @@ sudo ln -s /etc/nginx/sites-available/blog-gk-http.conf /etc/nginx/sites-enabled
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-### 10.3. Сертификаты
-
 ```bash
 sudo certbot certonly --webroot -w /var/www/html \
   -d blog-gk.ru -d www.blog-gk.ru \
@@ -478,11 +403,7 @@ sudo certbot certonly --webroot -w /var/www/html \
   --agree-tos -m admin@blog-gk.ru --no-eff-email
 ```
 
-Повторные выпуски проверять через `--staging`.
-
-### 10.4. HTTPS
-
-Сниппеты:
+### HTTPS
 
 ```bash
 sudo tee /etc/nginx/snippets/ssl-blog-gk.conf >/dev/null <<'EOF'
@@ -506,7 +427,6 @@ EOF
 `/etc/nginx/sites-available/blog-gk.conf`:
 
 ```nginx
-# www → без www
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -519,7 +439,6 @@ server {
     return 301 https://blog-gk.ru$request_uri;
 }
 
-# site
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -536,14 +455,12 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
         proxy_read_timeout 3600s;
     }
 }
 
-# API
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -570,20 +487,15 @@ server {
 }
 ```
 
-`client_max_body_size 20m` соответствует лимиту загрузки в backend (`Multer`, 20 МБ).
+`client_max_body_size 20m` соответствует лимиту загрузки в backend.
 `proxy_read_timeout 3600s` нужен для длительных AI-запросов через opencode.
 
-Включение:
+На Nginx < 1.25.1 вместо `http2 on;` используйте `listen 443 ssl http2;`.
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/blog-gk.conf /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
-
-Версия Nginx:
-
-- `>= 1.25.1` — `listen 443 ssl;` + отдельная строка `http2 on;` (как выше).
-- `< 1.25.1` — `listen 443 ssl http2;` без директивы `http2`.
 
 Продление:
 
@@ -603,7 +515,7 @@ sudo systemctl status nginx postgresql fail2ban pm2-deploy --no-pager
 pm2 status
 
 curl -I https://blog-gk.ru
-curl -I https://www.blog-gk.ru            # ожидается 301
+curl -I https://www.blog-gk.ru
 curl -I https://api.blog-gk.ru/api/articles
 curl -s https://api.blog-gk.ru/api/articles?limit=1 | head -c 200
 curl -s https://api.blog-gk.ru/api/opencode/hello
@@ -612,7 +524,7 @@ sudo ss -tulpn | grep -E ':(5021|5022|5023|5432)'
 sudo ufw status
 ```
 
-HTTP/2 и сертификаты:
+Проверить главную, статью, `/admin`, отдачу картинки (`/files/...`), HTTP/2 и сертификаты:
 
 ```bash
 curl -sI --http2 https://blog-gk.ru | head -1
@@ -625,18 +537,9 @@ for d in blog-gk.ru api.blog-gk.ru; do
 done
 ```
 
-Функционально: открыть главную, статью, `/admin`, проверить загрузку/отдачу картинки (`/files/...`).
+## 12. Бэкапы
 
-## 12. Медиа (S3)
-
-- Бакет Beget должен содержать объекты с ключами из `files.filename_disk` (`processed/...`, `<uuid>..jpg`).
-- Site отдаёт файлы через rewrite `/files/*` → `/api/files/*` и стримит их из S3; backend — через `/api/files/:id/file`.
-- Если бакет пустой, записи в БД остаются, но картинки отдают 404/502.
-- Ключи S3 должны совпадать в `backend/.env` и `site/.env`.
-
-## 13. Бэкапы
-
-Скрипт `/usr/local/bin/blog-gk-backup.sh`:
+`/usr/local/bin/blog-gk-backup.sh`:
 
 ```bash
 #!/bin/sh
@@ -647,7 +550,7 @@ pg_dump -U blog_gk_user -Fc blog_gk_db > "$BACKUP_DIR/db_$(date +%F_%H-%M).dump"
 find "$BACKUP_DIR" -name 'db_*.dump' -mtime +14 -delete
 ```
 
-Cron (`/etc/cron.d/blog-gk-backup`):
+Cron `/etc/cron.d/blog-gk-backup`:
 
 ```cron
 SHELL=/bin/bash
@@ -655,9 +558,13 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 0 2 * * * deploy /usr/local/bin/blog-gk-backup.sh >> /home/deploy/backup.log 2>&1
 ```
 
-Медиа в S3 — версионирование бакета или отдельная offsite-копия. Восстановление проверять раз в месяц.
+Медиа в S3 — версионирование бакета или offsite-копия. Восстановление проверять раз в месяц.
 
-## 14. Обновление
+## 13. Обновление
+
+```bash
+sudo -u postgres pg_dump -Fc blog_gk_db > /var/backups/blog-gk/predeploy_$(date +%F).dump
+```
 
 ```bash
 cd /var/www/blog-gk
@@ -666,7 +573,7 @@ git pull --ff-only
 cd backend
 npm ci
 npx prisma generate
-npx prisma migrate deploy   # только после бэкапа
+npx prisma migrate deploy
 npm run build
 
 cd ../site
@@ -678,33 +585,27 @@ pm2 reload ecosystem.config.js --update-env
 pm2 save
 ```
 
-Если менялись только `NEXT_PUBLIC_*` — пересборка site обязательна. Если только API — достаточно
+Менялись только `NEXT_PUBLIC_*` — пересборка site обязательна. Менялся только API — достаточно
 `pm2 reload blog-gk-backend`.
 
-Перед обновлением:
-
-```bash
-sudo -u postgres pg_dump -Fc blog_gk_db > /var/backups/blog-gk/predeploy_$(date +%F).dump
-```
-
-## 15. Чек-лист безопасности
+## 14. Чек-лист безопасности
 
 - root SSH и вход по паролю закрыты; UFW: только 22/80/443.
-- PostgreSQL слушает только `127.0.0.1`, наружу не опубликован.
+- PostgreSQL слушает только `127.0.0.1`.
 - `.env` — права `600`, секреты не в git.
-- opencode (5023) и API-порты слушают `127.0.0.1`.
+- opencode (5023) и API слушают `127.0.0.1`.
 - HSTS включать после проверки всех доменов.
 - `certbot renew --dry-run` успешен.
 - Бэкап БД по cron, восстановление проверено.
 - Российский CA установлен, S3-картинки отдаются.
 - Миграции применяются только вручную.
 
-## 16. Что уточнить перед выполнением
+## 15. Что уточнить перед выполнением
 
 1. IP сервера и SSH-доступ.
 2. DNS-провайдер и использование Cloudflare.
 3. Email для Let's Encrypt.
 4. Путь к дампу БД и актуальные S3-креды.
-5. Нужен ли `www.blog-gk.ru` (сейчас предусмотрен редирект).
+5. Нужен ли `www.blog-gk.ru`.
 6. RAM/CPU/диск сервера.
 7. Разрешён ли исходящий трафик к S3, AI-провайдерам и Let's Encrypt.
