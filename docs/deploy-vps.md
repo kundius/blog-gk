@@ -1,7 +1,7 @@
-# Развёртывание blog-gk на VPS (Nginx + PM2 + PostgreSQL 16)
+# Развёртывание blog-gk на VPS (Nginx + PM2 + PostgreSQL)
 
 Упрощённая инструкция под этот проект: **без Docker на проде**.
-Стек: Nginx, Node.js 22 LTS, PM2, PostgreSQL 16, Certbot.
+Стек: Nginx, Node.js 22 LTS, PM2, PostgreSQL 16+, Certbot.
 
 Локальная разработка и Docker-сценарий — в корневом [`DEPLOY.md`](../DEPLOY.md).
 
@@ -90,7 +90,7 @@ sudo ufw status verbose
 ## 5. Пакеты
 
 ```bash
-sudo apt install -y nginx postgresql-16 postgresql-client-16 certbot \
+sudo apt install -y nginx postgresql postgresql-client certbot \
   git curl wget gnupg ca-certificates ufw fail2ban \
   unattended-upgrades logrotate build-essential python3 make g++ \
   htop jq unzip
@@ -120,6 +120,37 @@ sudo update-ca-certificates
 ```
 
 ## 6. PostgreSQL
+
+### Версия
+
+Пакетов `postgresql-16` / `postgresql-client-16` может не быть в репозиториях Ubuntu:
+версия зависит от релиза ОС (24.04 — 16, 25.10/26.04 — 17/18). Ставьте дефолтный пакет:
+
+```bash
+sudo apt install -y postgresql postgresql-client
+psql --version
+```
+
+Дамп снят через `pg_dump` 16, а `pg_restore` новых мажорных версий восстанавливает дампы
+старых версий — конвертация не нужна. Проверьте кластер и сервис:
+
+```bash
+pg_lsclusters
+sudo systemctl status postgresql --no-pager
+```
+
+Если нужна именно версия 16 (например, чтобы совпадала с продом), подключите PGDG:
+
+```bash
+sudo install -d /usr/share/postgresql-common/pgdg
+sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+  https://www.postgresql.org/media/keys/ACCC4CF8.asc
+. /etc/os-release
+echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
+  | sudo tee /etc/apt/sources.list.d/pgdg.list
+sudo apt update
+sudo apt install -y postgresql-16 postgresql-client-16
+```
 
 Создать пользователя и базу (пароль — свой, длинный):
 
