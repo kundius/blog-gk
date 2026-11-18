@@ -1,7 +1,7 @@
 # Развёртывание blog-gk на VPS (Nginx + PM2 + PostgreSQL)
 
 Упрощённая инструкция под этот проект: **без Docker на проде**.
-Стек: Nginx, Node.js 22 LTS, PM2, PostgreSQL 16+, Certbot.
+Стек: Nginx, Node.js 26 LTS, PM2, PostgreSQL 16+, Certbot.
 
 Локальная разработка и Docker-сценарий — в корневом [`DEPLOY.md`](../DEPLOY.md).
 
@@ -96,14 +96,18 @@ sudo apt install -y nginx postgresql postgresql-client certbot \
   htop jq unzip
 ```
 
-Node.js 22 LTS:
+Node.js 26 LTS (Active LTS, ноябрь 2026):
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_26.x | sudo -E bash -
 sudo apt install -y nodejs
-node -v   # v22.x
+node -v   # v26.x
 npm -v
 ```
+
+Если prebuilt-бинарники нативных модулей (`sharp`, `@prisma/engines`) не находятся под Node 26,
+обновите зависимости или временно откатитесь на Node 24 LTS (`setup_24.x`). Docker-образы проекта
+собраны на `node:22-alpine` — это не влияет на прод под PM2.
 
 PM2:
 
