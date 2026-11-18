@@ -80,10 +80,10 @@ node -v
 npm -v
 ```
 
-PM2:
+PM2 и opencode (глобально, один раз):
 
 ```bash
-sudo npm install -g pm2
+sudo npm install -g pm2 opencode-ai
 ```
 
 Российский корневой CA (нужен для S3 Beget, backend стартует с `--use-system-ca`):
@@ -343,12 +343,6 @@ npx prisma migrate deploy
 ```
 
 `NEXT_PUBLIC_*` вшиваются в бандл на этапе `next build` — после их изменения пересборка site обязательна.
-
-opencode (один раз):
-
-```bash
-npm i -g opencode-ai
-```
 
 ## 9. PM2
 
