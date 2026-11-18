@@ -72,10 +72,59 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 ```
 
-Пользователь, SSH и firewall — по стандартной схеме: отдельный `deploy` с ключом, `PermitRootLogin no`,
-`PasswordAuthentication no`, UFW `22/80/443`, fail2ban, unattended-upgrades.
+### Пользователь `deploy`
 
-Минимальный UFW:
+Все команды `git`, `npm`, `pm2` и бэкапы выполняются от него, без `sudo`:
+
+```bash
+sudo adduser deploy
+sudo usermod -aG sudo deploy
+```
+
+SSH-ключ (генерируется на локальной машине):
+
+```bash
+ssh-keygen -t ed25519 -a 100 -C "deploy@blog-gk" -f ~/.ssh/blog_gk_deploy
+ssh-copy-id -i ~/.ssh/blog_gk_deploy.pub deploy@SERVER_IP
+```
+
+Для `ssh-copy-id` нужен временно разрешённый вход по паролю. Если его нет, скопируйте ключ вручную:
+
+```bash
+sudo install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
+echo '<содержимое blog_gk_deploy.pub>' | sudo tee -a /home/deploy/.ssh/authorized_keys
+sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys
+sudo chmod 600 /home/deploy/.ssh/authorized_keys
+```
+
+Проверьте вход **в новой сессии**:
+
+```bash
+ssh -i ~/.ssh/blog_gk_deploy deploy@SERVER_IP
+```
+
+Только после этого закрывайте root и парольный вход:
+
+```bash
+sudo tee /etc/ssh/sshd_config.d/99-blog-gk.conf >/dev/null <<'EOF'
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+AllowUsers deploy
+MaxAuthTries 3
+X11Forwarding no
+ClientAliveInterval 300
+ClientAliveCountMax 2
+EOF
+sudo sshd -t
+sudo systemctl reload ssh
+sudo sshd -T | grep -E 'permitrootlogin|passwordauthentication|allowusers'
+```
+
+Если cloud-init переопределяет настройки — проверьте `/etc/ssh/sshd_config.d/50-cloud-init.conf`.
+
+### Firewall
 
 ```bash
 sudo ufw default deny incoming
@@ -85,6 +134,28 @@ sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw enable
 sudo ufw status verbose
+```
+
+Сначала разрешите SSH — иначе можно потерять доступ.
+
+fail2ban и автообновления:
+
+```bash
+sudo apt install -y fail2ban python3-systemd unattended-upgrades
+sudo tee /etc/fail2ban/jail.d/blog-gk.local >/dev/null <<'EOF'
+[DEFAULT]
+banaction = ufw
+bantime = 1h
+findtime = 10m
+maxretry = 5
+backend = systemd
+
+[sshd]
+enabled = true
+EOF
+sudo fail2ban-client -t
+sudo systemctl enable --now fail2ban
+sudo systemctl enable --now unattended-upgrades
 ```
 
 ## 5. Пакеты
@@ -189,7 +260,12 @@ sudo -u postgres psql -d blog_gk_db -c 'select migration_name, finished_at from 
 
 ## 7. Код и каталоги
 
-Все команды `git`, `npm`, `pm2` и бэкапы выполняются от `deploy`, без `sudo`:
+Все команды `git`, `npm`, `pm2` и бэкапы выполняются от `deploy`, без `sudo`.
+Если вы сейчас root — переключитесь:
+
+```bash
+su - deploy
+```
 
 ```bash
 git clone <repo> /home/deploy/blog-gk-src
@@ -197,7 +273,9 @@ sudo mv /home/deploy/blog-gk-src /var/www/blog-gk
 sudo chown -R deploy:deploy /var/www/blog-gk
 ```
 
-`sudo` нужен только для `mv` в `/var/www`.
+`sudo` нужен только для `mv` в `/var/www`. Для приватного репозитория у `deploy` должен быть
+SSH-доступ к GitHub: сгенерируйте ключ (`ssh-keygen -t ed25519 -C "deploy@blog-gk-prod"`) и добавьте
+`.pub` в GitHub → репозиторий → **Settings → Deploy keys** (read-only). Проверка: `ssh -T git@github.com`.
 
 ### `.env`
 
