@@ -3,7 +3,7 @@
 Инструкция под этот проект: **без Docker на проде**.
 Стек: Nginx, Node.js 26 LTS, PM2, PostgreSQL, Certbot.
 
-Локальная разработка и Docker-сценарий — в корневом [`DEPLOY.md`](../DEPLOY.md).
+Локальная разработка и Docker-сценарий — в [`deploy-docker.md`](./deploy-docker.md).
 
 - TLS: отдельный сертификат на `blog-gk.ru` (+ `www`) и `api.blog-gk.ru`.
 - Медиа хранится в S3 (Beget) и стримится через backend/site — файлового сервера нет.
