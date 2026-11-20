@@ -21,7 +21,7 @@ module.exports = {
   apps: [
     {
       name: 'blog-gk-backend',
-      cwd: '/var/www/blog-gk/backend',
+      cwd: '/srv/blog-gk/backend',
       script: 'dist/main.js',
       node_args: '--use-system-ca',
       env: {
@@ -31,7 +31,7 @@ module.exports = {
     },
     {
       name: 'blog-gk-site',
-      cwd: '/var/www/blog-gk/site',
+      cwd: '/srv/blog-gk/site',
       script: 'node_modules/.bin/next',
       args: 'start -p 5021',
       env: {
@@ -41,7 +41,7 @@ module.exports = {
     },
     {
       name: 'blog-gk-opencode',
-      cwd: '/var/www/blog-gk/opencode',
+      cwd: '/srv/blog-gk/opencode',
       script: 'opencode',
       args: 'serve --hostname 127.0.0.1 --port 5023',
       interpreter: 'none',

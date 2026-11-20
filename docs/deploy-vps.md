@@ -246,8 +246,8 @@ su - deploy
 
 ```bash
 git clone <repo> /home/deploy/blog-gk-src
-sudo mv /home/deploy/blog-gk-src /var/www/blog-gk
-sudo chown -R deploy:deploy /var/www/blog-gk
+sudo mv /home/deploy/blog-gk-src /srv/blog-gk
+sudo chown -R deploy:deploy /srv/blog-gk
 ```
 
 Для приватного репозитория добавьте ключ `deploy` в GitHub → **Settings → Deploy keys** (read-only).
@@ -309,7 +309,7 @@ AITUNNEL_API_KEY=<key>
 Права:
 
 ```bash
-chmod 600 /var/www/blog-gk/backend/.env /var/www/blog-gk/site/.env /var/www/blog-gk/opencode/.env
+chmod 600 /srv/blog-gk/backend/.env /srv/blog-gk/site/.env /srv/blog-gk/opencode/.env
 ```
 
 Ключи S3 в `backend/.env` и `site/.env` должны совпадать с реальными ключами объектов
@@ -319,12 +319,12 @@ chmod 600 /var/www/blog-gk/backend/.env /var/www/blog-gk/site/.env /var/www/blog
 ## 8. Сборка и миграции
 
 ```bash
-cd /var/www/blog-gk/backend
+cd /srv/blog-gk/backend
 npm ci
 npx prisma generate
 npm run build
 
-cd /var/www/blog-gk/site
+cd /srv/blog-gk/site
 npm ci
 npm run build
 ```
@@ -338,7 +338,7 @@ NODE_OPTIONS=--max-old-space-size=4096 npm run build
 Применить миграции (только после бэкапа):
 
 ```bash
-cd /var/www/blog-gk/backend
+cd /srv/blog-gk/backend
 npx prisma migrate deploy
 ```
 
@@ -347,7 +347,7 @@ npx prisma migrate deploy
 ## 9. PM2
 
 ```bash
-cd /var/www/blog-gk
+cd /srv/blog-gk
 pm2 start ecosystem.config.js
 pm2 save
 
@@ -581,7 +581,7 @@ sudo -u postgres pg_dump -Fc blog_gk_db > /var/backups/blog-gk/predeploy_$(date 
 ```
 
 ```bash
-cd /var/www/blog-gk
+cd /srv/blog-gk
 git pull --ff-only
 
 cd backend
